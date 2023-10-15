@@ -13,7 +13,7 @@ def test_holds_detector():
     """
     Tests the HoldsDetector class by detecting objects in the test image and visualizing the detections.
     """
-    detector = HoldsDetector()
+    detector = HoldsDetector("cpu")
     video = cv2.VideoCapture(0)
 
     if (video.isOpened() == False): 
