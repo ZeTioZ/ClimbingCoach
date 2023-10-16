@@ -3,14 +3,13 @@ from .skeleton import Skeleton
 class Itinerary:
   """
   A class that represents an itinerary of a person in an image.
-  
-  Args:
-    itinerary (dict[int, Skeleton]): The array of skeleton that compose a intinerary with milisec as value keys.
   """
 
-  def __init__(self):
+  def __init__(self, itinerary: dict = dict()):
     """
     Initializes an itinerary object.
+
+    :param itinerary: The itinerary of the person.
     """
     self.itinerary = dict()
     pass
@@ -18,6 +17,7 @@ class Itinerary:
   def add_skeleton(self, milisec: int, skeleton: Skeleton) -> tuple[bool, str]:
     """
     Add a skeleton to the itinerary.
+
     :param milisec: The milisec of the skeleton.
     :param skeleton: The skeleton to add.
     :return: A tuple with a error indicator (bool) and error message (str).
@@ -39,6 +39,7 @@ class Itinerary:
   def get_skeleton(self, milisec: int) -> Skeleton:
     """
     Get the skeleton at the given milisec.
+
     :param milisec: The milisec of the skeleton.
     :return: The skeleton at the given milisec or None.
     """
@@ -53,6 +54,7 @@ class Itinerary:
   def __get_closest_skeleton(self, milisec: int) -> Skeleton:
     """
     Get the closest skeleton to the given milisec.
+    
     :param milisec: The milisec of the skeleton.
     :return: The closest skeleton to the given milisec or None.
     """

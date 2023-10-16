@@ -14,6 +14,7 @@ from objects.skeleton import Skeleton
 from objects.position import Position
 from objects.itinerary import Itinerary
 
+
 class SkeletonScanner:
   """
   Permet de générer un squelette à partir d'un flux vidéo
@@ -22,6 +23,7 @@ class SkeletonScanner:
   def __init__(self, flux_video: str|int, frequency: int =1, model_device: str ="cpu", threshold: float = 0.7):
     """
     Constructeur
+    
     :param self: SkeletonScanner
     :param flux_video: flux video, peut être un fichier ou une webcam
     :param frequency: fréquence de génération du squelette (Hz) [enregistre les coordonnées du squelette]
@@ -44,6 +46,7 @@ class SkeletonScanner:
     if not success: raise ValueError(err_msg)
     self.__loadModel()
     
+
   def loadVideo(self, flux_video: str|int) -> tuple[bool, str]:
     """
     Permet de charger le flux vidéo
@@ -64,6 +67,7 @@ class SkeletonScanner:
     else:
       return False, "flux_video must be a file or a webcam"
     
+
   def __loadModel(self) -> tuple[bool, str]:
     """
     Permet de charger le modèle de détection de squelette
@@ -99,22 +103,23 @@ class SkeletonScanner:
       #('nose', 'left_eye', 'right_eye', 'left_ear', 'right_ear', 'left_shoulder', 'right_shoulder', 'left_elbow', 'right_elbow', 'left_wrist', 'right_wrist', 'left_hip', 'right_hip', 'left_knee', 'right_knee', 'left_ankle', 'right_ankle')
       # Créer squelette objet
       skeleton = Skeleton(
-        main1 = Position(keypoint[metadata.keypoint_names.index("left_wrist")][0], keypoint[metadata.keypoint_names.index("left_wrist")][1]),
-        main2 = Position(keypoint[metadata.keypoint_names.index("right_wrist")][0], keypoint[metadata.keypoint_names.index("right_wrist")][1]),
-        pied1 = Position(keypoint[metadata.keypoint_names.index("left_ankle")][0], keypoint[metadata.keypoint_names.index("left_ankle")][1]),
-        pied2 = Position(keypoint[metadata.keypoint_names.index("right_ankle")][0], keypoint[metadata.keypoint_names.index("right_ankle")][1]),
-        epaule1 = Position(keypoint[metadata.keypoint_names.index("left_shoulder")][0], keypoint[metadata.keypoint_names.index("left_shoulder")][1]),
-        epaule2 = Position(keypoint[metadata.keypoint_names.index("right_shoulder")][0], keypoint[metadata.keypoint_names.index("right_shoulder")][1]),
-        coude1 = Position(keypoint[metadata.keypoint_names.index("left_elbow")][0], keypoint[metadata.keypoint_names.index("left_elbow")][1]),
-        coude2 = Position(keypoint[metadata.keypoint_names.index("right_elbow")][0], keypoint[metadata.keypoint_names.index("right_elbow")][1]),
-        bassin1 = Position(keypoint[metadata.keypoint_names.index("left_hip")][0], keypoint[metadata.keypoint_names.index("left_hip")][1]),
-        bassin2 = Position(keypoint[metadata.keypoint_names.index("right_hip")][0], keypoint[metadata.keypoint_names.index("right_hip")][1]),
-        genou1 = Position(keypoint[metadata.keypoint_names.index("left_knee")][0], keypoint[metadata.keypoint_names.index("left_knee")][1]),
-        genou2 = Position(keypoint[metadata.keypoint_names.index("right_knee")][0], keypoint[metadata.keypoint_names.index("right_knee")][1])
+        main_1 = Position(keypoint[metadata.keypoint_names.index("left_wrist")][0], keypoint[metadata.keypoint_names.index("left_wrist")][1]),
+        main_2 = Position(keypoint[metadata.keypoint_names.index("right_wrist")][0], keypoint[metadata.keypoint_names.index("right_wrist")][1]),
+        pied_1 = Position(keypoint[metadata.keypoint_names.index("left_ankle")][0], keypoint[metadata.keypoint_names.index("left_ankle")][1]),
+        pied_2 = Position(keypoint[metadata.keypoint_names.index("right_ankle")][0], keypoint[metadata.keypoint_names.index("right_ankle")][1]),
+        epaule_1 = Position(keypoint[metadata.keypoint_names.index("left_shoulder")][0], keypoint[metadata.keypoint_names.index("left_shoulder")][1]),
+        epaule_2 = Position(keypoint[metadata.keypoint_names.index("right_shoulder")][0], keypoint[metadata.keypoint_names.index("right_shoulder")][1]),
+        coude_1 = Position(keypoint[metadata.keypoint_names.index("left_elbow")][0], keypoint[metadata.keypoint_names.index("left_elbow")][1]),
+        coude_2 = Position(keypoint[metadata.keypoint_names.index("right_elbow")][0], keypoint[metadata.keypoint_names.index("right_elbow")][1]),
+        bassin_1 = Position(keypoint[metadata.keypoint_names.index("left_hip")][0], keypoint[metadata.keypoint_names.index("left_hip")][1]),
+        bassin_2 = Position(keypoint[metadata.keypoint_names.index("right_hip")][0], keypoint[metadata.keypoint_names.index("right_hip")][1]),
+        genou_1 = Position(keypoint[metadata.keypoint_names.index("left_knee")][0], keypoint[metadata.keypoint_names.index("left_knee")][1]),
+        genou_2 = Position(keypoint[metadata.keypoint_names.index("right_knee")][0], keypoint[metadata.keypoint_names.index("right_knee")][1])
       )
 
       return True, skeleton
     return False, "no skeleton found"
+
 
   def generateParcours(self) -> tuple[bool, str|Itinerary]:
     """

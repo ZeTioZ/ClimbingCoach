@@ -1,14 +1,13 @@
 class Position:
     """
     A class that represents a position in the image.
-
-    Args:
-        x (float): The x coordinate of the position.
-        y (float): The y coordinate of the position.
     """
     def __init__(self, x, y):
         """
         Initializes the Position of a point in the image.
+        
+        :param x (float): The x coordinate of the position.
+        :param y (float): The y coordinate of the position.
         """
         self.x = x
         self.y = y

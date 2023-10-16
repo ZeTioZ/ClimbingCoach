@@ -1,17 +1,14 @@
 import numpy as np
 from objects.route_configurator import RouteConfigurator
-from objects.holds_detector import HoldsDetector
+from libs.model_loader import ModelLoader
 
 
-def process_route_from_image(image: np.ndarray, holds_detector: HoldsDetector) -> RouteConfigurator:
+def process_route_from_image(image: np.ndarray, holds_detector: ModelLoader) -> RouteConfigurator:
     """
     Processes a climbing route from an image.
 
-    Args:
-        image: The image to process.
-
-    Returns:
-        A list of Hold objects representing the holds in the route.
+    :param image: The image to process.
+    :return: A list of Hold objects representing the holds in the route.
     """
-    route_configurator = RouteConfigurator(holds_detector.detect_holds(image))
+    route_configurator = RouteConfigurator(holds_detector.prefict(image))
     return route_configurator

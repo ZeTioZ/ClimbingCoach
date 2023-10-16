@@ -3,10 +3,7 @@ from .position import Position
 
 class RouteConfigurator:
     """
-    RouteConfigurator class for configuring a climbing route using a list of holds.
-
-    :param holds: A list of Hold objects representing the available holds.
-    :param route: A list of Hold objects representing the holds in the current route.
+    RouteConfigurator class for configuring a climbing route using a list of holds
     """
     def __init__(self, holds: list = list()):
         """
@@ -41,8 +38,6 @@ class RouteConfigurator:
 
     def get_route(self) -> list:
         """
-        Returns the list of holds in the current route.
-
         :return: A list of Hold objects representing the holds in the current route.
         """
         return self.route
