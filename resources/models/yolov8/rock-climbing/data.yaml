@@ -1,0 +1,13 @@
+train: /train/images
+val: /valid/images
+test: /test/images
+
+nc: 8
+names: ['Crimp', 'Edges', 'Foothold', 'Hand-holds', 'Jug', 'Pinch', 'Pocket', 'Sloper']
+
+roboflow:
+  workspace: university-of-maine
+  project: rock-climbing
+  version: 50
+  license: MIT
+  url: https://universe.roboflow.com/university-of-maine/rock-climbing/dataset/50
