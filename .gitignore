@@ -163,3 +163,6 @@ resources/models/experiment_config.yml
 resources/models/COCO/Base-RCNN-FPN.yaml
 resources/models/COCO/keypoint/Base-Keypoint-RCNN-FPN.yaml
 resources/models/COCO/keypoint/keypoint_rcnn_R_50_FPN_3x.yaml
+
+#MAC
+runs/.DS_Store
