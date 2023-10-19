@@ -7,5 +7,5 @@ class ModelLoader:
 
 
     def predict(self, image, classes=None):
-        predictions = self.model(image, classes=classes)
+        predictions = self.model(image, classes=classes, device='0')
         return predictions

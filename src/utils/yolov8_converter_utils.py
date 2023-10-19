@@ -29,11 +29,12 @@ def convert_image_skeleton_outputs(predictions_outputs) -> list:
     skeletons = []
     for skeleton_keypoints in predictions_outputs[0].keypoints.xy:
         keypoints = skeleton_keypoints.tolist()
+        if not len(keypoints) == 17: continue
         skeleton = Skeleton(
             main_1 = Position(keypoints[9][0], keypoints[9][1]),
             main_2 = Position(keypoints[10][0], keypoints[10][1]),
             pied_1 = Position(keypoints[15][0], keypoints[15][1]),
-            pied_2 = Position(keypoints[14][0], keypoints[14][1]),
+            pied_2 = Position(keypoints[16][0], keypoints[16][1]),
             epaule_1 = Position(keypoints[5][0], keypoints[5][1]),
             epaule_2 = Position(keypoints[6][0], keypoints[6][1]),
             coude_1 = Position(keypoints[7][0], keypoints[7][1]),

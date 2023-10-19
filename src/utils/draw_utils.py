@@ -17,23 +17,32 @@ def box_visualizer(image: np.ndarray, boxes: list, color: tuple = (0, 255, 0), t
     return image
 
 
+def line(image: np.ndarray, skeleton: Skeleton, membre_1: str, membre_2: str, color: tuple = (0, 255, 0), thickness: int = 2):
+    if skeleton.exist(membre_1) and skeleton.exist(membre_2):
+      cv2.line(image, skeleton.body[membre_1].to_tuple(), skeleton.body[membre_2].to_tuple(), color, thickness)
+
+
 def skeleton_visualizer(image: np.ndarray, skeleton, color: tuple = (0, 255, 0), thickness: int = 2):
     if not isinstance(skeleton, Skeleton):
         return image
-    cv2.line(image, (int(skeleton.body["main_1"].x), int(skeleton.body["main_1"].y)), (int(skeleton.body["coude_1"].x), int(skeleton.body["coude_1"].y)), color, thickness)
-    cv2.line(image, (int(skeleton.body["coude_1"].x), int(skeleton.body["coude_1"].y)), (int(skeleton.body["epaule_1"].x), int(skeleton.body["epaule_1"].y)), color, thickness)
-    cv2.line(image, (int(skeleton.body["epaule_1"].x), int(skeleton.body["epaule_1"].y)), (int(skeleton.body["bassin_1"].x), int(skeleton.body["bassin_1"].y)), color, thickness)
-    cv2.line(image, (int(skeleton.body["bassin_1"].x), int(skeleton.body["bassin_1"].y)), (int(skeleton.body["genou_1"].x), int(skeleton.body["genou_1"].y)), color, thickness)
-    cv2.line(image, (int(skeleton.body["genou_1"].x), int(skeleton.body["genou_1"].y)), (int(skeleton.body["pied_1"].x), int(skeleton.body["pied_1"].y)), color, thickness)
 
-    cv2.line(image, (int(skeleton.body["main_2"].x), int(skeleton.body["main_2"].y)), (int(skeleton.body["coude_2"].x), int(skeleton.body["coude_2"].y)), color, thickness)
-    cv2.line(image, (int(skeleton.body["coude_2"].x), int(skeleton.body["coude_2"].y)), (int(skeleton.body["epaule_2"].x), int(skeleton.body["epaule_2"].y)), color, thickness)
-    cv2.line(image, (int(skeleton.body["epaule_2"].x), int(skeleton.body["epaule_2"].y)), (int(skeleton.body["bassin_2"].x), int(skeleton.body["bassin_2"].y)), color, thickness)
-    cv2.line(image, (int(skeleton.body["bassin_2"].x), int(skeleton.body["bassin_2"].y)), (int(skeleton.body["genou_2"].x), int(skeleton.body["genou_2"].y)), color, thickness)
-    cv2.line(image, (int(skeleton.body["genou_2"].x), int(skeleton.body["genou_2"].y)), (int(skeleton.body["pied_2"].x), int(skeleton.body["pied_2"].y)), color, thickness)
+    # Left
+    line(image, skeleton, "main_1", "coude_1", color, thickness)
+    line(image, skeleton, "coude_1", "epaule_1", color, thickness)
+    line(image, skeleton, "epaule_1", "bassin_1", color, thickness)
+    line(image, skeleton, "bassin_1", "genou_1", color, thickness)
+    line(image, skeleton, "genou_1", "pied_1", color, thickness)
+    
+    #Right
+    line(image, skeleton, "main_2", "coude_2", color, thickness)
+    line(image, skeleton, "coude_2", "epaule_2", color, thickness)
+    line(image, skeleton, "epaule_2", "bassin_2", color, thickness)
+    line(image, skeleton, "bassin_2", "genou_2", color, thickness)
+    line(image, skeleton, "genou_2", "pied_2", color, thickness)
 
-    cv2.line(image, (int(skeleton.body["epaule_1"].x), int(skeleton.body["epaule_1"].y)), (int(skeleton.body["epaule_2"].x), int(skeleton.body["epaule_2"].y)), color, thickness)
-    cv2.line(image, (int(skeleton.body["bassin_1"].x), int(skeleton.body["bassin_1"].y)), (int(skeleton.body["bassin_2"].x), int(skeleton.body["bassin_2"].y)), color, thickness)
+    # Body box
+    line(image, skeleton, "epaule_1", "epaule_2", color, thickness)
+    line(image, skeleton, "bassin_1", "bassin_2", color, thickness)
     return image
 
 

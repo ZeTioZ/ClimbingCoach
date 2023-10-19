@@ -15,18 +15,18 @@ def mouse_callback(event, x, y, flags, param):
         print("Left button down at ({}, {})".format(x, y))
 
 
-def test_holds_detector():
+def test_holds_detector(nbr_frame_to_skip: int = 2):
     """
     Tests the HoldsDetector class by detecting objects in the test image and visualizing the detections.
     """
     holds_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "holds_model_yolov8l.pt"))
     skeleton_detector = ModelLoader("yolov8l-pose.pt")
 
-    video = cv2.VideoCapture(os.path.join(VIDEOS_DIRECTORY, "Escalade_Mouvement.mp4"))
+    video = cv2.VideoCapture(os.path.join(VIDEOS_DIRECTORY, "Escalade_Fixe.mp4"))
     video.set(cv2.CAP_PROP_FRAME_WIDTH, video.get(cv2.CAP_PROP_FRAME_WIDTH)/2)
     video.set(cv2.CAP_PROP_FRAME_HEIGHT, video.get(cv2.CAP_PROP_FRAME_WIDTH)/2)
 
-    refresh_holds = True
+    refresh_holds = False
     refreshed = False
     frame_skipper = 0
     while video.isOpened():
@@ -62,7 +62,7 @@ def test_holds_detector():
                                 cv2.circle(image, (int(member_position.x), int(member_position.y)), 5, (0, 255, 0), 1)
                                 members_to_check.remove(member)
                                 break
-        frame_skipper = (frame_skipper + 1) % 2
+        frame_skipper = (frame_skipper + 1) % (nbr_frame_to_skip+1)
 
         cv2.imshow("Holds", image)
         if cv2.waitKey(int((1000/video.get(cv2.CAP_PROP_FPS))-5)) & 0xFF == ord('q'):
@@ -72,6 +72,6 @@ def test_holds_detector():
 
 
 if __name__ == "__main__":
-    # cv2.namedWindow("Holds")
-    # cv2.setMouseCallback("Holds", mouse_callback)
-    test_holds_detector()
+    cv2.namedWindow("Holds")
+    cv2.setMouseCallback("Holds", mouse_callback)
+    test_holds_detector(4)
