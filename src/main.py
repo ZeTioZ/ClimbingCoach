@@ -26,26 +26,32 @@ def test_holds_detector():
     video.set(cv2.CAP_PROP_FRAME_WIDTH, video.get(cv2.CAP_PROP_FRAME_WIDTH)/2)
     video.set(cv2.CAP_PROP_FRAME_HEIGHT, video.get(cv2.CAP_PROP_FRAME_WIDTH)/2)
 
-    if (video.isOpened() == False):
-        print("Error opening video stream or file")
-
-    success, image = video.read()
-    while success:
+    refresh_holds = True
+    refreshed = False
+    frame_skipper = 0
+    while video.isOpened():
         success, image = video.read()
         if not success:
             break
 
-        holds_predictions = holds_detector.predict(image)
-        holds_boxes = convert_image_box_outputs(holds_predictions)
-        image = box_visualizer(image, holds_boxes, color=(0, 255, 0), thickness=1)
+        if refresh_holds or not refreshed:
+            refreshed = True
+            holds_predictions = holds_detector.predict(image, classes=[0])
+            floor_predictions = holds_detector.predict(image, classes=[1])
+            holds_boxes = convert_image_box_outputs(holds_predictions)
+            floor_boxes = convert_image_box_outputs(floor_predictions)
 
-        skeleton_prediction = skeleton_detector.predict(image)
-        skeletons = convert_image_skeleton_outputs(skeleton_prediction)
+        image = box_visualizer(image, holds_boxes, color=(0, 255, 0), thickness=1)
+        image = box_visualizer(image, floor_boxes, color=(0, 255, 0), thickness=1)
+
+        if frame_skipper == 0:
+            skeleton_prediction = skeleton_detector.predict(image)
+            skeletons = convert_image_skeleton_outputs(skeleton_prediction)
 
         for skeleton in skeletons:
             image = skeleton_visualizer(image, skeleton, color=(0, 0, 255), thickness=1)
 
-            if isinstance(skeleton, Skeleton):
+            if isinstance(skeleton, Skeleton) and frame_skipper == 0:
                 members_to_check = ["main_1", "main_2", "pied_1", "pied_2"]
                 for hold_box in holds_boxes:
                     for member in skeleton.body.keys():
@@ -56,10 +62,13 @@ def test_holds_detector():
                                 cv2.circle(image, (int(member_position.x), int(member_position.y)), 5, (0, 255, 0), 1)
                                 members_to_check.remove(member)
                                 break
+        frame_skipper = (frame_skipper + 1) % 2
 
         cv2.imshow("Holds", image)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(int((1000/video.get(cv2.CAP_PROP_FPS))-5)) & 0xFF == ord('q'):
             break
+    video.release()
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":

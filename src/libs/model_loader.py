@@ -6,6 +6,6 @@ class ModelLoader:
         self.model = YOLO(model_path)
 
 
-    def predict(self, image):
-        predictions = self.model(image)
+    def predict(self, image, classes=None):
+        predictions = self.model(image, classes=classes)
         return predictions
