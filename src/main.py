@@ -45,7 +45,7 @@ def test_holds_detector(nbr_frame_to_skip: int = 2):
         image = box_visualizer(image, floor_boxes, color=(0, 255, 0), thickness=1)
 
         if frame_skipper == 0:
-            skeleton_prediction = skeleton_detector.predict(image)
+            skeleton_prediction = skeleton_detector.predict(image, img_size=512)
             skeletons = convert_image_skeleton_outputs(skeleton_prediction)
 
         for skeleton in skeletons:
@@ -62,7 +62,7 @@ def test_holds_detector(nbr_frame_to_skip: int = 2):
                                 cv2.circle(image, (int(member_position.x), int(member_position.y)), 5, (0, 255, 0), 1)
                                 members_to_check.remove(member)
                                 break
-        frame_skipper = (frame_skipper + 1) % (nbr_frame_to_skip+1)
+        frame_skipper = (frame_skipper + 1) % (nbr_frame_to_skip + 1)
 
         cv2.imshow("Holds", image)
         if cv2.waitKey(int((1000/video.get(cv2.CAP_PROP_FPS))-5)) & 0xFF == ord('q'):
@@ -74,4 +74,4 @@ def test_holds_detector(nbr_frame_to_skip: int = 2):
 if __name__ == "__main__":
     cv2.namedWindow("Holds")
     cv2.setMouseCallback("Holds", mouse_callback)
-    test_holds_detector(4)
+    test_holds_detector(3)
