@@ -1,12 +1,10 @@
 import cv2, os
 
 from libs.model_loader import ModelLoader
-from utils.detectron2_converter_utils import convert_image_box_output
-from utils.draw_utils import skeleton_visualizer, box_visualizer, refresh
+from utils.yolov8_converter_utils import convert_image_box_outputs, convert_image_skeleton_outputs
+from utils.draw_utils import skeleton_visualizer, box_visualizer
 
-from utils.skeleton_scanner import SkeletonScanner
 from objects.skeleton import Skeleton
-from detectron2 import model_zoo
 
 MODELS_DIRECTORY = "./resources/models/"
 VIDEOS_DIRECTORY = "./resources/videos/"
@@ -17,72 +15,63 @@ def mouse_callback(event, x, y, flags, param):
         print("Left button down at ({}, {})".format(x, y))
 
 
-def test_holds_detector():
+def test_holds_detector(nbr_frame_to_skip: int = 2):
     """
     Tests the HoldsDetector class by detecting objects in the test image and visualizing the detections.
     """
-    holds_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "experiment_config.yml"), os.path.join(MODELS_DIRECTORY, "model_final.pth"))
-    skeleton_detector = ModelLoader(model_zoo.get_config_file("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml"), model_zoo.get_checkpoint_url("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml"))
-    
-    video = cv2.VideoCapture(2)
-    if (video.isOpened() == False): 
-        print("Error opening video stream or file")
+    holds_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "holds_model_yolov8l.pt"))
+    skeleton_detector = ModelLoader("yolov8l-pose.pt")
 
-    scanner = SkeletonScanner(2)
+    video = cv2.VideoCapture(os.path.join(VIDEOS_DIRECTORY, "Escalade_Fixe.mp4"))
+    video.set(cv2.CAP_PROP_FRAME_WIDTH, video.get(cv2.CAP_PROP_FRAME_WIDTH)/2)
+    video.set(cv2.CAP_PROP_FRAME_HEIGHT, video.get(cv2.CAP_PROP_FRAME_WIDTH)/2)
 
-    success, image = video.read()
-    refresh_indicator = None
-    should_refresh = True
-    while success:
+    refresh_holds = False
+    refreshed = False
+    frame_skipper = 0
+    while video.isOpened():
         success, image = video.read()
         if not success:
             break
 
-        if refresh_indicator is not "no-refresh" and refresh(image, refresh_indicator, 10, 10):
-            refresh_indicator = image[10, 10] if should_refresh else "no-refresh"
-            outputs = holds_detector.predict(image)
-            boxes = convert_image_box_output(outputs)
+        if refresh_holds or not refreshed:
+            refreshed = True
+            holds_predictions = holds_detector.predict(image, classes=[0])
+            floor_predictions = holds_detector.predict(image, classes=[1])
+            holds_boxes = convert_image_box_outputs(holds_predictions)
+            floor_boxes = convert_image_box_outputs(floor_predictions)
 
-        image = box_visualizer(image, boxes, color=(0, 255, 0), thickness=1)
-        skeleton = scanner.generateSkeleton(image)[1]
-        image = skeleton_visualizer(image, skeleton, color=(0, 0, 255), thickness=1)
+        image = box_visualizer(image, holds_boxes, color=(0, 255, 0), thickness=1)
+        image = box_visualizer(image, floor_boxes, color=(0, 255, 0), thickness=1)
 
-        if isinstance(skeleton, Skeleton):
-            members_to_check = ["main_1", "main_2", "pied_1", "pied_2"]
-            for box in boxes:
-                for member in skeleton.body.keys():
-                    if member in members_to_check:
-                        member_position = skeleton.body[member]
-                        if box.position_collide(member_position, margin=10):
-                            cv2.rectangle(image, (int(box.positions[0].x), int(box.positions[0].y)), (int(box.positions[1].x), int(box.positions[1].y)), (0, 0, 255), 2)
-                            cv2.circle(image, (int(member_position.x), int(member_position.y)), 5, (0, 255, 0), 2)
-                            members_to_check.remove(member)
-                            break
+        if frame_skipper == 0:
+            skeleton_prediction = skeleton_detector.predict(image, img_size=512)
+            skeletons = convert_image_skeleton_outputs(skeleton_prediction)
+
+        for skeleton in skeletons:
+            image = skeleton_visualizer(image, skeleton, color=(0, 0, 255), thickness=1)
+
+            if isinstance(skeleton, Skeleton) and frame_skipper == 0:
+                members_to_check = ["main_1", "main_2", "pied_1", "pied_2"]
+                for hold_box in holds_boxes:
+                    for member in skeleton.body.keys():
+                        if member in members_to_check:
+                            member_position = skeleton.body[member]
+                            if hold_box.position_collide(member_position, margin=10):
+                                cv2.rectangle(image, (int(hold_box.positions[0].x), int(hold_box.positions[0].y)), (int(hold_box.positions[1].x), int(hold_box.positions[1].y)), (0, 0, 255), 2)
+                                cv2.circle(image, (int(member_position.x), int(member_position.y)), 5, (0, 255, 0), 1)
+                                members_to_check.remove(member)
+                                break
+        frame_skipper = (frame_skipper + 1) % (nbr_frame_to_skip + 1)
 
         cv2.imshow("Holds", image)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(int((1000/video.get(cv2.CAP_PROP_FPS))-5)) & 0xFF == ord('q'):
             break
-
-
-def test_skeleton_scanner_file():
-    """
-    Tests the SkeletonScanner class by generating a skeleton from the test image and visualizing the skeleton.
-    """
-    skeleton_scanner = SkeletonScanner(os.path.join(VIDEOS_DIRECTORY, "Escalade_Prof.mp4"), frequency=4)
-    skeleton_scanner.generateParcours()
-
-
-def test_skeleton_scanner_webcam():
-    """
-    Tests the SkeletonScanner class by generating a skeleton from the webcam and visualizing the skeleton.
-    """
-    skeleton_scanner = SkeletonScanner(0)
-    skeleton_scanner.generateParcours()
+    video.release()
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
     cv2.namedWindow("Holds")
     cv2.setMouseCallback("Holds", mouse_callback)
-    test_holds_detector()
-    # test_skeleton_scanner_file()
-    # test_skeleton_scanner_webcam()
+    test_holds_detector(3)

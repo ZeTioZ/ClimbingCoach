@@ -13,8 +13,16 @@ class Position:
         self.y = y
     
 
-    def __str__(self):
+    def to_tuple(self) -> tuple:
+        return (int(self.x), int(self.y))
+
+
+    def __str__(self) -> str:
         """
         Returns a string representation of the Position object.
         """
         return "Position: ({}, {})".format(self.x, self.y)
+    
+
+    def __repr__(self) -> tuple:
+        return self.to_tuple()

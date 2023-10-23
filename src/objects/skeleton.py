@@ -51,6 +51,15 @@ class Skeleton:
                  "genou_2": genou_2}
 
 
+  def exist(self, key: str) -> bool:
+    """
+    Check if the given key position (x and y) is not 0.
+    """
+    if key not in self.body: return False
+    if self.body[key].x != 0 and self.body[key].y != 0:
+      return True   
+
+
   def __str__(self) -> str:
     result = ""
     for member in self.body:
