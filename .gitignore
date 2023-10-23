@@ -158,11 +158,4 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
-resources/models/model_final.pth
-resources/models/experiment_config.yml
-resources/models/COCO/Base-RCNN-FPN.yaml
-resources/models/COCO/keypoint/Base-Keypoint-RCNN-FPN.yaml
-resources/models/COCO/keypoint/keypoint_rcnn_R_50_FPN_3x.yaml
-
-#MAC
-runs/.DS_Store
+runs/
