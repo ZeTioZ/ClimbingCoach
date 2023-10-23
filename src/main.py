@@ -20,7 +20,7 @@ def test_holds_detector(nbr_frame_to_skip: int = 2):
     Tests the HoldsDetector class by detecting objects in the test image and visualizing the detections.
     """
     holds_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "holds_model_yolov8l.pt"))
-    skeleton_detector = ModelLoader("yolov8l-pose.pt")
+    skeleton_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "yolov8l-pose.pt"))
 
     video = cv2.VideoCapture(os.path.join(VIDEOS_DIRECTORY, "Escalade_Fixe.mp4"))
     video.set(cv2.CAP_PROP_FRAME_WIDTH, video.get(cv2.CAP_PROP_FRAME_WIDTH)/2)
