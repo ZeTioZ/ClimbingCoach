@@ -2,38 +2,155 @@
 import tkinter as tk
 import customtkinter
 from gui.singleton_metaclass import singleton_page
+import os.path
+from PIL import Image
+
+
+DEFAULT_FONT = ("Helvetica", 16)
+TITLE_FONT = ("Helvetica", 24)
+DF = DEFAULT_FONT
+TF = TITLE_FONT
+
+DEFAULT_FONT_BIG = ("Helvetica", 32)
+DFB = DEFAULT_FONT_BIG
+
+v = lambda x, view: x * (view/100)
 
 class login_page(customtkinter.CTkFrame, singleton_page):
     """Class for the login page."""
-    
-    def __init__(self, parent):
+
+    RI_TITLE = 1
+    RI_USERNAME_LABEL =2
+    RI_USERNAME = 3
+    RI_PASSWORD_LABEL = 4
+    RI_PASSWORD = 5
+    RI_LOGIN = 6
+
+    CI_LEFT = 1
+    CI_RIGHT = 2
+
+    __sizeState = None
+
+    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
         """Constructor. Singleton then init executed only once."""
         super().__init__(parent)  # Call the __init__ method of the parent class
+        app_path = os.path.dirname(os.path.abspath(__file__))
+        app_path = app_path[:app_path.rfind("\\src")]
 
-        parent.title("Login Page")
+        if app is not None: 
+            app.title("Login Page")
+            self.toggle_menu = app.toggle_menu
+            latest_width = app.winfo_width()
+            latest_height = app.winfo_height()
+        else: 
+            self.toggle_menu = lambda: print("Toggle menu")
         
-        self.username_label = customtkinter.CTkLabel(self, text="Username:")
-        self.username_combobox = customtkinter.CTkComboBox(self, values=["Admin", "User", "Guest"]) #Faire appel a la fonction qui permet de choper tous les users
+        #Frame configure
+        parent.grid_rowconfigure(0, weight=1) 
+        parent.grid_columnconfigure(0, weight=1) # Use to align the frame in the center of the window
 
-        # For password purpose
-        #self.password_label = customtkinter.CTkLabel(self, text="Password:")
-        #self.password_entry = customtkinter.CTkEntry(self, show="*")
+        self.grid_rowconfigure((self.RI_TITLE, self.RI_LOGIN), weight=2, minsize=100)
+        self.grid_rowconfigure((self.RI_USERNAME,self.RI_PASSWORD), weight=1)
+        self.grid_rowconfigure((self.RI_USERNAME_LABEL, self.RI_PASSWORD_LABEL), weight=0)
+        self.grid_rowconfigure((0,7), weight=6)
 
-        self.login_button = customtkinter.CTkButton(self, text="Login", command=self.login)
+        self.grid_columnconfigure((self.CI_LEFT,self.CI_RIGHT), weight=1)
+        self.grid_columnconfigure((0,3), weight=4)
 
-        self.username_label.grid(row = 0, column = 1)
-        self.username_combobox.grid(row = 1, column = 1)
-        # self.password_label.grid(row = 0, column = 0)
-        # self.password_entry.grid(row = 0, column = 0)
-        self.login_button.grid(row = 2, column = 1)
+        #Title
+        self.app_image = customtkinter.CTkImage(Image.open(os.path.join(app_path, "resources\\images", "incroyable_logo_climbing_coach.png")), size=(100,100))
+        self.title = customtkinter.CTkLabel(self, text="", font=TF, image=self.app_image)
+        self.title.grid(row = self.RI_TITLE, column = self.CI_LEFT, columnspan=2)
+        
+        #Username
+        self.username_label = customtkinter.CTkLabel(self, text="Username", font=DF)
+        self.username_combobox = customtkinter.CTkComboBox(self, values=self.__get_usernames(), font=DF, dropdown_font=DF) #Faire appel a la fonction qui permet de choper tous les users
+        self.username_combobox.set("")
+        self.username_label.grid(row = self.RI_USERNAME_LABEL, column = self.CI_LEFT, sticky="sw", columnspan=2)       
+        self.username_combobox.grid(row = self.RI_USERNAME, column = self.CI_LEFT, sticky="nwe", columnspan=2)
+        
+        #Password
+        self.password_label = customtkinter.CTkLabel(self, text="Password", font=DF)
+        self.password_entry = customtkinter.CTkEntry(self, show="*")
+        self.password_label.grid(row = self.RI_PASSWORD_LABEL, column = self.CI_LEFT, sticky="sw", columnspan=2)
+        self.password_entry.grid(row = self.RI_PASSWORD, column = self.CI_LEFT, sticky="nwe", columnspan=2)
+        
+        #Login button
+        self.login_button = customtkinter.CTkButton(self, text="Login", command=self.toggle_menu, font=DF)
+        self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
-        #frame.grid(row = 0, column = 0, sticky = "nsew")
+        self.guest_button = customtkinter.CTkButton(self, text="Guest", command=self.toggle_menu, font=DF, fg_color="#027148", hover_color="#013220")
+        self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
+
+        self.register_button = customtkinter.CTkButton(self, text="Register", command=self.toggle_menu, font=DF)
+        self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=2)
+
 
     def login(self):
-        username = self.username_entry.get()
+        username = self.username_combobox.get()
         password = self.password_entry.get()
+        if username not in self.__get_usernames():
+            print(f"User {username} not found")
+            return
         # Add your login logic here
+        print(f"You'r logged in as {username}")
+
+    def __get_usernames(self):
+        return ["Admin", "User"]
+
+    def __setup_smallScreen(self):
+        """Setup the container for small screen."""
+        self.grid_rowconfigure((0,7), weight=6)
+
+        self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=1, sticky="nw", pady=(10, 4))
+        self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=1, sticky="ne", pady=(10, 4))
+        self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2, sticky="swe")
     
-    def get_frame(self):
-        """Return the frame of the login page."""
-        return self.__frame
+    def __setup_bigScreen(self):
+        """Setup the container for big screen."""
+        self.grid_rowconfigure((0), weight=1)
+        self.grid_rowconfigure((7), weight=1)
+
+        self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=1, sticky="nw", pady=0)
+        self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=1, sticky="ne")
+        self.register_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=1, sticky="w", pady=0)
+
+    def onSizeChange(self, width, height):
+        """Called when the windows size change."""
+
+        # Change grid structure
+        if width > 800 and height > 600 and self.__sizeState != "big":
+            self.__sizeState = "big"
+            self.__setup_bigScreen()
+        elif width and height <= 600 and self.__sizeState != "small":
+            self.__sizeState = "small"
+            self.__setup_smallScreen()
+
+        default_font = ("Helvetica", min(int(v(4, height)), 24))
+        title_font = ("Helvetica", min(int(v(6, height)), 32))
+
+        self.app_image.configure(size=(
+            max(100, min(int(v(10, width)), 200)), 
+            max(100, min(int(v(10, width)), 200))
+        ))
+
+        self.username_label.configure(font=default_font)
+        self.password_label.configure(font=default_font)
+        self.login_button.configure(
+            font=default_font,
+            width=v(20, width)
+        )
+        self.register_button.configure(
+            font=default_font,
+            width=v(20, width)
+        )
+        self.guest_button.configure(
+            font=default_font,
+            width=v(20, width)
+        )
+
+        self.title.configure(font=title_font)
+
+        self.password_entry.configure(font=default_font)
+        self.username_combobox.configure(font=default_font, dropdown_font=default_font)
+    
