@@ -60,6 +60,8 @@ class login_page(customtkinter.CTkFrame, singleton_page):
         #Title
         self.app_image = customtkinter.CTkImage(Image.open(os.path.join(app_path, "resources\\images", "incroyable_logo_climbing_coach.png")), size=(100,100))
         self.title = customtkinter.CTkLabel(self, text="", font=TF, image=self.app_image)
+        self.title.bind("<Enter>", lambda e: self.title.configure(text="Logo", image=customtkinter.CTkImage(Image.frombytes("RGBA", (1,1), b"\x00\x00\x00\x00"))))
+        self.title.bind("<Leave>", lambda e: self.title.configure(text="", image=self.app_image))
         self.title.grid(row = self.RI_TITLE, column = self.CI_LEFT, columnspan=2)
         
         #Username
@@ -79,7 +81,7 @@ class login_page(customtkinter.CTkFrame, singleton_page):
         self.login_button = customtkinter.CTkButton(self, text="Login", command=self.toggle_menu, font=DF)
         self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
-        self.guest_button = customtkinter.CTkButton(self, text="Guest", command=self.toggle_menu, font=DF, fg_color="#027148", hover_color="#013220")
+        self.guest_button = customtkinter.CTkButton(self, text="Guest", font=DF, fg_color="#027148", hover_color="#013220")
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
         self.register_button = customtkinter.CTkButton(self, text="Register", command=self.toggle_menu, font=DF)
@@ -133,6 +135,11 @@ class login_page(customtkinter.CTkFrame, singleton_page):
             max(100, min(int(v(10, width)), 200)), 
             max(100, min(int(v(10, width)), 200))
         ))
+
+        self.title.configure(
+            width=max(100, min(int(v(10, width)), 200)),
+            height=max(100, min(int(v(10, width)), 200))
+        )
 
         self.username_label.configure(font=default_font)
         self.password_label.configure(font=default_font)
