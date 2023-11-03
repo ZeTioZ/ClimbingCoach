@@ -36,19 +36,18 @@ class Application(customtkinter.CTk):
     # Initialize the application frame
     def init_frame(self):
         """Initialize the application frame."""
-        self.main_frame = customtkinter.CTkFrame(self)
 
-        self.main_frame.grid_rowconfigure(0,weight=1)
-        self.main_frame.grid_columnconfigure((0), weight=1)
-        self.main_frame.grid_columnconfigure((1), weight=5)
+        # configure grid layout (2x1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
-        self.menu_frame = customtkinter.CTkButton(self.main_frame, bg_color="white", fg_color="red")
-        self.menu_frame.grid(row=0, column=0, padx=5)
+        self.menu_frame = customtkinter.CTkFrame(self, fg_color="red", width=150)
+        self.menu_frame.grid(row=0, column=0, sticky="nswe")
 
-        self.container_frame = customtkinter.CTkButton(self.main_frame, bg_color="white", fg_color="blue")
-        self.container_frame.grid(row=0, column=1)
+        self.container_frame = customtkinter.CTkFrame(self, fg_color="blue")
+        self.container_frame.grid(row=0, column=1, sticky="nswe")
 
-        self.main_frame.grid()
+        #self.main_frame.grid()
 
 
 if __name__ == "__main__":
