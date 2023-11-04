@@ -4,7 +4,7 @@ class page(CTkFrame):
 
     __instance = None
 
-    def __init__(self, parent: CTkFrame, app: CTk = None):
+    def __init__(self, parent: CTkFrame, app: CTk = None, *args, **kwargs):
         """Constructor. Singleton then init executed only once."""
         super().__init__(parent)
     
