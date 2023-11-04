@@ -3,6 +3,7 @@ import tkinter as tk
 import customtkinter
 from tkinter import messagebox
 from gui import login_page, test_page, page
+import os.path
 
 class Application(customtkinter.CTk):
     """
@@ -22,6 +23,11 @@ class Application(customtkinter.CTk):
         self.title("Climbing Coach")
 
         # self.bind('<Escape>', lambda e: self.quit()) 
+        # Set the window icon
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        parent_dir = os.path.dirname(current_dir)
+        icon_path = os.path.join(parent_dir, 'resources/images', 'climbing_coach.ico')
+        self.iconbitmap(icon_path)
 
         # detect windows size change
         self.bind("<Configure>", lambda e: self.onWindowsSizeChange())
