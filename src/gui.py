@@ -22,9 +22,12 @@ class Application(customtkinter.CTk):
     def __init__(self):
         """Constructor."""
         super().__init__()
+        set_height_utils(self.winfo_screenheight())
 
-        self.geometry("600x300+600+300")
+        self.geometry(f"{UV(700)}x{UV(600)}+600+300")
         self.title("Climbing Coach")
+
+        self.minsize(UV(700), UV(600))
 
 
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -40,7 +43,6 @@ class Application(customtkinter.CTk):
         self.bind("<Configure>", lambda e: self.onWindowsSizeChange())
         self.latest_width = self.winfo_width()
         self.latest_height = self.winfo_height()
-        set_height_utils(self.winfo_screenheight())
 
         self.init_frame()
         #self.show_page(login_page)
