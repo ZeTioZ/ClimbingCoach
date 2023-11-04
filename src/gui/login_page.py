@@ -1,7 +1,7 @@
 """Module for tkinter interface of the login page."""
 import tkinter as tk
 import customtkinter
-from gui.singleton_metaclass import singleton_page
+from gui.page import page
 import os.path
 from PIL import Image
 
@@ -16,7 +16,7 @@ DFB = DEFAULT_FONT_BIG
 
 v = lambda x, view: x * (view/100)
 
-class login_page(customtkinter.CTkFrame, singleton_page):
+class login_page(page):
     """Class for the login page."""
 
     RI_TITLE = 1

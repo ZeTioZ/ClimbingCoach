@@ -2,7 +2,7 @@
 import tkinter as tk
 import customtkinter
 from tkinter import messagebox
-from gui import login_page, test_page, singleton_page
+from gui import login_page, test_page, page
 
 class Application(customtkinter.CTk):
     """
@@ -21,23 +21,24 @@ class Application(customtkinter.CTk):
         self.geometry("600x300+600+300")
         self.title("Climbing Coach")
 
+        # self.bind('<Escape>', lambda e: self.quit()) 
+
         # detect windows size change
         self.bind("<Configure>", lambda e: self.onWindowsSizeChange())
-        latest_width = self.winfo_width()
-        latest_height = self.winfo_height()
+        self.latest_width = self.winfo_width()
+        self.latest_height = self.winfo_height()
 
         self.init_frame()
-        self.show_page(login_page)
+        self.show_page(test_page)
     
-
     # Page utils
-    def show_page(self, page: customtkinter.CTkFrame):
+    def show_page(self, page: page):
         """Show the page passed in parameter."""
         if self.page_frame is not None: self.page_frame.grid_forget()
         self.page_frame = page.get_instance(self.container_frame, self)
         self.page_frame.grid(row=0, column=0, sticky="nsew")
     
-    def update_page(self, page: customtkinter.CTkFrame):
+    def update_page(self, page: page):
         """Update the page passed in parameter."""
         page.get_instance(self).update()
         self.show_page(page)
