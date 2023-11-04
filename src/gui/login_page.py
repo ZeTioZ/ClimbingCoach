@@ -4,16 +4,16 @@ import customtkinter
 from gui.page import page
 import os.path
 from PIL import Image
-from gui.utils import v, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
+from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, PARENT_PATH
 
 
 
-DEFAULT_FONT = ("Helvetica", 16)
-TITLE_FONT = ("Helvetica", 24)
+DEFAULT_FONT = ("Helvetica", IUV(16))
+TITLE_FONT = ("Helvetica", IUV(24))
 DF = DEFAULT_FONT
 TF = TITLE_FONT
 
-DEFAULT_FONT_BIG = ("Helvetica", 32)
+DEFAULT_FONT_BIG = ("Helvetica", IUV(32))
 DFB = DEFAULT_FONT_BIG
 
 class login_page(page):
@@ -34,14 +34,11 @@ class login_page(page):
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
         """Constructor. Singleton then init executed only once."""
         super().__init__(parent)  # Call the __init__ method of the parent class
-        app_path = os.path.dirname(os.path.abspath(__file__))
-        app_path = app_path[:app_path.rfind("\\src")]
+        app_path = PARENT_PATH
 
         if app is not None: 
             app.title("Login Page")
             self.toggle_menu = app.toggle_menu
-            latest_width = app.winfo_width()
-            latest_height = app.winfo_height()
         else: 
             self.toggle_menu = lambda: print("Toggle menu")
         
@@ -49,7 +46,7 @@ class login_page(page):
         parent.grid_rowconfigure(0, weight=1) 
         parent.grid_columnconfigure(0, weight=1) # Use to align the frame in the center of the window
 
-        self.grid_rowconfigure((self.RI_TITLE, self.RI_LOGIN), weight=2, minsize=100)
+        self.grid_rowconfigure((self.RI_TITLE, self.RI_LOGIN), weight=2, minsize=UV(100))
         self.grid_rowconfigure((self.RI_USERNAME,self.RI_PASSWORD), weight=1)
         self.grid_rowconfigure((self.RI_USERNAME_LABEL, self.RI_PASSWORD_LABEL), weight=0)
         self.grid_rowconfigure((0,7), weight=6)
@@ -58,10 +55,8 @@ class login_page(page):
         self.grid_columnconfigure((0,3), weight=4)
 
         #Title
-        self.app_image = customtkinter.CTkImage(Image.open(os.path.join(app_path, "resources\\images", "incroyable_logo_climbing_coach.png")), size=(100,100))
+        self.app_image = customtkinter.CTkImage(Image.open(os.path.join(app_path, "resources\\images", "incroyable_logo_climbing_coach.png")), size=(UV(100),UV(100)))
         self.title = customtkinter.CTkLabel(self, text="", font=TF, image=self.app_image)
-        # self.title.bind("<Enter>", lambda e: self.title.configure(text="Logo", image=customtkinter.CTkImage(Image.frombytes("RGBA", (1,1), b"\x00\x00\x00\x00"))))
-        # self.title.bind("<Leave>", lambda e: self.title.configure(text="", image=self.app_image))
         self.title.grid(row = self.RI_TITLE, column = self.CI_LEFT, columnspan=2)
         
         #Username
@@ -104,8 +99,8 @@ class login_page(page):
         """Setup the container for small screen."""
         self.grid_rowconfigure((0,7), weight=6)
 
-        self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=1, sticky="nw", pady=(10, 4))
-        self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=1, sticky="ne", pady=(10, 4))
+        self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=1, sticky="nw", pady=(IUV(10), IUV(4)))
+        self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=1, sticky="ne", pady=(IUV(10), IUV(4)))
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2, sticky="swe")
     
     def __setup_bigScreen(self):
@@ -121,39 +116,39 @@ class login_page(page):
         """Called when the windows size change."""
 
         # Change grid structure
-        if width > 800 and height > 600 and self.__sizeState != "big":
+        if width > UV(800) and height > UV(600) and self.__sizeState != "big":
             self.__sizeState = "big"
             self.__setup_bigScreen()
-        elif width and height <= 600 and self.__sizeState != "small":
+        elif width <= UV(800) and height <= UV(600) and self.__sizeState != "small":
             self.__sizeState = "small"
             self.__setup_smallScreen()
 
-        default_font = ("Helvetica", min(int(v(4, height)), 24))
-        title_font = ("Helvetica", min(int(v(6, height)), 32))
+        default_font = ("Helvetica", min(int(v(4, height)), IUV(24)))
+        title_font = ("Helvetica", min(int(v(6, height)), IUV(32)))
 
         self.app_image.configure(size=(
-            max(100, min(int(v(10, width)), 200)), 
-            max(100, min(int(v(10, width)), 200))
+            max(UV(100), min(int(v(10, width)), UV(200))), 
+            max(UV(100), min(int(v(10, width)), UV(200)))
         ))
 
         self.title.configure(
-            width=max(100, min(int(v(10, width)), 200)),
-            height=max(100, min(int(v(10, width)), 200))
+            width=max(UV(100), min(int(v(10, width)), UV(200))),
+            height=max(UV(100), min(int(v(10, width)), UV(200)))
         )
 
         self.username_label.configure(font=default_font)
         self.password_label.configure(font=default_font)
         self.login_button.configure(
             font=default_font,
-            width=v(20, width)
+            width=v(IUV(20), width)
         )
         self.register_button.configure(
             font=default_font,
-            width=v(20, width)
+            width=v(IUV(20), width)
         )
         self.guest_button.configure(
             font=default_font,
-            width=v(20, width)
+            width=v(IUV(20), width)
         )
 
         self.title.configure(font=title_font)

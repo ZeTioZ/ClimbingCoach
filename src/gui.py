@@ -3,6 +3,7 @@ import tkinter as tk
 import customtkinter
 from tkinter import messagebox
 from gui import login_page, test_page, page, menu_page, trail_page
+from gui import set_height_utils, UV
 import os.path
 
 class Application(customtkinter.CTk):
@@ -39,6 +40,7 @@ class Application(customtkinter.CTk):
         self.bind("<Configure>", lambda e: self.onWindowsSizeChange())
         self.latest_width = self.winfo_width()
         self.latest_height = self.winfo_height()
+        set_height_utils(self.winfo_screenheight())
 
         self.init_frame()
         #self.show_page(login_page)
@@ -51,6 +53,11 @@ class Application(customtkinter.CTk):
 
         if(isinstance(self.page_frame, page)): 
             return
+        
+        if(page == login_page):
+            self.__collapse_menu()
+        else:
+            self.__expand_menu()
         
         if self.page_frame is not None: 
             self.page_frame.grid_forget()
@@ -104,7 +111,7 @@ class Application(customtkinter.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.menu_container_frame = customtkinter.CTkFrame(self, width=170)
+        self.menu_container_frame = customtkinter.CTkFrame(self, width=UV(170))
         self.menu_container_frame.grid(row=0, column=0, sticky="nswe")    
 
         self.container_frame = customtkinter.CTkFrame(self)
