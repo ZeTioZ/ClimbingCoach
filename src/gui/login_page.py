@@ -4,6 +4,8 @@ import customtkinter
 from gui.page import page
 import os.path
 from PIL import Image
+from gui.utils import v, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
+
 
 
 DEFAULT_FONT = ("Helvetica", 16)
@@ -13,8 +15,6 @@ TF = TITLE_FONT
 
 DEFAULT_FONT_BIG = ("Helvetica", 32)
 DFB = DEFAULT_FONT_BIG
-
-v = lambda x, view: x * (view/100)
 
 class login_page(page):
     """Class for the login page."""
@@ -60,8 +60,8 @@ class login_page(page):
         #Title
         self.app_image = customtkinter.CTkImage(Image.open(os.path.join(app_path, "resources\\images", "incroyable_logo_climbing_coach.png")), size=(100,100))
         self.title = customtkinter.CTkLabel(self, text="", font=TF, image=self.app_image)
-        self.title.bind("<Enter>", lambda e: self.title.configure(text="Logo", image=customtkinter.CTkImage(Image.frombytes("RGBA", (1,1), b"\x00\x00\x00\x00"))))
-        self.title.bind("<Leave>", lambda e: self.title.configure(text="", image=self.app_image))
+        # self.title.bind("<Enter>", lambda e: self.title.configure(text="Logo", image=customtkinter.CTkImage(Image.frombytes("RGBA", (1,1), b"\x00\x00\x00\x00"))))
+        # self.title.bind("<Leave>", lambda e: self.title.configure(text="", image=self.app_image))
         self.title.grid(row = self.RI_TITLE, column = self.CI_LEFT, columnspan=2)
         
         #Username
@@ -81,7 +81,7 @@ class login_page(page):
         self.login_button = customtkinter.CTkButton(self, text="Login", command=self.toggle_menu, font=DF)
         self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
-        self.guest_button = customtkinter.CTkButton(self, text="Guest", font=DF, fg_color="#027148", hover_color="#013220")
+        self.guest_button = customtkinter.CTkButton(self, text="Guest", font=DF, fg_color=SECONDARY_COLOR, hover_color=SECONDARY_HOVER_COLOR, command=self.toggle_menu)
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
         self.register_button = customtkinter.CTkButton(self, text="Register", command=self.toggle_menu, font=DF)
@@ -160,4 +160,9 @@ class login_page(page):
 
         self.password_entry.configure(font=default_font)
         self.username_combobox.configure(font=default_font, dropdown_font=default_font)
+    
+    def setUnactive(self):
+        super().setActive()
+        self.username_combobox.set("")
+        self.password_entry.delete(0, tk.END)
     

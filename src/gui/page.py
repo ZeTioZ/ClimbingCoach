@@ -16,6 +16,14 @@ class page(CTkFrame):
         """Update the page."""
         pass
 
+    def setUnactive(self):
+        """Set the page unactive."""
+        pass
+
+    def setActive(self):
+        """Set the page active."""
+        pass
+
     @classmethod
     def get_instance(cls, parent, app=None):
         """Return the instance of the login page."""

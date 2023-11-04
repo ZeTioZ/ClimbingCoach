@@ -112,6 +112,13 @@ class test_page(page):
         hrate = (height*0.5)/480
         wrate = (width*0.5)/640
         rate = min(hrate, wrate)
-        self.__scale(rate*100)      
+        self.__scale(rate*100) 
+
+    def setUnactive(self):
+        super().setUnactive()
+
+        # Stop the camera
+        self.__reading = False
+        self.test_button.configure(text="start")
 
 
