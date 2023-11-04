@@ -3,7 +3,9 @@ import cv2, os
 from libs.model_loader import ModelLoader
 from utils.yolov8_converter_utils import convert_image_box_outputs, convert_image_skeleton_outputs
 from utils.draw_utils import skeleton_visualizer, box_visualizer
+from utils.serializer import serialize_skeletons_record, deserialize_skeletons_record
 
+from objects.skeletons_record import SkeletonsRecord
 from objects.skeleton import Skeleton
 
 MODELS_DIRECTORY = "./resources/models/"
@@ -23,12 +25,13 @@ def test_holds_detector(nbr_frame_to_skip: int = 2):
     skeleton_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "yolov8l-pose.pt"))
 
     video = cv2.VideoCapture(os.path.join(VIDEOS_DIRECTORY, "Escalade_Fixe.mp4"))
-    video.set(cv2.CAP_PROP_FRAME_WIDTH, video.get(cv2.CAP_PROP_FRAME_WIDTH)/2)
-    video.set(cv2.CAP_PROP_FRAME_HEIGHT, video.get(cv2.CAP_PROP_FRAME_WIDTH)/2)
+    video.set(cv2.CAP_PROP_FRAME_WIDTH, video.get(cv2.CAP_PROP_FRAME_WIDTH)/4)
+    video.set(cv2.CAP_PROP_FRAME_HEIGHT, video.get(cv2.CAP_PROP_FRAME_HEIGHT)/4)
 
     refresh_holds = False
     refreshed = False
     frame_skipper = 0
+    skeletons_record = SkeletonsRecord()
     while video.isOpened():
         success, image = video.read()
         if not success:
@@ -47,7 +50,8 @@ def test_holds_detector(nbr_frame_to_skip: int = 2):
         if frame_skipper == 0:
             skeleton_prediction = skeleton_detector.predict(image, img_size=512)
             skeletons = convert_image_skeleton_outputs(skeleton_prediction)
-
+            skeletons_record.append(skeletons)
+        
         for skeleton in skeletons:
             image = skeleton_visualizer(image, skeleton, color=(0, 0, 255), thickness=1)
 
@@ -67,6 +71,7 @@ def test_holds_detector(nbr_frame_to_skip: int = 2):
         cv2.imshow("Holds", image)
         if cv2.waitKey(int((1000/video.get(cv2.CAP_PROP_FPS))-5)) & 0xFF == ord('q'):
             break
+
     video.release()
     cv2.destroyAllWindows()
 
