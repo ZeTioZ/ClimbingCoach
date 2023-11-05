@@ -112,7 +112,7 @@ class trail_page(page):
         return {"name": f"Piste {self.choose_index+1}", 
                 "difficulty": (self.choose_index+1 * 7)%5, # in [0..4]
                 "image": f"trail_{self.choose_index+1}.jpg",
-                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget ultricies ultrices, nunc nisl ultricies nunc, nec aliquam nisl nunc eget nisl. Nulla facilisi. Nu"
+                "description": f"{self.choose_index}Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget ultricies ultrices, nunc nisl ultricies nunc, nec aliquam nisl nunc eget nisl. Nulla facilisi. Nu"
         }
 
 
@@ -166,7 +166,7 @@ class trail_page(page):
         self.trail_label.grid_forget()
 
         self.__image_loader("trail_" + str(trail_choosed+1))
-        self.trail_label.grid(row=RID_TITLE, rowspan=2, column=CID_RIGHT)
+        self.trail_label.grid(row=RID_DESCR, column=CID_RIGHT)
 
         current_trail = self.__fletch_trail_detail()
         self.__set_difficulty(current_trail["difficulty"])
