@@ -46,7 +46,7 @@ class test_page(page):
         self.__model = model
 
     def __annimation_camera_loading(self):
-        print("annimation")
+        if not self.__thread_actif: return
         innerText = self.test_label.cget("text")
         if len(innerText) > 3: innerText = ""
         innerText += "."
@@ -149,5 +149,8 @@ class test_page(page):
         self.__annimation_camera_loading()
         self.camLoader = Thread(target=self.__init_cap, args=(40,))
         self.camLoader.start()
+    
+    def get_name(self):
+        return "test"
 
 

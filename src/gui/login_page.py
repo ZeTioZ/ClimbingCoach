@@ -36,11 +36,7 @@ class login_page(page):
         super().__init__(parent, app)  # Call the __init__ method of the parent class
         app_path = PARENT_PATH
 
-        if app is not None: 
-            app.title("Login Page")
-            self.toggle_menu = app.toggle_menu
-        else: 
-            self.toggle_menu = lambda: print("Toggle menu")
+        self.toggle_menu = app.toggle_menu
         
         #Frame configure
         parent.grid_rowconfigure(0, weight=1) 
@@ -155,3 +151,6 @@ class login_page(page):
         self.username_combobox.set("")
         self.password_entry.delete(0, tk.END)
     
+
+    def get_name(self):
+        return "Login"

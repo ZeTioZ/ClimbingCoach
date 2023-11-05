@@ -11,6 +11,8 @@ SECONDARY_HOVER_COLOR = "#524141"
 LIGHT_GREEN = "#248f6d"
 DARK_GREEN = "#1b7254"
 
+COLOR_DIFFICULTY = ["#5bbc67","#98bc5b","#bcaf5b","#bc8d5b","#bc5b5b"]
+
 PARENT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RESSOURCES_PATH = os.path.join(PARENT_PATH, 'resources')
 

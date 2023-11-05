@@ -29,6 +29,10 @@ class page(CTkFrame):
         """Set the page active."""
         pass
 
+    def get_name(self):
+        """Return the name of the page."""
+        return self.__class__.__name__
+
     @classmethod
     def get_instance(cls, parent, app=None):
         """Return the instance of the login page."""

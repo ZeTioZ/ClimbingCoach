@@ -2,7 +2,7 @@
 import tkinter as tk
 import customtkinter
 from tkinter import messagebox
-from gui import login_page, test_page, page, menu_page, trail_page
+from gui import login_page, test_page, page, menu_page, trail_page, path_page
 from gui import set_height_utils, UV
 import os.path
 
@@ -46,7 +46,7 @@ class Application(customtkinter.CTk):
 
         self.init_frame()
         #self.show_page(login_page)
-        self.show_page(login_page)
+        self.show_page(trail_page)
         self.show_menu()
     
     # Page utils
@@ -69,6 +69,8 @@ class Application(customtkinter.CTk):
         self.page_frame.setActive()
         self.__ungarded_onWindowsSizeChange()
 
+        self.change_title(self.page_frame.get_name())
+
         self.page_frame.grid(row=0, column=0, sticky="nsew")
 
     def show_menu(self):
@@ -77,7 +79,7 @@ class Application(customtkinter.CTk):
         self.menu_frame = menu_page.get_instance(self.menu_container_frame, self)
         self.menu_frame.grid(row=0, column=0, sticky="nsew")
         self.menu_frame.set_command_piste(lambda: self.show_page(trail_page))
-        self.menu_frame.set_command_chemin(lambda: self.show_page(test_page))
+        self.menu_frame.set_command_chemin(lambda: self.show_page(path_page))
         self.menu_frame.set_command_run(lambda: self.show_page(test_page))
         self.menu_frame.set_command_compte(lambda: self.show_page(login_page))
         
@@ -140,6 +142,10 @@ class Application(customtkinter.CTk):
             self.__collapse_menu()
         else:
             self.__expand_menu()
+    
+    def change_title(self, title: str):
+        """Change the title of the application."""
+        self.title(f"ClimbingCoach - {title}")
 
 
 if __name__ == "__main__":
