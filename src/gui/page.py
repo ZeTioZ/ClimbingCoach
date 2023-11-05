@@ -3,14 +3,19 @@ from customtkinter import CTkFrame, CTk
 class page(CTkFrame):
 
     __instance = None
+    app_width = None
+    app_height = None
 
-    def __init__(self, parent: CTkFrame, app: CTk = None, *args, **kwargs):
+    def __init__(self, parent: CTkFrame, app: CTk, *args, **kwargs):
         """Constructor. Singleton then init executed only once."""
+        self.app_width = app.winfo_width()
+        self.app_height = app.winfo_height()
         super().__init__(parent)
     
     def onSizeChange(self, width, height):
         """Called when the windows size change."""
-        pass
+        self.app_width = width
+        self.app_height = height
 
     def update(self, *args, **kwargs):
         """Update the page."""

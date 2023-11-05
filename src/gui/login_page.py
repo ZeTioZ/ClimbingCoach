@@ -4,16 +4,16 @@ import customtkinter
 from gui.page import page
 import os.path
 from PIL import Image
-from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, PARENT_PATH
+from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, PARENT_PATH, FONT
 
 
 
-DEFAULT_FONT = ("Helvetica", IUV(16))
-TITLE_FONT = ("Helvetica", IUV(24))
+DEFAULT_FONT = (FONT, IUV(16))
+TITLE_FONT = (FONT, IUV(24))
 DF = DEFAULT_FONT
 TF = TITLE_FONT
 
-DEFAULT_FONT_BIG = ("Helvetica", IUV(32))
+DEFAULT_FONT_BIG = (FONT, IUV(32))
 DFB = DEFAULT_FONT_BIG
 
 class login_page(page):
@@ -31,9 +31,9 @@ class login_page(page):
 
     __sizeState = None
 
-    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
+    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
         """Constructor. Singleton then init executed only once."""
-        super().__init__(parent)  # Call the __init__ method of the parent class
+        super().__init__(parent, app)  # Call the __init__ method of the parent class
         app_path = PARENT_PATH
 
         if app is not None: 
@@ -123,18 +123,12 @@ class login_page(page):
             self.__sizeState = "small"
             self.__setup_smallScreen()
 
-        default_font = ("Helvetica", min(int(v(4, height)), IUV(24)))
-        title_font = ("Helvetica", min(int(v(6, height)), IUV(32)))
+        default_font = (FONT, min(int(v(4, height)), IUV(24)))
+        title_font = (FONT, min(int(v(6, height)), IUV(32)))
 
-        self.app_image.configure(size=(
-            max(UV(100), min(int(v(10, width)), UV(200))), 
-            max(UV(100), min(int(v(10, width)), UV(200)))
-        ))
-
-        self.title.configure(
-            width=max(UV(100), min(int(v(10, width)), UV(200))),
-            height=max(UV(100), min(int(v(10, width)), UV(200)))
-        )
+        app_icon_size = min(int(v(15, width)), UV(250))
+        self.app_image.configure(size=(app_icon_size,app_icon_size))
+        self.title.configure(width=app_icon_size, height=app_icon_size)
 
         self.username_label.configure(font=default_font)
         self.password_label.configure(font=default_font)

@@ -5,16 +5,16 @@ from gui.page import page
 from PIL import Image
 import os.path
 
-from gui.utils import LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
-from gui.utils import UV, IUV
+from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
+from gui.utils import v, UV, IUV, min_max_range
 
 
 
 class trail_page(page):
     """Class of the trail page."""
     
-    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
-        super().__init__(parent)
+    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
+        super().__init__(parent, app)
 
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
@@ -44,14 +44,19 @@ class trail_page(page):
         self.trail_selection_button.grid(row=2, column=0)
 
         #get all the trails in the db
-        test_list= ["piste 1","piste 2","piste 3","piste 4","piste 5","piste 6"]
+        test_list= self.__fletch_trail_list()
     
         self.button_list: list[customtkinter.CTkButton] = []
         for trail in test_list:
             self.trail_button = self.create_button(trail, test_list.index(trail))
             self.button_list.append(self.trail_button)
 
-          
+
+    def __fletch_trail_list(self):
+        """Fetch the trail list from the database."""
+        return [f"piste {i}" for i in range(1, 7)]
+
+
     def create_button(self, display_text, index):
         """Creates a button with the given text."""
         if index == 0:
@@ -118,8 +123,9 @@ class trail_page(page):
 
     def __image_loader(self, image_name: str):
         """Loads an image from the given path."""
-        image = customtkinter.CTkImage(Image.open(self.__get_trail_image_path(image_name+".jpg")), size=(UV(200), UV(200)))
-        self.trail_label.configure(image=image)
+        image_size = self.trail_image.cget("size")
+        self.trail_image = customtkinter.CTkImage(Image.open(self.__get_trail_image_path(image_name+".jpg")), size=image_size)
+        self.trail_label.configure(image=self.trail_image)
 
 
     def __get_trail_image_path(self, trail_image_name: str):
@@ -134,5 +140,13 @@ class trail_page(page):
     def onSizeChange(self, width, height):
         super().onSizeChange(width, height)
 
+        image_size = min_max_range(UV(100), UV(1000), v(25, width))
+        self.trail_image.configure(size=(image_size, image_size))
+        self.trail_label.configure(height=IUV(image_size), width=IUV(image_size))
+
+        font_style = (FONT, min_max_range(IUV(8), IUV(32), int(v(4, height))))
+        self.trail_selection_button.configure(height=v(5, height), width=image_size, font=font_style)
+        for button in self.button_list:
+            button.configure(height=v(5, height), width=image_size, font=font_style)
         
 

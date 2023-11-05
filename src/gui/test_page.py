@@ -1,25 +1,28 @@
 """Module tkinter for the test page."""
 import tkinter as tk
 import customtkinter
-from gui.page import page
-import cv2
 from PIL import Image, ImageTk 
 
+import cv2
 from threading import Thread
 from typing import Callable
 import numpy as np
 
+from gui.page import page
+from gui.utils import EMPTY_IMAGE
+
 class test_page(page):
 
     __reading = False
+    __thread_actif = False
     __isCameraLoaded = False
     __imageSize = None
     __model: Callable[[np.ndarray], np.ndarray] = lambda self, x: x
 
     """test page."""
-    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk, *args, **kwargs):
+    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
         """Constructor. Singleton then init executed only once."""
-        super().__init__(parent)
+        super().__init__(parent, app)
 
         if app is not None:
             app.title("test Page")
@@ -37,16 +40,13 @@ class test_page(page):
         self.test_button = customtkinter.CTkButton(self, text="start", command=self.__toggle_camera, state=customtkinter.DISABLED)
         self.test_button.grid(row = 1, column = 0)
 
-        self.cap = None
-        self.__annimation_camera_loading()
-        camLoader = Thread(target=self.__init_cap, args=(40,app))
-        camLoader.start()
+        self.camLoader = None
 
     def set_model(self, model: Callable[[np.ndarray], np.ndarray]):
         self.__model = model
 
     def __annimation_camera_loading(self):
-        
+        print("annimation")
         innerText = self.test_label.cget("text")
         if len(innerText) > 3: innerText = ""
         innerText += "."
@@ -56,29 +56,38 @@ class test_page(page):
             return
         self.after(1000, self.__annimation_camera_loading)
      
-    def __init_cap(self, scale_percent: int = 100, app: customtkinter.CTk = None):
+    def __init_cap(self, scale_percent: int = 100):
+
+        if not self.__thread_actif: return
+
         self.cap = cv2.VideoCapture(0)
+
         self.baseW = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.baseH = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+
         self.__imageSize = (self.baseW, self.baseH)
 
         if(scale_percent != 100): self.__scale(scale_percent)
-        
+
         self.__isCameraLoaded = True
+
+        if not self.__thread_actif: return
         self.test_button.configure(state=customtkinter.NORMAL)
+        self.onSizeChange(self.app_width, self.app_height)
         self.__toggle_camera()
-        if app is not None: self.onSizeChange(app.winfo_width(), app.winfo_height())
+        
+
 
     def __scale(self, scale_percent: int = 100):
         if self.cap is None: return
         rate = scale_percent/100
         self.__imageSize = (self.baseW*rate, self.baseH*rate)
 
-    def __toggle_camera(self): 
-        if self.__reading: 
+    def __toggle_camera(self):
+        if self.__reading or not self.__thread_actif: 
             self.__reading = False
             self.test_button.configure(text="start")
-            self.test_label.configure(image=customtkinter.CTkImage(Image.frombytes("RGBA", (1,1), b"\x00\x00\x00\x00")))
+            self.test_label.configure(image=EMPTY_IMAGE)
         else:
             self.__reading = True
             self.test_button.configure(text="stop")
@@ -86,7 +95,7 @@ class test_page(page):
 
     def __read_camera(self):
 
-        if not self.__reading or self.cap is None: return
+        if not self.__reading or self.cap is None or not self.__thread_actif: return
     
         _, frame = self.cap.read() 
     
@@ -109,6 +118,8 @@ class test_page(page):
 
     def onSizeChange(self, width, height):
         """Called when the windows size change."""
+        super().onSizeChange(width, height)
+
         hrate = (height*0.5)/480
         wrate = (width*0.5)/640
         rate = min(hrate, wrate)
@@ -118,7 +129,25 @@ class test_page(page):
         super().setUnactive()
 
         # Stop the camera
+        self.__thread_actif = False
         self.__reading = False
+        self.__isCameraLoaded = False
         self.test_button.configure(text="start")
+        if self.cap is not None:
+            self.cap.release()
+        
+        # Set empty image
+        self.test_label.configure(image=EMPTY_IMAGE)
+        self.test_button.configure(state=customtkinter.DISABLED, text="start")
+    
+    def setActive(self):
+        super().setActive()
+
+        # Start the camera
+        self.__thread_actif = True
+        self.cap = None
+        self.__annimation_camera_loading()
+        self.camLoader = Thread(target=self.__init_cap, args=(40,))
+        self.camLoader.start()
 
 

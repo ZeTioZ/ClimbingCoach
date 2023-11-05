@@ -46,7 +46,7 @@ class Application(customtkinter.CTk):
 
         self.init_frame()
         #self.show_page(login_page)
-        self.show_page(trail_page)
+        self.show_page(login_page)
         self.show_menu()
     
     # Page utils
@@ -77,9 +77,9 @@ class Application(customtkinter.CTk):
         self.menu_frame = menu_page.get_instance(self.menu_container_frame, self)
         self.menu_frame.grid(row=0, column=0, sticky="nsew")
         self.menu_frame.set_command_piste(lambda: self.show_page(trail_page))
-        self.menu_frame.set_command_chemin(lambda: self.show_page(login_page))
+        self.menu_frame.set_command_chemin(lambda: self.show_page(test_page))
         self.menu_frame.set_command_run(lambda: self.show_page(test_page))
-        self.menu_frame.set_command_compte(lambda: self.show_page(test_page))
+        self.menu_frame.set_command_compte(lambda: self.show_page(login_page))
         
     
     def update_page(self, page: page):
