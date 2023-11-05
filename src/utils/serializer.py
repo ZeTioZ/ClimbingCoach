@@ -1,5 +1,7 @@
 import base64
 import pickle
+
+from objects.route import Route
 from objects.skeletons_record import SkeletonsRecord
 
 
@@ -15,3 +17,17 @@ def deserialize_skeletons_record(serialized_skeletons_record: bytes) -> Skeleton
     Deserializes the given pickle bytes object into a SkeletonsRecord object.
     """
     return pickle.loads(serialized_skeletons_record)
+
+
+def serilize_route(route: Route) -> bytes:
+    """
+    Serializes the given route into a pickle bytes object.
+    """
+    return pickle.dumps(route)
+
+
+def deserialize_route(serialized_route: bytes) -> Route:
+    """
+    Deserializes the given pickle bytes object into a Route object.
+    """
+    return pickle.loads(serialized_route)
