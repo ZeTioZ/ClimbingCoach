@@ -3,10 +3,12 @@ import cv2, os
 from libs.model_loader import ModelLoader
 from utils.yolov8_converter_utils import convert_image_box_outputs, convert_image_skeleton_outputs
 from utils.draw_utils import skeleton_visualizer, box_visualizer
-from utils.serializer import serialize_skeletons_record, deserialize_skeletons_record
 
 from objects.skeletons_record import SkeletonsRecord
 from objects.skeleton import Skeleton
+
+from database.database_handler import DatabaseHandler
+from database.queries import user_queries
 
 MODELS_DIRECTORY = "./resources/models/"
 VIDEOS_DIRECTORY = "./resources/videos/"
@@ -77,6 +79,6 @@ def test_holds_detector(nbr_frame_to_skip: int = 2):
 
 
 if __name__ == "__main__":
-    cv2.namedWindow("Holds")
-    cv2.setMouseCallback("Holds", mouse_callback)
-    test_holds_detector(3)
+    # cv2.namedWindow("Holds")
+    # cv2.setMouseCallback("Holds", mouse_callback)
+    # test_holds_detector(3)

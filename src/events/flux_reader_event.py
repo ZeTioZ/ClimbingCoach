@@ -26,7 +26,7 @@ class FluxReaderEvent(Observable):
         holds_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "holds_model_yolov8l.pt"))
         skeleton_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "yolov8l-pose.pt"))
 
-        video = cv2.VideoCapture(os.path.join(VIDEOS_DIRECTORY, "Escalade_Fixe.mp4"))
+        video = cv2.VideoCapture(self.flux)
         video.set(cv2.CAP_PROP_FRAME_WIDTH, video.get(cv2.CAP_PROP_FRAME_WIDTH)/4)
         video.set(cv2.CAP_PROP_FRAME_HEIGHT, video.get(cv2.CAP_PROP_FRAME_HEIGHT)/4)
 

@@ -19,3 +19,10 @@ class Hold:
         :return: A string representation of the Position object.
         """
         return str(self.box)
+
+
+    def get_center(self) -> tuple:
+        """
+        :return: A tuple representing the center of the hold.
+        """
+        return self.box.get_center()
