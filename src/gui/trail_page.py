@@ -9,6 +9,10 @@ import os.path
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, COLOR_DIFFICULTY
 from gui.utils import v, UV, IUV, min_max_range
 
+from gui.db import db as dbclass
+
+db = dbclass()
+
 RID_TITLE = 1
 RID_DESCR = 2
 RID_DIFFICULTY = 3
@@ -19,8 +23,9 @@ CID_RIGHT = 2
 class trail_page(page):
     """Class of the trail page."""
     choose_index = 0 #page dans laquelle on est
-    selected_trail = None #page selectionnée
+    # selected_trail = None #page selectionnée
     
+
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
         super().__init__(parent, app)
 
@@ -94,8 +99,20 @@ class trail_page(page):
             self.trail_button = self.create_button(trail, test_list.index(trail))
             self.button_list.append(self.trail_button)
 
+
+    def __set_description(self, description: str):
+        """Set the description of the trail."""
+        self.detail_description.configure(state=tk.NORMAL)
+        self.detail_description.delete("1.0", tk.END)
+        self.detail_description.insert(tk.END, description)
+        self.detail_description.configure(state=tk.DISABLED)
+
+
     def __set_difficulty(self, difficulty: int):
         """Set the difficulty of the trail."""
+
+        if difficulty < 0 or difficulty > 4:
+            raise ValueError("difficulty must be in [0..4]")
         
         for i in range(5):
             if i <= difficulty:
@@ -103,14 +120,16 @@ class trail_page(page):
             else:
                 self.difficulty[i].configure(fg_color="transparent", border_width=UV(2))
 
+
     def __fetch_trail_list(self):
         """Fetch the trail list from the database."""
-        return [f"Piste {i}" for i in range(1, 7)]
+        return [f"Piste {i}" for i in range(1, 17)]
+
 
     def __fletch_trail_detail(self):
         """Fetch the trail detail from the database."""
         return {"name": f"Piste {self.choose_index+1}", 
-                "difficulty": (self.choose_index+1 * 7)%5, # in [0..4]
+                "difficulty": self.choose_index%5, # in [0..4]
                 "image": f"trail_{self.choose_index+1}.jpg",
                 "description": f"{self.choose_index}Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget ultricies ultrices, nunc nisl ultricies nunc, nec aliquam nisl nunc eget nisl. Nulla facilisi. Nu"
         }
@@ -140,10 +159,12 @@ class trail_page(page):
         button_text = self.trail_selection_button.cget("text")
         if button_text == "Select":
             self.trail_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
-            self.selected_trail = self.choose_index
+            db.set_trail(self.choose_index)
         else :
             self.trail_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR)
-            self.selected_trail = None
+            db.set_trail(None)
+        self.app.update_menu()
+        
 
         #faire le back-end pour enregistrer le choix de l'utilisateur
 
@@ -157,7 +178,7 @@ class trail_page(page):
             button.configure(fg_color="transparent")
         
         self.choose_index = trail_choosed
-        if trail_choosed == self.selected_trail:
+        if trail_choosed == db.get_trail():
             self.trail_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
         else :
             self.trail_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR)
@@ -170,6 +191,7 @@ class trail_page(page):
 
         current_trail = self.__fletch_trail_detail()
         self.__set_difficulty(current_trail["difficulty"])
+        self.__set_description(current_trail["description"])
 
 
     def __image_loader(self, image_name: str):
@@ -212,3 +234,5 @@ class trail_page(page):
 
     def get_name(self):
         return "Trail selection"
+        
+    

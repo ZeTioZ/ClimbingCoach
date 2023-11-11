@@ -73,7 +73,7 @@ class test_page(page):
 
         if not self.__thread_actif: return
         self.test_button.configure(state=customtkinter.NORMAL)
-        self.onSizeChange(self.app_width, self.app_height)
+        self.app.onWindowsSizeChange()
         self.__toggle_camera()
         
 

@@ -65,7 +65,7 @@ class Application(customtkinter.CTk):
             self.page_frame.grid_forget()
             self.page_frame.setUnactive()
         
-        self.page_frame = page.get_instance(self.container_frame, self)
+        self.page_frame = page(self.container_frame, self)
         self.page_frame.setActive()
         self.__ungarded_onWindowsSizeChange()
 
@@ -73,10 +73,11 @@ class Application(customtkinter.CTk):
 
         self.page_frame.grid(row=0, column=0, sticky="nsew")
 
+
     def show_menu(self):
         """Show the menu page."""
         if self.menu_frame is not None: return
-        self.menu_frame = menu_page.get_instance(self.menu_container_frame, self)
+        self.menu_frame = menu_page(self.menu_container_frame, self)
         self.menu_frame.grid(row=0, column=0, sticky="nsew")
         self.menu_frame.set_command_piste(lambda: self.show_page(trail_page))
         self.menu_frame.set_command_chemin(lambda: self.show_page(path_page))
@@ -86,14 +87,16 @@ class Application(customtkinter.CTk):
     
     def update_page(self, page: page):
         """Update the page passed in parameter."""
-        page.get_instance(self).update()
+        page(self).update()
         self.show_page(page)
     
+
     def onWindowsSizeChange(self):
         """Called when the windows size change."""
         if self.__is_significant_change():
             self.__ungarded_onWindowsSizeChange()
-            
+
+
     def __ungarded_onWindowsSizeChange(self):
         self.latest_width = self.winfo_width()
         self.latest_height = self.winfo_height()
@@ -123,11 +126,13 @@ class Application(customtkinter.CTk):
 
         #self.main_frame.grid()
 
+
     def __collapse_menu(self):
         """Collapse the menu."""
         self.container_frame.grid_forget()
         self.menu_container_frame.grid_forget()
         self.container_frame.grid(row=0, column=0, columnspan = 2 ,sticky="nswe")
+
 
     def __expand_menu(self):
         """Expand the menu."""
@@ -136,6 +141,7 @@ class Application(customtkinter.CTk):
         self.menu_container_frame.grid(row=0, column=0, sticky="nswe")
         self.container_frame.grid(row=0, column=1, sticky="nswe")
 
+
     def toggle_menu(self):
         """Toggle the menu."""
         if self.menu_frame.winfo_ismapped():
@@ -143,10 +149,16 @@ class Application(customtkinter.CTk):
         else:
             self.__expand_menu()
     
+
     def change_title(self, title: str):
         """Change the title of the application."""
         self.title(f"ClimbingCoach - {title}")
 
+
+    def update_menu(self):
+        """Update the menu."""
+        if self.menu_frame is not None:
+            self.menu_frame.update()
 
 if __name__ == "__main__":
     app = Application()

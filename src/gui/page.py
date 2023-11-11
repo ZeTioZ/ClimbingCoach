@@ -1,41 +1,36 @@
 from customtkinter import CTkFrame, CTk
+from gui.singleton import Singleton
 
-class page(CTkFrame):
+class page(CTkFrame, metaclass=Singleton):
 
-    __instance = None
-    app_width = None
-    app_height = None
+    # __instance = None
+    app = None
 
     def __init__(self, parent: CTkFrame, app: CTk, *args, **kwargs):
         """Constructor. Singleton then init executed only once."""
-        self.app_width = app.winfo_width()
-        self.app_height = app.winfo_height()
         super().__init__(parent)
+        self.app = app
+        
     
     def onSizeChange(self, width, height):
         """Called when the windows size change."""
-        self.app_width = width
-        self.app_height = height
+        pass
 
     def update(self, *args, **kwargs):
         """Update the page."""
         pass
 
+
     def setUnactive(self):
         """Set the page unactive."""
         pass
+
 
     def setActive(self):
         """Set the page active."""
         pass
 
+
     def get_name(self):
         """Return the name of the page."""
         return self.__class__.__name__
-
-    @classmethod
-    def get_instance(cls, parent, app=None):
-        """Return the instance of the login page."""
-        if cls.__instance is None:
-            cls.__instance = cls(parent, app)
-        return cls.__instance
