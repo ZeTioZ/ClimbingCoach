@@ -9,9 +9,9 @@ import os.path
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, COLOR_DIFFICULTY
 from gui.utils import v, UV, IUV, min_max_range
 
-from gui.db import db as dbclass
+from gui.app_state import AppState
 
-db = dbclass()
+state = AppState()
 
 RID_TITLE = 1
 RID_DESCR = 2
@@ -159,10 +159,10 @@ class trail_page(page):
         button_text = self.trail_selection_button.cget("text")
         if button_text == "Select":
             self.trail_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
-            db.set_trail(self.choose_index)
+            state.set_trail(self.choose_index)
         else :
             self.trail_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR)
-            db.set_trail(None)
+            state.set_trail(None)
         self.app.update_menu()
         
 
@@ -178,7 +178,7 @@ class trail_page(page):
             button.configure(fg_color="transparent")
         
         self.choose_index = trail_choosed
-        if trail_choosed == db.get_trail():
+        if trail_choosed == state.get_trail():
             self.trail_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
         else :
             self.trail_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR)

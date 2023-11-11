@@ -6,11 +6,11 @@ from PIL import Image
 
 from gui.utils import v, min_max_range, IUV, UV, PRIMARY_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, EMPTY_IMAGE
 
-from gui.db import db as dbclass
+from gui.app_state import AppState
 
 import os.path
 
-db = dbclass()
+state = AppState()
 
 DEFAULT_RADIUS = 12
 COLOR = PRIMARY_COLOR #"#0b7687"
@@ -65,11 +65,11 @@ class menu_page(page):
 
     def refresh_hide_show(self):
         """Refresh hide and show."""
-        if db.get_trail() is None:
-            self.hide_chemin()
-        else:
+        if state.is_trail_selected():
             self.show_chemin()
-
+        else:
+            self.hide_chemin()
+            
 
     def set_command_piste(self, command):
         self.__set_on_click(self.piste_label, lambda e: command())
@@ -132,7 +132,7 @@ class menu_page(page):
 
     def update(self, *args, **kwargs):
         """Update the page."""
-        if db.get_trail() is not None:
+        if state.is_trail_selected():
             self.show_chemin()
         else:
             self.hide_chemin()

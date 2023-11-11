@@ -1,7 +1,7 @@
 """Database gui instance class."""
 from gui.singleton import Singleton
 
-class db(metaclass=Singleton):
+class AppState(metaclass=Singleton):
 
     # Constructor
     def __init__(self):
@@ -21,3 +21,7 @@ class db(metaclass=Singleton):
         """Set the trail. (Id of the current selected trail)"""
         self.__trail = trail
 
+
+    def is_trail_selected(self) -> bool:
+        """Return true if a trail is selected."""
+        return self.__trail is not None
