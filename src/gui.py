@@ -2,7 +2,7 @@
 import tkinter as tk
 import customtkinter
 from tkinter import messagebox
-from gui import login_page, test_page, page, menu_page, trail_page
+from gui import login_page, test_page, page, menu_page, trail_page, account_page
 from gui import set_height_utils, UV
 import os.path
 
@@ -77,7 +77,7 @@ class Application(customtkinter.CTk):
         self.menu_frame.set_command_piste(lambda: self.show_page(trail_page))
         self.menu_frame.set_command_chemin(lambda: self.show_page(login_page))
         self.menu_frame.set_command_run(lambda: self.show_page(test_page))
-        self.menu_frame.set_command_compte(lambda: self.show_page(test_page))
+        self.menu_frame.set_command_compte(lambda: self.show_page(account_page))
         
     
     def update_page(self, page: page):
