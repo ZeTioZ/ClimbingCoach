@@ -2,6 +2,7 @@
 import tkinter as tk
 import customtkinter
 from gui.page import page
+from gui.register_page import register_page
 import os.path
 from PIL import Image
 
@@ -40,6 +41,7 @@ class login_page(page):
         if app is not None: 
             app.title("Login Page")
             self.toggle_menu = app.toggle_menu
+            self.show_page = app.show_page
             latest_width = app.winfo_width()
             latest_height = app.winfo_height()
         else: 
@@ -84,7 +86,7 @@ class login_page(page):
         self.guest_button = customtkinter.CTkButton(self, text="Guest", font=DF, fg_color="#027148", hover_color="#013220")
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
-        self.register_button = customtkinter.CTkButton(self, text="Register", command=self.toggle_menu, font=DF)
+        self.register_button = customtkinter.CTkButton(self, text="Register", command=lambda:self.show_page(register_page), font=DF)
         self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=2)
 
 
