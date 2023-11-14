@@ -29,8 +29,8 @@ class Application(customtkinter.CTk):
 
         current_dir = os.path.dirname(os.path.abspath(__file__))
         parent_dir = os.path.dirname(current_dir)
-        icon_path = os.path.join(parent_dir, 'resources\\images', 'climbing_coach.ico')
-        themeDir = os.path.join(parent_dir, 'resources\\themes', 'cc.json')
+        icon_path = os.path.join(parent_dir, 'resources', 'images', 'climbing_coach.ico')
+        themeDir = os.path.join(parent_dir, 'resources', 'themes', 'cc.json')
 
         self.iconbitmap(icon_path)
 

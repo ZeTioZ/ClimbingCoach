@@ -121,7 +121,7 @@ class trail_page(page):
     def __get_trail_image_path(self, trail_image_name: str):
         """Return the path of the icon passed in parameter."""
         parent_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        path = os.path.join(parent_path, 'resources\\images', trail_image_name)
+        path = os.path.join(parent_path, 'resources', 'images', trail_image_name)
         if os.path.exists(path):
             return path
-        return os.path.join(parent_path, 'resources\\images', "trail_1.jpg")
+        return os.path.join(parent_path, 'resources', 'images', "trail_1.jpg")
