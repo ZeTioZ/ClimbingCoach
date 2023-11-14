@@ -59,11 +59,11 @@ class test_page(page):
      
     def __init_cap(self, scale_percent: int = 100, app: customtkinter.CTk = None):
         #check the os of the user
-        if platform.system() == "Darwin": #Means Mac
-            video_cap = 1
+        if platform.system() == "Windows":
+            video_cap = 0
         else:
             #Check if it works on linux
-            video_cap = 0
+            video_cap = 1
 
         self.cap = cv2.VideoCapture(video_cap)
         self.baseW = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
