@@ -36,7 +36,7 @@ class login_page(page):
         """Constructor. Singleton then init executed only once."""
         super().__init__(parent)  # Call the __init__ method of the parent class
         app_path = os.path.dirname(os.path.abspath(__file__))
-        app_path = app_path[:app_path.rfind("\\src")]
+        app_path = app_path[:app_path.rfind("src")] # was \\src --> check if it works on windows
 
         if app is not None: 
             app.title("Login Page")
@@ -60,7 +60,7 @@ class login_page(page):
         self.grid_columnconfigure((0,3), weight=4)
 
         #Title
-        self.app_image = customtkinter.CTkImage(Image.open(os.path.join(app_path, "resources\\images", "incroyable_logo_climbing_coach.png")), size=(100,100))
+        self.app_image = customtkinter.CTkImage(Image.open(os.path.join(app_path, "resources", "images", "incroyable_logo_climbing_coach.png")), size=(100,100))
         self.title = customtkinter.CTkLabel(self, text="", font=TF, image=self.app_image)
         self.title.bind("<Enter>", lambda e: self.title.configure(text="Logo", image=customtkinter.CTkImage(Image.frombytes("RGBA", (1,1), b"\x00\x00\x00\x00"))))
         self.title.bind("<Leave>", lambda e: self.title.configure(text="", image=self.app_image))
