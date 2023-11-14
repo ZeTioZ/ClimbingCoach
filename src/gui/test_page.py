@@ -5,6 +5,7 @@ from gui.page import page
 import cv2
 from PIL import Image, ImageTk 
 
+import platform
 from threading import Thread
 from typing import Callable
 import numpy as np
@@ -57,7 +58,14 @@ class test_page(page):
         self.after(1000, self.__annimation_camera_loading)
      
     def __init_cap(self, scale_percent: int = 100, app: customtkinter.CTk = None):
-        self.cap = cv2.VideoCapture(0)
+        #check the os of the user
+        if platform.system() == "Darwin": #Means Mac
+            video_cap = 1
+        else:
+            #Check if it works on linux
+            video_cap = 0
+
+        self.cap = cv2.VideoCapture(video_cap)
         self.baseW = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.baseH = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
         self.__imageSize = (self.baseW, self.baseH)
