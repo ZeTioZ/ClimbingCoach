@@ -1,10 +1,11 @@
 """Module for the interface of the application."""
 import tkinter as tk
 import customtkinter
-from tkinter import messagebox
+from tkinter import PhotoImage, messagebox
 from gui import login_page, test_page, page, menu_page, trail_page, account_page
 from gui import set_height_utils, UV
 import os.path
+import platform
 
 class Application(customtkinter.CTk):
     """
@@ -27,12 +28,10 @@ class Application(customtkinter.CTk):
         self.title("Climbing Coach")
 
 
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        parent_dir = os.path.dirname(current_dir)
-        icon_path = os.path.join(parent_dir, 'resources', 'images', 'climbing_coach.ico')
-        themeDir = os.path.join(parent_dir, 'resources', 'themes', 'cc.json')
+        self.current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.parent_dir = os.path.dirname(self.current_dir)
 
-        self.iconbitmap(icon_path)
+        themeDir = os.path.join(self.parent_dir, 'resources', 'themes', 'cc.json')
 
         customtkinter.set_default_color_theme(themeDir)
 
@@ -42,10 +41,61 @@ class Application(customtkinter.CTk):
         self.latest_height = self.winfo_height()
         set_height_utils(self.winfo_screenheight())
 
+        self.__os_init()
+
         self.init_frame()
         #self.show_page(login_page)
         self.show_page(trail_page)
         self.show_menu()
+
+
+    # OS Init Section
+    def __os_init(self):
+        """Os specific initialisation for the application"""
+        if self.is_windows():
+            self.__os_windows_init()
+        elif self.is_linux():
+            self.__os_linux_init()
+        elif self.is_macos():
+            self.__os_macos_init()
+        else:
+            raise Exception("Your os is not supported")
+
+
+    def is_windows(self) -> bool:
+        """True if the os is Windows"""
+        return platform.system() == "Windows"
+
+
+    def is_linux(self) -> bool:
+        """True if the os is Linux"""
+        return platform.system() == "Linux"
+
+
+    def is_macos(self) -> bool:
+        """True if the os is MacOS"""
+        return platform.system() == "Darwin"
+
+
+    def __os_windows_init(self):
+        """Initialisation for windows"""
+        icon_path = os.path.join(self.parent_dir, 'resources', 'images', 'climbing_coach.ico')
+        self.iconbitmap(icon_path)
+    
+
+    def __os_linux_init(self):
+        """Initialisation for Linux"""
+        icon_path = os.path.join(self.parent_dir, 'resources', 'images', 'incroyable_logo_climbing_coach.png')
+        img = PhotoImage(file=icon_path)
+        self.tk.call('wm', 'iconphoto', self._w, img)
+        
+
+    def __os_macos_init(self):
+        """Initialisation for MacOS"""
+        icon_path = os.path.join(self.parent_dir, 'resources', 'images', 'incroyable_logo_climbing_coach.png')
+        img = PhotoImage(file=icon_path)
+        self.tk.call('wm', 'iconphoto', self._w, img)
+
     
     # Page utils
     def show_page(self, page: page):
@@ -69,6 +119,7 @@ class Application(customtkinter.CTk):
 
         self.page_frame.grid(row=0, column=0, sticky="nsew")
 
+
     def show_menu(self):
         """Show the menu page."""
         if self.menu_frame is not None: return
@@ -85,11 +136,13 @@ class Application(customtkinter.CTk):
         page.get_instance(self).update()
         self.show_page(page)
     
+
     def onWindowsSizeChange(self):
         """Called when the windows size change."""
         if self.__is_significant_change():
             self.__ungarded_onWindowsSizeChange()
-            
+
+
     def __ungarded_onWindowsSizeChange(self):
         self.latest_width = self.winfo_width()
         self.latest_height = self.winfo_height()
@@ -102,6 +155,7 @@ class Application(customtkinter.CTk):
     def __is_significant_change(self):
         """Return true if the change is significant."""
         return abs(self.latest_width - self.winfo_width()) > self.significant_change or abs(self.latest_height - self.winfo_height()) > self.significant_change
+
 
     # Initialize the application frame
     def init_frame(self):
@@ -119,11 +173,13 @@ class Application(customtkinter.CTk):
 
         #self.main_frame.grid()
 
+
     def __collapse_menu(self):
         """Collapse the menu."""
         self.container_frame.grid_forget()
         self.menu_container_frame.grid_forget()
         self.container_frame.grid(row=0, column=0, columnspan = 2 ,sticky="nswe")
+
 
     def __expand_menu(self):
         """Expand the menu."""
@@ -131,6 +187,7 @@ class Application(customtkinter.CTk):
         self.container_frame.grid_forget()
         self.menu_container_frame.grid(row=0, column=0, sticky="nswe")
         self.container_frame.grid(row=0, column=1, sticky="nswe")
+
 
     def toggle_menu(self):
         """Toggle the menu."""
