@@ -1,8 +1,8 @@
 from .. import database_handler
 from ..models.run import Run
 
-from ....objects.skeletons_record import SkeletonsRecord
-from ....utils.serializer import serialize_skeletons_record 
+from ...objects.skeletons_record import SkeletonsRecord
+from ...utils.serializer import serialize_skeletons_record 
 
 from .user_queries import get_user_by_username
 

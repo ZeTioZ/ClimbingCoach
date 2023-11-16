@@ -5,6 +5,7 @@ from gui.page import page
 from gui.register_page import register_page
 import os.path
 from PIL import Image
+from database import user_queries
 
 
 DEFAULT_FONT = ("Helvetica", 16)
@@ -68,7 +69,7 @@ class login_page(page):
         
         #Username
         self.username_label = customtkinter.CTkLabel(self, text="Username", font=DF)
-        self.username_combobox = customtkinter.CTkComboBox(self, values=self.__get_usernames(), font=DF, dropdown_font=DF) #Faire appel a la fonction qui permet de choper tous les users
+        self.username_combobox = customtkinter.CTkComboBox(self, values=self.__get_all_usernames(), font=DF, dropdown_font=DF) #Faire appel a la fonction qui permet de choper tous les users
         self.username_combobox.set("")
         self.username_label.grid(row = self.RI_USERNAME_LABEL, column = self.CI_LEFT, sticky="sw", columnspan=2)       
         self.username_combobox.grid(row = self.RI_USERNAME, column = self.CI_LEFT, sticky="nwe", columnspan=2)
@@ -93,14 +94,17 @@ class login_page(page):
     def login(self):
         username = self.username_combobox.get()
         password = self.password_entry.get()
-        if username not in self.__get_usernames():
-            print(f"User {username} not found")
-            return
+        self.__get_usernames(username)
         # Add your login logic here
         print(f"You'r logged in as {username}")
 
-    def __get_usernames(self):
-        return ["Admin", "User"]
+    def __get_usernames(self, username: str):
+        if username in self.__get_all_usernames():
+            self.user = user_queries.get_user_by_name(username)
+        return self.user
+
+    def __get_all_usernames(self):
+        return user_queries.get_all_users()
 
     def __setup_smallScreen(self):
         """Setup the container for small screen."""

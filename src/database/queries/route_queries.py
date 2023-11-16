@@ -2,8 +2,8 @@ from np import ndarray
 
 from .. import database_handler
 from ..models.route import Route
-from ..objects.route import Route as RouteObject
-from ..utils.serializer import serialize_route
+from ...objects.route import Route as RouteObject
+from ...utils.serializer import serialize_route
 
 
 DATABASE_HANDLER = database_handler.get_instance_database()

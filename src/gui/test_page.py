@@ -59,10 +59,11 @@ class test_page(page):
      
     def __init_cap(self, scale_percent: int = 100, app: customtkinter.CTk = None):
         #check the os of the user
+        #ask the user which camera he wants to use
         if app.is_windows() or app.is_linux():
             video_cap = 0
         elif app.is_macos():
-            video_cap = 1
+            video_cap = 0
         else:
             raise Exception("Your os is not supported")
 

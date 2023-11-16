@@ -74,6 +74,7 @@ class Application(customtkinter.CTk):
 
     def is_macos(self) -> bool:
         """True if the os is MacOS"""
+        print (platform.system())
         return platform.system() == "Darwin"
 
 
