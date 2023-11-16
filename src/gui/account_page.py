@@ -9,7 +9,7 @@ class account_page(page):
     """Class of the account page."""
 
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
-        super().__init__(parent)
+        super().__init__(parent, app)
 
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)

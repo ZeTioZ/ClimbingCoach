@@ -63,7 +63,7 @@ class test_page(page):
         if not self.__thread_actif: return
 
         #check the os of the user
-        if self.app.is_windows() or app.is_linux():
+        if self.app.is_windows() or self.app.is_linux():
             video_cap = 0
         elif self.app.is_macos():
             video_cap = 1
