@@ -16,6 +16,7 @@ class page(CTkFrame, metaclass=Singleton):
         """Called when the windows size change."""
         pass
 
+
     def update(self, *args, **kwargs):
         """Update the page."""
         pass

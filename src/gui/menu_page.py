@@ -59,32 +59,15 @@ class menu_page(page):
         entry = self.piste_label
 
         self.__change_active(entry)
-
-        self.refresh_hide_show()
     
 
-    def refresh_hide_show(self):
-        """Refresh hide and show."""
-        if state.is_trail_selected():
-            self.show_chemin()
-        else:
-            self.hide_chemin()
-            
-
-    def set_command_piste(self, command):
-        self.__set_on_click(self.piste_label, lambda e: command())
-
-
+    # Hide/Show methods
     def hide_piste(self):
         self.piste_label.grid_forget()
 
 
     def show_piste(self):
         self.piste_label.grid(row=1, column=0, pady=(10, 10), padx=(10, 10))
-
-
-    def set_command_chemin(self, command):
-        self.__set_on_click(self.chemin_label, lambda e: command())
 
 
     def hide_chemin(self):
@@ -95,6 +78,18 @@ class menu_page(page):
         self.chemin_label.grid(row=2, column=0, padx=(10, 10))
 
 
+    def hide_run(self):
+        self.run_label.grid_forget()
+    
+
+    def show_run(self):
+        self.run_label.grid(row=3, column=0, pady=(10, 10), padx=(10, 10))
+
+    # Set Command methods
+    def set_command_chemin(self, command):
+        self.__set_on_click(self.chemin_label, lambda e: command())
+
+
     def set_command_run(self, command):
         self.__set_on_click(self.run_label, lambda e: command())
 
@@ -103,6 +98,11 @@ class menu_page(page):
         self.__set_on_click(self.compte_label, lambda e: command())
 
 
+    def set_command_piste(self, command):
+        self.__set_on_click(self.piste_label, lambda e: command())
+
+
+    # Utils
     def __change_active(self, elem: customtkinter.CTkLabel):
             """Change the active element."""
             if self.__active_elem is not None:
@@ -130,12 +130,25 @@ class menu_page(page):
         elem.bind("<Button-1>", extended_on_click)
 
 
+    # Methods for the page
     def update(self, *args, **kwargs):
         """Update the page."""
+        self.__update_chemin()
+        self.__update_run()
+        
+
+    def __update_chemin(self):
         if state.is_trail_selected():
             self.show_chemin()
         else:
             self.hide_chemin()
+
+
+    def __update_run(self):
+        if state.is_run_selected():
+            self.show_run()
+        else:
+            self.hide_run()
 
 
     def onSizeChange(self, width, height):

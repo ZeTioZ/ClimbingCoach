@@ -13,7 +13,7 @@ class Application(customtkinter.CTk):
 
     significant_change = 50 # Amount of pixel to consider a change as significant and then reload the page
 
-    page_frame = None
+    page_frame: page | None = None
     menu_frame = None
 
     latest_width = 0
@@ -50,28 +50,45 @@ class Application(customtkinter.CTk):
         self.show_menu()
     
     # Page utils
-    def show_page(self, page: page):
+    def show_page(self, new_page: page):
         """Show the page passed in parameter."""
+        if(not self.is_page_active(new_page)): 
+            
+            self.empty_container()
+            self.set_new_page_frame(new_page)
+            self.fill_container()
 
-        if(isinstance(self.page_frame, page)): 
-            return
-        
-        if(page == login_page):
-            self.__collapse_menu()
-        else:
-            self.__expand_menu()
-        
-        if self.page_frame is not None: 
+
+    def is_page_active(self, page: page) -> bool:
+        """Return true if the page passed in parameter is active."""
+        return isinstance(self.page_frame, page)
+
+
+    def is_a_page_in_container(self) -> bool:
+        """Return true if a page is in the container."""
+        return self.page_frame is not None
+
+
+    def empty_container(self):
+        """Empty the page container."""
+        if self.is_a_page_in_container(): 
             self.page_frame.grid_forget()
             self.page_frame.setUnactive()
-        
-        self.page_frame = page(self.container_frame, self)
+            self.page_frame = None
+
+
+    def fill_container(self):
+        """Fill the page container."""
+        self.change_title(self.page_frame.get_name())
+        self.page_frame.grid(row=0, column=0, sticky="nsew")
+
+
+    def set_new_page_frame(self, new_page: page):
+        """Set the new page frame."""
+        self.page_frame: page = new_page(self.container_frame, self)
         self.page_frame.setActive()
         self.__ungarded_onWindowsSizeChange()
-
-        self.change_title(self.page_frame.get_name())
-
-        self.page_frame.grid(row=0, column=0, sticky="nsew")
+        self.page_frame.update()
 
 
     def show_menu(self):
@@ -83,6 +100,7 @@ class Application(customtkinter.CTk):
         self.menu_frame.set_command_chemin(lambda: self.show_page(path_page))
         self.menu_frame.set_command_run(lambda: self.show_page(test_page))
         self.menu_frame.set_command_compte(lambda: self.show_page(login_page))
+        self.menu_frame.update()
         
     
     def update_page(self, page: page):
