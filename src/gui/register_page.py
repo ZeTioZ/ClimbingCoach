@@ -3,12 +3,16 @@ import customtkinter
 from gui.page import page
 
 from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR
+from database import user_queries
+from gui import login_page
 
 class register_page(page):
     """Class of the register page."""
 
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
         super().__init__(parent)
+
+        self.show_page = app.show_page
 
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
@@ -42,6 +46,9 @@ class register_page(page):
         password = self.password_entry.get()
 
         # TODO: Add the registration logic
+        user_queries.create_user(pseudo, password)
+        print(f"User {pseudo} registered !")
+        self.show_page(login_page)
 
     def cancel(self):
         """Cancel the registration."""

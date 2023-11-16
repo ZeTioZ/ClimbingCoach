@@ -6,6 +6,8 @@ from gui import login_page, test_page, page, menu_page, trail_page, account_page
 from gui import set_height_utils, UV
 import os.path
 import platform
+from database.database_handler import DatabaseHandler
+from database.queries import user_queries
 
 class Application(customtkinter.CTk):
     """
@@ -27,6 +29,9 @@ class Application(customtkinter.CTk):
         self.geometry("600x300+600+300")
         self.title("Climbing Coach")
 
+        
+        self.database = DatabaseHandler()
+        self.database.create_tables()
 
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.parent_dir = os.path.dirname(self.current_dir)
@@ -74,7 +79,6 @@ class Application(customtkinter.CTk):
 
     def is_macos(self) -> bool:
         """True if the os is MacOS"""
-        print (platform.system())
         return platform.system() == "Darwin"
 
 
