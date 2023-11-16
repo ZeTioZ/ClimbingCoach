@@ -1,20 +1,23 @@
 """Module for tkinter interface of the login page."""
 import tkinter as tk
 import customtkinter
-from gui.page import page
+from gui.abstract.page import page
 from gui.register_page import register_page
 import os.path
 from PIL import Image
 from database import user_queries
 from gui.trail_page import trail_page
+from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, PARENT_PATH, FONT
 
 
-DEFAULT_FONT = ("Helvetica", 16)
-TITLE_FONT = ("Helvetica", 24)
+
+
+DEFAULT_FONT = (FONT, IUV(16))
+TITLE_FONT = (FONT, IUV(24))
 DF = DEFAULT_FONT
 TF = TITLE_FONT
 
-DEFAULT_FONT_BIG = ("Helvetica", 32)
+DEFAULT_FONT_BIG = (FONT, IUV(32))
 DFB = DEFAULT_FONT_BIG
 
 v = lambda x, view: x * (view/100)
@@ -34,20 +37,12 @@ class login_page(page):
 
     __sizeState = None
 
-    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
+    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
         """Constructor. Singleton then init executed only once."""
-        super().__init__(parent)  # Call the __init__ method of the parent class
-        app_path = os.path.dirname(os.path.abspath(__file__))
-        app_path = app_path[:app_path.rfind("src")] # was \\src --> check if it works on windows
+        super().__init__(parent, app)  # Call the __init__ method of the parent class
+        app_path = PARENT_PATH
 
-        if app is not None: 
-            app.title("Login Page")
-            self.toggle_menu = app.toggle_menu
-            self.show_page = app.show_page
-            latest_width = app.winfo_width()
-            latest_height = app.winfo_height()
-        else: 
-            self.toggle_menu = lambda: print("Toggle menu")
+        self.toggle_menu = app.toggle_menu
         
         #Frame configure
         parent.grid_rowconfigure(0, weight=1) 
@@ -142,18 +137,12 @@ class login_page(page):
             self.__sizeState = "small"
             self.__setup_smallScreen()
 
-        default_font = ("Helvetica", min(int(v(4, height)), 24))
-        title_font = ("Helvetica", min(int(v(6, height)), 32))
+        default_font = (FONT, min(int(v(4, height)), IUV(24)))
+        title_font = (FONT, min(int(v(6, height)), IUV(32)))
 
-        self.app_image.configure(size=(
-            max(100, min(int(v(10, width)), 200)), 
-            max(100, min(int(v(10, width)), 200))
-        ))
-
-        self.title.configure(
-            width=max(100, min(int(v(10, width)), 200)),
-            height=max(100, min(int(v(10, width)), 200))
-        )
+        app_icon_size = min(int(v(15, width)), UV(250))
+        self.app_image.configure(size=(app_icon_size,app_icon_size))
+        self.title.configure(width=app_icon_size, height=app_icon_size)
 
         self.username_label.configure(font=default_font)
         self.password_label.configure(font=default_font)
@@ -174,4 +163,12 @@ class login_page(page):
 
         self.password_entry.configure(font=default_font)
         self.username_combobox.configure(font=default_font, dropdown_font=default_font)
+
+    def setUnactive(self):
+        super().setActive()
+        self.username_combobox.set("")
+        self.password_entry.delete(0, tk.END)
     
+
+    def get_name(self):
+        return "Login"

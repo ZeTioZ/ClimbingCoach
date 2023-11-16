@@ -1,7 +1,7 @@
 """"Module for tkinter interface of account page."""
 import tkinter as tk
 import customtkinter
-from gui.page import page
+from gui.abstract.page import page
 
 from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 
@@ -9,7 +9,7 @@ class account_page(page):
     """Class of the account page."""
 
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
-        super().__init__(parent)
+        super().__init__(parent, app)
 
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)

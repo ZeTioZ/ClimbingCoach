@@ -1,12 +1,16 @@
 """"Module for tkinter interface of menu page."""
 import tkinter as tk
 import customtkinter
-from gui.page import page
+from gui.abstract.page import page
 from PIL import Image
 
-from gui.utils import v, min_max_range, PRIMARY_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
+from gui.utils import v, min_max_range, IUV, UV, PRIMARY_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, EMPTY_IMAGE
+
+from gui.app_state import AppState
 
 import os.path
+
+state = AppState()
 
 DEFAULT_RADIUS = 12
 COLOR = PRIMARY_COLOR #"#0b7687"
@@ -20,14 +24,14 @@ class menu_page(page):
 
     __active_elem = None
 
-    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
-        super().__init__(parent)
+    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
+        super().__init__(parent, app)
 
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure((1,2,3,4), weight=1, minsize=110)
+        self.grid_rowconfigure((1,2,3,4), weight=1)
         self.grid_rowconfigure((0,5), weight=6)
 
         #initialize logo
@@ -55,19 +59,50 @@ class menu_page(page):
         entry = self.piste_label
 
         self.__change_active(entry)
-
-    def set_command_piste(self, command):
-        self.__set_on_click(self.piste_label, lambda e: command())
     
+
+    # Hide/Show methods
+    def hide_piste(self):
+        self.piste_label.grid_forget()
+
+
+    def show_piste(self):
+        self.piste_label.grid(row=1, column=0, pady=(10, 10), padx=(10, 10))
+
+
+    def hide_chemin(self):
+        self.chemin_label.grid_forget()
+    
+
+    def show_chemin(self):
+        self.chemin_label.grid(row=2, column=0, padx=(10, 10))
+
+
+    def hide_run(self):
+        self.run_label.grid_forget()
+    
+
+    def show_run(self):
+        self.run_label.grid(row=3, column=0, pady=(10, 10), padx=(10, 10))
+
+    # Set Command methods
     def set_command_chemin(self, command):
         self.__set_on_click(self.chemin_label, lambda e: command())
-    
+
+
     def set_command_run(self, command):
         self.__set_on_click(self.run_label, lambda e: command())
-    
+
+
     def set_command_compte(self, command):
         self.__set_on_click(self.compte_label, lambda e: command())
 
+
+    def set_command_piste(self, command):
+        self.__set_on_click(self.piste_label, lambda e: command())
+
+
+    # Utils
     def __change_active(self, elem: customtkinter.CTkLabel):
             """Change the active element."""
             if self.__active_elem is not None:
@@ -75,15 +110,18 @@ class menu_page(page):
             elem.configure(fg_color = COLOR_ACTIVE, corner_radius= DEFAULT_RADIUS_ACTIVE)
             self.__active_elem = elem
 
+
     def __get_icon_path(self, icon_name: str):
         """Return the path of the icon passed in parameter."""
         return os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'resources', 'images', icon_name)
 
+
     def __set_hover_effect(self, elem: customtkinter.CTkLabel, image: customtkinter.CTkImage, hover_text: str):
         """Set the hover effect on the label passed in parameter."""
-        elem.bind("<Enter>", lambda e: elem.configure(text=hover_text, image=customtkinter.CTkImage(Image.frombytes("RGBA", (1,1), b"\x00\x00\x00\x00"))))
+        elem.bind("<Enter>", lambda e: elem.configure(text=hover_text, image=EMPTY_IMAGE))
         elem.bind("<Leave>", lambda e: elem.configure(image=image, text=""))
-    
+
+
     def __set_on_click(self, elem: customtkinter.CTkLabel, on_click = lambda e: print("Please implement the on click function")):
         """Set the on click function on the label passed in parameter."""
         def extended_on_click(e):
@@ -91,12 +129,35 @@ class menu_page(page):
             on_click(e)
         elem.bind("<Button-1>", extended_on_click)
 
+
+    # Methods for the page
+    def update(self, *args, **kwargs):
+        """Update the page."""
+        self.__update_chemin()
+        self.__update_run()
+        
+
+    def __update_chemin(self):
+        if state.is_trail_selected():
+            self.show_chemin()
+        else:
+            self.hide_chemin()
+
+
+    def __update_run(self):
+        if state.is_run_selected():
+            self.show_run()
+        else:
+            self.hide_run()
+
+
     def onSizeChange(self, width, height):
         """Called when the windows size change."""
 
-        size_icon = min_max_range(60, 80, v(5, width))
+        size_icon = min_max_range(UV(60), UV(80), v(5.5, width))
         size_label_icon = 115/80 * size_icon
-        default_font = ("Helvetica", min(int(v(3, height)), 32), "bold")
+        #min(int(v(1.7, width)), 32)
+        default_font = ("Helvetica", min_max_range(IUV(22), IUV(30), int(v(1.7, width))), "bold")
 
         def set_size(label: customtkinter.CTkLabel, image: customtkinter.CTkImage):
             label.configure(height = size_label_icon, width = size_label_icon, font= default_font)
@@ -105,7 +166,3 @@ class menu_page(page):
         set_size(self.chemin_label, self.chemin)
         set_size(self.run_label, self.run)
         set_size(self.compte_label, self.compte)
-
-        # Font size
-
-        pass

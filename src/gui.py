@@ -2,7 +2,7 @@
 import tkinter as tk
 import customtkinter
 from tkinter import PhotoImage, messagebox
-from gui import login_page, test_page, page, menu_page, trail_page, account_page
+from gui import login_page, test_page, page, menu_page, trail_page, path_page, account_page
 from gui import set_height_utils, UV
 import os.path
 import platform
@@ -16,7 +16,7 @@ class Application(customtkinter.CTk):
 
     significant_change = 50 # Amount of pixel to consider a change as significant and then reload the page
 
-    page_frame = None
+    page_frame: page | None = None
     menu_frame = None
 
     latest_width = 0
@@ -25,13 +25,14 @@ class Application(customtkinter.CTk):
     def __init__(self):
         """Constructor."""
         super().__init__()
+        set_height_utils(self.winfo_screenheight())
 
-        self.geometry("600x300+600+300")
+        self.geometry(f"{UV(700)}x{UV(600)}+600+300")
         self.title("Climbing Coach")
-
         
         self.database = DatabaseHandler()
         self.database.create_tables()
+        self.minsize(UV(700), UV(600))
 
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.parent_dir = os.path.dirname(self.current_dir)
@@ -44,7 +45,6 @@ class Application(customtkinter.CTk):
         self.bind("<Configure>", lambda e: self.onWindowsSizeChange())
         self.latest_width = self.winfo_width()
         self.latest_height = self.winfo_height()
-        set_height_utils(self.winfo_screenheight())
 
         self.__os_init()
 
@@ -103,42 +103,63 @@ class Application(customtkinter.CTk):
 
     
     # Page utils
-    def show_page(self, page: page):
+    def show_page(self, new_page: page):
         """Show the page passed in parameter."""
+        if(not self.is_page_active(new_page)): 
+            
+            self.empty_container()
+            self.set_new_page_frame(new_page)
+            self.fill_container()
 
-        if(isinstance(self.page_frame, page)): 
-            return
-        
-        if(page == login_page):
-            self.__collapse_menu()
-        else:
-            self.__expand_menu()
-        
-        if self.page_frame is not None: 
+
+    def is_page_active(self, page: page) -> bool:
+        """Return true if the page passed in parameter is active."""
+        return isinstance(self.page_frame, page)
+
+
+    def is_a_page_in_container(self) -> bool:
+        """Return true if a page is in the container."""
+        return self.page_frame is not None
+
+
+    def empty_container(self):
+        """Empty the page container."""
+        if self.is_a_page_in_container(): 
             self.page_frame.grid_forget()
             self.page_frame.setUnactive()
-        
-        self.page_frame = page.get_instance(self.container_frame, self)
+            self.page_frame = None
+
+
+    def fill_container(self):
+        """Fill the page container."""
+        self.change_title(self.page_frame.get_name())
+        self.page_frame.grid(row=0, column=0, sticky="nsew")
+
+
+    def set_new_page_frame(self, new_page: page):
+        """Set the new page frame."""
+        self.page_frame: page = new_page(self.container_frame, self)
         self.page_frame.setActive()
         self.__ungarded_onWindowsSizeChange()
+        self.page_frame.update()
 
-        self.page_frame.grid(row=0, column=0, sticky="nsew")
 
 
     def show_menu(self):
         """Show the menu page."""
         if self.menu_frame is not None: return
-        self.menu_frame = menu_page.get_instance(self.menu_container_frame, self)
+        self.menu_frame = menu_page(self.menu_container_frame, self)
         self.menu_frame.grid(row=0, column=0, sticky="nsew")
         self.menu_frame.set_command_piste(lambda: self.show_page(trail_page))
-        self.menu_frame.set_command_chemin(lambda: self.show_page(login_page))
+        self.menu_frame.set_command_chemin(lambda: self.show_page(path_page))
         self.menu_frame.set_command_run(lambda: self.show_page(test_page))
         self.menu_frame.set_command_compte(lambda: self.show_page(account_page))
+        self.menu_frame.update()
         
     
     def update_page(self, page: page):
         """Update the page passed in parameter."""
-        page.get_instance(self).update()
+        page(self).update()
         self.show_page(page)
     
 
@@ -200,7 +221,17 @@ class Application(customtkinter.CTk):
             self.__collapse_menu()
         else:
             self.__expand_menu()
+    
 
+    def change_title(self, title: str):
+        """Change the title of the application."""
+        self.title(f"ClimbingCoach - {title}")
+
+
+    def update_menu(self):
+        """Update the menu."""
+        if self.menu_frame is not None:
+            self.menu_frame.update()
 
 if __name__ == "__main__":
     app = Application()
