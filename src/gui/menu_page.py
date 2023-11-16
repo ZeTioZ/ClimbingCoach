@@ -113,7 +113,7 @@ class menu_page(page):
 
     def __get_icon_path(self, icon_name: str):
         """Return the path of the icon passed in parameter."""
-        return os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'resources\\images', icon_name)
+        return os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'resources', 'images', icon_name)
 
 
     def __set_hover_effect(self, elem: customtkinter.CTkLabel, image: customtkinter.CTkImage, hover_text: str):

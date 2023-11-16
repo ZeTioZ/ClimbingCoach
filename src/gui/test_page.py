@@ -4,6 +4,8 @@ import customtkinter
 from PIL import Image, ImageTk 
 
 import cv2
+import platform
+
 from threading import Thread
 from typing import Callable
 import numpy as np
@@ -60,8 +62,15 @@ class test_page(page):
 
         if not self.__thread_actif: return
 
-        self.cap = cv2.VideoCapture(0)
+        #check the os of the user
+        if self.app.is_windows() or app.is_linux():
+            video_cap = 0
+        elif self.app.is_macos():
+            video_cap = 1
+        else:
+            raise Exception("Your os is not supported")
 
+        self.cap = cv2.VideoCapture(video_cap)
         self.baseW = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.baseH = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 

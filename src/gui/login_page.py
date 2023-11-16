@@ -2,6 +2,7 @@
 import tkinter as tk
 import customtkinter
 from gui.page import page
+from gui.register_page import register_page
 import os.path
 from PIL import Image
 from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, PARENT_PATH, FONT
@@ -15,6 +16,8 @@ TF = TITLE_FONT
 
 DEFAULT_FONT_BIG = (FONT, IUV(32))
 DFB = DEFAULT_FONT_BIG
+
+v = lambda x, view: x * (view/100)
 
 class login_page(page):
     """Class for the login page."""
@@ -42,7 +45,7 @@ class login_page(page):
         parent.grid_rowconfigure(0, weight=1) 
         parent.grid_columnconfigure(0, weight=1) # Use to align the frame in the center of the window
 
-        self.grid_rowconfigure((self.RI_TITLE, self.RI_LOGIN), weight=2, minsize=UV(100))
+        self.grid_rowconfigure((self.RI_TITLE, self.RI_LOGIN), weight=2, minsize=100)
         self.grid_rowconfigure((self.RI_USERNAME,self.RI_PASSWORD), weight=1)
         self.grid_rowconfigure((self.RI_USERNAME_LABEL, self.RI_PASSWORD_LABEL), weight=0)
         self.grid_rowconfigure((0,7), weight=6)
@@ -51,8 +54,10 @@ class login_page(page):
         self.grid_columnconfigure((0,3), weight=4)
 
         #Title
-        self.app_image = customtkinter.CTkImage(Image.open(os.path.join(app_path, "resources\\images", "incroyable_logo_climbing_coach.png")), size=(UV(100),UV(100)))
+        self.app_image = customtkinter.CTkImage(Image.open(os.path.join(app_path, "resources", "images", "incroyable_logo_climbing_coach.png")), size=(100,100))
         self.title = customtkinter.CTkLabel(self, text="", font=TF, image=self.app_image)
+        self.title.bind("<Enter>", lambda e: self.title.configure(text="Logo", image=customtkinter.CTkImage(Image.frombytes("RGBA", (1,1), b"\x00\x00\x00\x00"))))
+        self.title.bind("<Leave>", lambda e: self.title.configure(text="", image=self.app_image))
         self.title.grid(row = self.RI_TITLE, column = self.CI_LEFT, columnspan=2)
         
         #Username
@@ -72,10 +77,10 @@ class login_page(page):
         self.login_button = customtkinter.CTkButton(self, text="Login", command=self.toggle_menu, font=DF)
         self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
-        self.guest_button = customtkinter.CTkButton(self, text="Guest", font=DF, fg_color=SECONDARY_COLOR, hover_color=SECONDARY_HOVER_COLOR, command=self.toggle_menu)
+        self.guest_button = customtkinter.CTkButton(self, text="Guest", font=DF, fg_color="#027148", hover_color="#013220")
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
-        self.register_button = customtkinter.CTkButton(self, text="Register", command=self.toggle_menu, font=DF)
+        self.register_button = customtkinter.CTkButton(self, text="Register", command=lambda:self.show_page(register_page), font=DF)
         self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=2)
 
 
@@ -95,8 +100,8 @@ class login_page(page):
         """Setup the container for small screen."""
         self.grid_rowconfigure((0,7), weight=6)
 
-        self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=1, sticky="nw", pady=(IUV(10), IUV(4)))
-        self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=1, sticky="ne", pady=(IUV(10), IUV(4)))
+        self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=1, sticky="nw", pady=(10, 4))
+        self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=1, sticky="ne", pady=(10, 4))
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2, sticky="swe")
     
     def __setup_bigScreen(self):
@@ -112,10 +117,10 @@ class login_page(page):
         """Called when the windows size change."""
 
         # Change grid structure
-        if width > UV(800) and height > UV(600) and self.__sizeState != "big":
+        if width > 800 and height > 600 and self.__sizeState != "big":
             self.__sizeState = "big"
             self.__setup_bigScreen()
-        elif width <= UV(800) and height <= UV(600) and self.__sizeState != "small":
+        elif width and height <= 600 and self.__sizeState != "small":
             self.__sizeState = "small"
             self.__setup_smallScreen()
 
@@ -130,22 +135,22 @@ class login_page(page):
         self.password_label.configure(font=default_font)
         self.login_button.configure(
             font=default_font,
-            width=v(IUV(20), width)
+            width=v(20, width)
         )
         self.register_button.configure(
             font=default_font,
-            width=v(IUV(20), width)
+            width=v(20, width)
         )
         self.guest_button.configure(
             font=default_font,
-            width=v(IUV(20), width)
+            width=v(20, width)
         )
 
         self.title.configure(font=title_font)
 
         self.password_entry.configure(font=default_font)
         self.username_combobox.configure(font=default_font, dropdown_font=default_font)
-    
+
     def setUnactive(self):
         super().setActive()
         self.username_combobox.set("")
