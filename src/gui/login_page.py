@@ -1,7 +1,7 @@
 """Module for tkinter interface of the login page."""
 import tkinter as tk
 import customtkinter
-from gui.page import page
+from gui.abstract.page import page
 from gui.register_page import register_page
 import os.path
 from PIL import Image

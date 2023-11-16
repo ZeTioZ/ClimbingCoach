@@ -1,7 +1,7 @@
 """"Module for tkinter interface of path page."""
 import tkinter as tk
 import customtkinter
-from gui.page import page
+from gui.abstract.page import page
 from PIL import Image
 import os.path
 

@@ -1,5 +1,5 @@
 """Database gui instance class."""
-from gui.singleton import Singleton
+from gui.abstract.singleton import Singleton
 
 class AppState(metaclass=Singleton):
 

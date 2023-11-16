@@ -1,7 +1,7 @@
 """"Module for tkinter interface of account page."""
 import tkinter as tk
 import customtkinter
-from gui.page import page
+from gui.abstract.page import page
 
 from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 

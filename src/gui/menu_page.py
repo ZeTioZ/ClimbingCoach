@@ -1,7 +1,7 @@
 """"Module for tkinter interface of menu page."""
 import tkinter as tk
 import customtkinter
-from gui.page import page
+from gui.abstract.page import page
 from PIL import Image
 
 from gui.utils import v, min_max_range, IUV, UV, PRIMARY_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, EMPTY_IMAGE

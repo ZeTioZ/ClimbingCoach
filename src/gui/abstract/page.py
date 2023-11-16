@@ -1,5 +1,5 @@
 from customtkinter import CTkFrame, CTk
-from gui.singleton import Singleton
+from gui.abstract.singleton import Singleton
 
 class page(CTkFrame, metaclass=Singleton):
 

@@ -2,7 +2,7 @@
 import tkinter as tk
 from typing import Any
 import customtkinter
-from gui.page import page
+from gui.abstract.page import page
 from PIL import Image
 import os.path
 
