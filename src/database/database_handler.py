@@ -1,4 +1,5 @@
 import json
+import os
 
 from sqlalchemy import create_engine
 from sqlalchemy import URL
@@ -8,7 +9,10 @@ from .models.base_table import BaseTable
 
 INSTANCE = None
 
-DATABASE_CONFIG_FILE = open("./resources/configs/database.json", "r")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(os.path.dirname(current_dir))
+
+DATABASE_CONFIG_FILE = open(os.path.join(parent_dir, "resources","configs","database.json"), "r")
 DATABASE_CONFIG = json.load(DATABASE_CONFIG_FILE)
 CONNECTION_URL = URL.create(
             drivername=DATABASE_CONFIG["drivername"] if DATABASE_CONFIG["drivername"] != "" else "sqlite",

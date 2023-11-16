@@ -6,6 +6,8 @@ from gui import login_page, test_page, page, menu_page, trail_page, path_page, a
 from gui import set_height_utils, UV
 import os.path
 import platform
+from database.database_handler import DatabaseHandler
+from database.queries import user_queries
 
 class Application(customtkinter.CTk):
     """
@@ -27,9 +29,10 @@ class Application(customtkinter.CTk):
 
         self.geometry(f"{UV(700)}x{UV(600)}+600+300")
         self.title("Climbing Coach")
-
+        
+        self.database = DatabaseHandler()
+        self.database.create_tables()
         self.minsize(UV(700), UV(600))
-
 
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.parent_dir = os.path.dirname(self.current_dir)

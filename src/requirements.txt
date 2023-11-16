@@ -1,0 +1,10 @@
+bcrypt==4.0.1
+customtkinter==5.2.1
+darkdetect==0.8.0
+greenlet==3.0.1
+numpy==1.26.2
+opencv-python==4.8.1.78
+packaging==23.2
+Pillow==10.1.0
+SQLAlchemy==2.0.23
+typing_extensions==4.8.0
