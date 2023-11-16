@@ -11,7 +11,9 @@ from typing import Callable
 import numpy as np
 
 from gui.abstract.page import page
-from gui.utils import EMPTY_IMAGE
+from gui.utils import EMPTY_IMAGE, FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
+from gui.utils import v, UV, IUV, min_max_range
+from gui.run_viewer_page import run_viewer_page
 
 class run_page(page):
 
@@ -27,22 +29,55 @@ class run_page(page):
         super().__init__(parent, app)
 
         if app is not None:
-            app.title("test Page")
-
-        parent.grid_rowconfigure(0, weight=1) 
+            app.title("Run Page")
+            
+        parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=3)
         self.grid_rowconfigure(1, weight=1)
+        
+        #Image with slider over there
+        #TODO: Take the current trail image with app_state
+        self.slider = customtkinter.CTkSlider(app, from_=0, to=100, command=self.slider_event)
+        #get_runs_by_user_and_route
 
-        self.test_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 32))
+        #Add two button
+        #this button will start recording but we'll stay on this page
+        self.start_recording = customtkinter.CTkButton(self, text="start recording", command=self.__start_recording)
         self.test_label.grid(row = 0, column = 0)
 
+        self.load_recording = customtkinter.CTkButton(self, text="load recording", command=self.__load_recording)
+        self.load_recording.grid(row = 0, column = 1)
+        
         self.test_button = customtkinter.CTkButton(self, text="start", command=self.__toggle_camera, state=customtkinter.DISABLED)
         self.test_button.grid(row = 1, column = 0)
 
         self.camLoader = None
+        
+    def __fetch_run_list(self):
+        """Fetch the run list from the database."""
+        return [f"Run {i}" for i in range(1, 7)]
+
+
+    def create_button(self, display_text, index):
+        """Creates a button with the given text."""
+
+        is_first = index == 0
+
+        self.button = customtkinter.CTkButton(
+            self.run_list_frame,
+            text=display_text,
+            fg_color= SECONDARY_COLOR if is_first else "transparent",
+            hover_color=SECONDARY_COLOR,
+            border_spacing=UV(17), 
+            #command=,
+            anchor="w"
+        )
+
+        self.button.grid(row=index, column=0, padx=UV(10), sticky="ew")
+        return self.button
 
 
     def set_model(self, model: Callable[[np.ndarray], np.ndarray]):
@@ -171,4 +206,19 @@ class run_page(page):
     def get_name(self):
         return "test"
 
+    def __start_recording(self):
+        print("start recording")
+
+    def __clear_run_record_frame(self):
+        print("clear run record frame")
+        for widget in self.run_record_frame.grid_slaves():
+            widget.grid_forget()
+
+    def __load_recording(self):
+        print("load recording")
+        self.show_page(run_viewer_page)
+        #self.__clear_run_record_frame()
+        
+    def __slider_event(self, event):
+        print("slider event")
 

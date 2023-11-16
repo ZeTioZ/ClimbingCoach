@@ -2,7 +2,8 @@ class SkeletonsRecord:
     """
     This class is used to represent a skeletons record.
     """
-    def __init__(self):
+    def __init__(self, frame_rate: float = 30.0):
+        self.frame_rate = frame_rate
         self.skeletons = []
 
 

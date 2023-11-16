@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, LargeBinary
-from sqlalchemy.orm import DeclarativeBase, Mapped
+from sqlalchemy.orm import Mapped
 
 from .base_table import BaseTable
 

@@ -19,7 +19,7 @@ def deserialize_skeletons_record(serialized_skeletons_record: bytes) -> Skeleton
     return pickle.loads(serialized_skeletons_record)
 
 
-def serilize_route(route: Route) -> bytes:
+def serialize_route(route: Route) -> bytes:
     """
     Serializes the given route into a pickle bytes object.
     """

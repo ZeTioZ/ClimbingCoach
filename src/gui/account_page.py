@@ -2,6 +2,7 @@
 import tkinter as tk
 import customtkinter
 from gui.abstract.page import page
+from gui import login_page
 
 from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 
@@ -27,4 +28,4 @@ class account_page(page):
     def desconnect(self):
         """Desconnect the user."""
         #TODO: desconnect the user
-        pass
+        self.app.show_page(login_page)

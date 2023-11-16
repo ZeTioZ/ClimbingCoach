@@ -1,15 +1,14 @@
 """Module for tkinter interface of the login page."""
 import tkinter as tk
 import customtkinter
-from gui.abstract.page import page
-from gui.register_page import register_page
 import os.path
+
 from PIL import Image
 from database import user_queries
+from gui.abstract.page import page
 from gui.trail_page import trail_page
 from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, PARENT_PATH, FONT
-
-
+from gui.register_page import register_page
 
 
 DEFAULT_FONT = (FONT, IUV(16))
@@ -21,6 +20,7 @@ DEFAULT_FONT_BIG = (FONT, IUV(32))
 DFB = DEFAULT_FONT_BIG
 
 v = lambda x, view: x * (view/100)
+
 
 class login_page(page):
     """Class for the login page."""
@@ -41,8 +41,6 @@ class login_page(page):
         """Constructor. Singleton then init executed only once."""
         super().__init__(parent, app)  # Call the __init__ method of the parent class
         app_path = PARENT_PATH
-
-        self.toggle_menu = app.toggle_menu
         
         #Frame configure
         parent.grid_rowconfigure(0, weight=1) 
@@ -94,20 +92,25 @@ class login_page(page):
         success, user = user_queries.user_can_connect(username, password)
         print(user_queries.user_can_connect(username, password))
         if success:
-            self.toggle_menu()
-            self.show_page(trail_page)
-        # Add your login logic here
-        print(f"You'r logged in as {username}")
+            #self.toggle_menu()
+            self.app.show_page(trail_page)
+            # Add your login logic here
+            #TODO:ajouter une variable qui permet de savoir quel utilisateur est connecté 
+            
+            print(f"You're now logged in as {user.username}")
+
 
     def __get_usernames(self, username: str):
         self.user = user_queries.get_user_by_name(username)
         return self.user
+
 
     def __get_all_usernames(self):
         username_list = []
         for user in user_queries.get_all_users():
             username_list.append(user.username)
         return username_list
+
 
     def __setup_smallScreen(self):
         """Setup the container for small screen."""
@@ -117,6 +120,7 @@ class login_page(page):
         self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=1, sticky="ne", pady=(10, 4))
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2, sticky="swe")
     
+
     def __setup_bigScreen(self):
         """Setup the container for big screen."""
         self.grid_rowconfigure((0), weight=1)
@@ -125,6 +129,7 @@ class login_page(page):
         self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=1, sticky="nw", pady=0)
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=1, sticky="ne")
         self.register_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=1, sticky="w", pady=0)
+
 
     def onSizeChange(self, width, height):
         """Called when the windows size change."""
@@ -163,6 +168,7 @@ class login_page(page):
 
         self.password_entry.configure(font=default_font)
         self.username_combobox.configure(font=default_font, dropdown_font=default_font)
+
 
     def setUnactive(self):
         super().setActive()

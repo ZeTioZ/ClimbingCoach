@@ -4,15 +4,15 @@ from gui.abstract.page import page
 
 from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from database import user_queries
-from gui import login_page
 
 class register_page(page):
     """Class of the register page."""
 
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
-        super().__init__(parent)
+        super().__init__(parent, app)
 
         self.show_page = app.show_page
+        #self.login_page = login_page
 
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
@@ -45,13 +45,21 @@ class register_page(page):
         pseudo = self.pseudo_entry.get()
         password = self.password_entry.get()
 
-        # TODO: Add the registration logic
-        user_queries.create_user(pseudo, password)
+        if pseudo not in self.__get_all_usernames():
+            user_queries.create_user(pseudo, password)
+        else :
+            #TODO: afficher un message disant que l'user existe déjà
+            print("User already exists")
         print(f"User {pseudo} registered !")
-        self.show_page(login_page)
+        self.app.show_login_page()
 
     def cancel(self):
         """Cancel the registration."""
         # TODO: Add the redirection to the login page
         pass
 
+    def __get_all_usernames(self):
+        username_list = []
+        for user in user_queries.get_all_users():
+            username_list.append(user.username)
+        return username_list

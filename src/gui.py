@@ -2,10 +2,13 @@
 import tkinter as tk
 import customtkinter
 from tkinter import PhotoImage, messagebox
-from gui import login_page, test_page, page, menu_page, trail_page, path_page, account_page
+
+from gui import login_page, run_page, page, menu_page, trail_page, path_page, account_page
 from gui import set_height_utils, UV
+
 import os.path
 import platform
+
 from database.database_handler import DatabaseHandler
 from database.queries import user_queries
 
@@ -49,8 +52,7 @@ class Application(customtkinter.CTk):
         self.__os_init()
 
         self.init_frame()
-        #self.show_page(login_page)
-        self.show_page(trail_page)
+        self.show_page(login_page)
         self.show_menu()
 
 
@@ -105,11 +107,16 @@ class Application(customtkinter.CTk):
     # Page utils
     def show_page(self, new_page: page):
         """Show the page passed in parameter."""
-        if(not self.is_page_active(new_page)): 
-            
+        if(not self.is_page_active(new_page)):  
             self.empty_container()
             self.set_new_page_frame(new_page)
+            self. __hide_show_menu_if_login()
             self.fill_container()
+
+
+    def show_login_page(self):
+        """Show the login page."""
+        self.show_page(login_page)
 
 
     def is_page_active(self, page: page) -> bool:
@@ -144,7 +151,6 @@ class Application(customtkinter.CTk):
         self.page_frame.update()
 
 
-
     def show_menu(self):
         """Show the menu page."""
         if self.menu_frame is not None: return
@@ -152,7 +158,7 @@ class Application(customtkinter.CTk):
         self.menu_frame.grid(row=0, column=0, sticky="nsew")
         self.menu_frame.set_command_piste(lambda: self.show_page(trail_page))
         self.menu_frame.set_command_chemin(lambda: self.show_page(path_page))
-        self.menu_frame.set_command_run(lambda: self.show_page(test_page))
+        self.menu_frame.set_command_run(lambda: self.show_page(run_page))
         self.menu_frame.set_command_compte(lambda: self.show_page(account_page))
         self.menu_frame.update()
         
@@ -215,6 +221,14 @@ class Application(customtkinter.CTk):
         self.container_frame.grid(row=0, column=1, sticky="nswe")
 
 
+    def __hide_show_menu_if_login(self):
+        """Hide the menu if the user is not logged in."""
+        if self.__is_page_login():
+            self.__collapse_menu()
+        else:
+            self.__expand_menu()
+
+
     def toggle_menu(self):
         """Toggle the menu."""
         if self.menu_frame.winfo_ismapped():
@@ -222,6 +236,11 @@ class Application(customtkinter.CTk):
         else:
             self.__expand_menu()
     
+
+    def __is_page_login(self) -> bool:
+        """Return true if the page is the login page."""
+        return isinstance(self.page_frame, login_page)
+
 
     def change_title(self, title: str):
         """Change the title of the application."""
@@ -232,6 +251,7 @@ class Application(customtkinter.CTk):
         """Update the menu."""
         if self.menu_frame is not None:
             self.menu_frame.update()
+
 
 if __name__ == "__main__":
     app = Application()

@@ -15,11 +15,16 @@ class FluxReaderEvent(Observable):
         self.video = cv2.VideoCapture(self.flux)
         self.video.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        self.cancelled = False
 
         self.nbr_frame_to_skip = nbr_frame_to_skip
         self.holds_boxes = []
         self.floor_boxes = []
         self.skeletons = []
+
+
+    def set_cancelled(self, cancelled: bool):
+        self.cancelled = cancelled
         
 
     def process(self):
@@ -33,7 +38,7 @@ class FluxReaderEvent(Observable):
         refresh_holds = False
         refreshed = False
         frame_skipper = 0
-        while video.isOpened():
+        while video.isOpened() and not self.cancelled:
             success, frame = video.read()
             if not success:
                 break
@@ -52,7 +57,7 @@ class FluxReaderEvent(Observable):
             if frame_skipper == 0:
                 skeleton_prediction = skeleton_detector.predict(frame, img_size=512)
                 skeletons = convert_image_skeleton_outputs(skeleton_prediction)
-                self.notify(FluxReaderEnum.SKELETONS_PROCESSED, frame_skipper, skeletons)
+                self.notify(FluxReaderEnum.SKELETONS_PROCESSED, self.nbr_frame_to_skip, frame_skipper, skeletons)
             
             self.notify(FluxReaderEnum.FRAME_PROCESSED, frame, holds_boxes, floor_boxes, skeletons, frame_skipper)
             frame_skipper = (frame_skipper + 1) % (self.nbr_frame_to_skip + 1)

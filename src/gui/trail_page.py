@@ -5,6 +5,7 @@ import customtkinter
 from gui.abstract.page import page
 from PIL import Image
 import os.path
+from database import route_queries
 
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, COLOR_DIFFICULTY
 from gui.utils import v, UV, IUV, min_max_range
@@ -46,8 +47,8 @@ class trail_page(page):
         self.trail_list_title_frame.grid_columnconfigure(0, weight=1)
         self.trail_list_title_frame.grid_rowconfigure(0, weight=1)
 
-        self.tail_list_title = customtkinter.CTkLabel(self.trail_list_title_frame, text="Trail list", font=(FONT, IUV(28), "bold"))
-        self.tail_list_title.grid(row=0, column=0, sticky="nswe")
+        self.trail_list_title = customtkinter.CTkLabel(self.trail_list_title_frame, text="Trail list", font=(FONT, IUV(28), "bold"))
+        self.trail_list_title.grid(row=0, column=0, sticky="nswe")
 
         self.trail_detail_frame = customtkinter.CTkFrame(self)
         self.trail_detail_frame.grid(row=0, column=1, rowspan=2, sticky="nswe")
@@ -93,7 +94,8 @@ class trail_page(page):
 
         #get all the trails in the db
         test_list= self.__fetch_trail_list()
-    
+
+        
         self.button_list: list[customtkinter.CTkButton] = []
         for trail in test_list:
             self.trail_button = self.create_button(trail, test_list.index(trail))
@@ -123,7 +125,8 @@ class trail_page(page):
 
     def __fetch_trail_list(self):
         """Fetch the trail list from the database."""
-        return [f"Piste {i}" for i in range(1, 17)]
+        return [f"Path {i}" for i in range(1, 13)]
+        #return [f"Piste {run}" for run in route_queries.get_all_routes()]
 
 
     def __fletch_trail_detail(self):
@@ -225,7 +228,7 @@ class trail_page(page):
 
         for button in self.button_list:
             button.configure(height=v(5, height), width=image_size, font=font_style_default)
-        self.tail_list_title.configure(font=font_style_title)
+        self.trail_list_title.configure(font=font_style_title)
 
         size_difficulty = min_max_range(UV(15), UV(100), v(2.5, width))
         for i in range(5):

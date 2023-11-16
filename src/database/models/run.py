@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String, LargeBinary, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, Mapped
+from sqlalchemy import Column, Integer, LargeBinary, ForeignKey
+from sqlalchemy.orm import Mapped
 
 from user import User
 from route import Route

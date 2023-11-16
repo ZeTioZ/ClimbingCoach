@@ -151,6 +151,12 @@ class menu_page(page):
             self.hide_run()
 
 
+    def setActive(self):
+        """Set the page active."""
+        super().setActive()
+        self.__change_active(self.piste_label)
+
+
     def onSizeChange(self, width, height):
         """Called when the windows size change."""
 
