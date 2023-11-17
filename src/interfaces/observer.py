@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from observable import Observable
+from interfaces.observable import Observable
 
 
 class Observer(ABC):

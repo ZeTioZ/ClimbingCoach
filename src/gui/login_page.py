@@ -81,7 +81,7 @@ class login_page(page):
         self.guest_button = customtkinter.CTkButton(self, text="Guest", font=DF, fg_color="#027148", hover_color="#013220")
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
-        self.register_button = customtkinter.CTkButton(self, text="Register", command=lambda:self.show_page(register_page), font=DF)
+        self.register_button = customtkinter.CTkButton(self, text="Register", command=lambda:self.app.show_page(register_page), font=DF)
         self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=2)
 
 
