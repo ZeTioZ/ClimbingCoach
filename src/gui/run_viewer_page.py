@@ -39,7 +39,7 @@ class run_viewer_page(page):
         self.run_list_title.grid(row=0, column=0, sticky="nswe")
 
         self.run_back_button = customtkinter.CTkButton(self, text="Back", width=UV(100)
-                                                       , command=lambda : self.__show_page("run_page")
+                                                       , command= self.__show_run_page
                                                        )
         self.run_back_button.grid(row=2, column=0, sticky="w")
 
@@ -125,7 +125,7 @@ class run_viewer_page(page):
             self.video_play_button.configure(image=self.video_play_button_img)
 
 
-    def __show_page(self, page_name: str):
+    def __show_run_page(self):
         """Show the page passed in parameter."""
         from gui.run_page import run_page
 
