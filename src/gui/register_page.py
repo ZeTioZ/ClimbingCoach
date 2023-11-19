@@ -55,8 +55,10 @@ class register_page(page):
 
     def cancel(self):
         """Cancel the registration."""
-        # TODO: Add the redirection to the login page
-        pass
+        from gui.login_page import login_page
+
+        if self.app is not None:
+            self.app.show_page(login_page)
 
     def __get_all_usernames(self):
         username_list = []
