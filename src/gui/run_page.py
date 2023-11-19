@@ -55,11 +55,13 @@ class run_page(page):
 
         self.load_recording = customtkinter.CTkButton(self, text="Load recording", command=self.__load_recording, font=(FONT, 22))
         self.load_recording.grid(row = 1, column = 1, pady = UV(10))
+
+        self.stop_recording = customtkinter.CTkButton(self, text="Stop recording", command=self.__stop_recording, font=(FONT, 22), fg_color="red")
         
         self.show_cam = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("show_cam.png")), size=(25,25))
         self.hide_cam = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("hide_cam.png")), size=(25,25))
-        self.test_button = customtkinter.CTkButton(self, text="", command=self.__toggle_camera, state=customtkinter.DISABLED, image=self.hide_cam, width=UV(50), height=UV(50))
-        self.test_button.grid(row = 0, column = 2,padx = UV(10))
+        self.visibility_button = customtkinter.CTkButton(self, text="", command=self.__toggle_camera, state=customtkinter.DISABLED, image=self.hide_cam, width=UV(50), height=UV(50))
+        self.visibility_button.grid(row = 0, column = 2,padx = UV(10))
 
         self.camLoader = None
 
@@ -130,7 +132,7 @@ class run_page(page):
         self.__isCameraLoaded = True
 
         if not self.__thread_actif: return
-        self.test_button.configure(state=customtkinter.NORMAL)
+        self.visibility_button.configure(state=customtkinter.NORMAL)
         self.app.onWindowsSizeChange()
         self.__toggle_camera()
         
@@ -144,11 +146,11 @@ class run_page(page):
     def __toggle_camera(self):
         if self.__reading or not self.__thread_actif: 
             self.__reading = False
-            self.test_button.configure(image=self.show_cam)
+            self.visibility_button.configure(image=self.show_cam)
             self.test_label.configure(image=EMPTY_IMAGE)
         else:
             self.__reading = True
-            self.test_button.configure(image=self.hide_cam)
+            self.visibility_button.configure(image=self.hide_cam)
             self.__read_camera()
 
 
@@ -194,13 +196,13 @@ class run_page(page):
         self.__thread_actif = False
         self.__reading = False
         self.__isCameraLoaded = False
-        self.test_button.configure(image=self.show_cam)
+        self.visibility_button.configure(image=self.show_cam)
         if self.cap is not None:
             self.cap.release()
         
         # Set empty image
         self.test_label.configure(image=EMPTY_IMAGE)
-        self.test_button.configure(state=customtkinter.DISABLED, image=self.show_cam)
+        self.visibility_button.configure(state=customtkinter.DISABLED, image=self.show_cam)
 
 
     def setActive(self):
@@ -217,13 +219,25 @@ class run_page(page):
     def get_name(self):
         return "Run"
 
-    def __start_recording(self):
-        print("start recording")
-
     def __clear_run_record_frame(self):
         print("clear run record frame")
         for widget in self.run_record_frame.grid_slaves():
             widget.grid_forget()
+
+    def __start_recording(self):
+        #add logical
+        if self.visibility_button.cget("image") == self.hide_cam:   
+            self.start_recording.grid_forget()
+            self.load_recording.grid_forget()
+            self.visibility_button.grid_forget()
+            self.stop_recording.grid(row = 1, column = 0, columnspan = 2, pady = UV(10))
+
+    def __stop_recording(self):
+        #add logical
+        self.stop_recording.grid_forget()
+        self.start_recording.grid(row = 1, column = 0, pady = UV(10))
+        self.load_recording.grid(row = 1, column = 1, pady = UV(10))
+        self.visibility_button.grid(row = 0, column = 2,padx = UV(10))
 
     def __load_recording(self):
         print("load recording")
