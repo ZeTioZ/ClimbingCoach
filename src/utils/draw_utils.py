@@ -2,18 +2,24 @@ import cv2
 import numpy as np
 
 from objects.skeleton import Skeleton
+from objects.box import Box
 
 
-def box_visualizer(image: np.ndarray, boxes: list, color: tuple = (0, 255, 0), thickness: int = 2):
+def box_visualizer(image: np.ndarray, boxes: list[Box], box_path: list[Box], color: tuple = (0, 255, 0), color_path: tuple = (255, 0, 0), thickness: int = 2):
     """
     Visualizes boxes in the given image.
 
     :param image: A numpy array representing the image.
     :param boxes: A list containing bounding boxes of the detected objects.
+    :param color: The color of the bounding boxes.
+    :param thickness: The thickness of the bounding boxes.
     :param wait_key: The amount of time to wait before closing the image.
     """
     for box in boxes:
-        cv2.rectangle(image, (int(box.positions[0].x), int(box.positions[0].y)), (int(box.positions[1].x), int(box.positions[1].y)), color, thickness)
+        if box_path is not None and box in box_path:
+            cv2.rectangle(image, (int(box.positions[0].x), int(box.positions[0].y)), (int(box.positions[1].x), int(box.positions[1].y)), color_path, thickness)
+        else:
+            cv2.rectangle(image, (int(box.positions[0].x), int(box.positions[0].y)), (int(box.positions[1].x), int(box.positions[1].y)), color, thickness)
     return image
 
 
