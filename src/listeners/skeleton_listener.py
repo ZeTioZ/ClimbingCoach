@@ -1,26 +1,26 @@
 import cv2
 
-from interfaces.observer import Observer
+from interfaces.listener import Listener
 from objects.skeletons_record import SkeletonsRecord
-from enums.flux_reader_enum import FluxReaderEnum
+from enums.flux_reader_event_type import FluxReaderEventType
 from objects.skeleton import Skeleton
 from utils.serializer import serialize_skeletons_record, deserialize_skeletons_record
 
 
-class SkeletonRecordSaverListener(Observer):
+class SkeletonRecordSaverListener(Listener):
     def __init__(self):
         self.skeleton_record = SkeletonsRecord()
 
 
-    def update(self, observable, event_type, *args, **kwargs):
-        if event_type == FluxReaderEnum.SKELETONS_PROCESSED:
+    def update(self, observable, event_types, *args, **kwargs):
+        if FluxReaderEventType.SKELETONS_PROCESSED_EVENT in event_types:
             nbr_frame_to_skip = args[0]
             self.skeleton_record.frame_rate = observable.video.get(cv2.CAP_PROP_FPS) / nbr_frame_to_skip
             frame_skipper = args[1]
             skeletons = args[2]
 
             self.append_skeleton(frame_skipper, skeletons)
-        elif event_type == FluxReaderEnum.END_OF_FILE:
+        elif FluxReaderEventType.END_OF_FILE_EVENT in event_types:
             self.save_skeletons_record()
 
 
