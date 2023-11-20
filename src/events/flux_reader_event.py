@@ -45,22 +45,24 @@ class FluxReaderEvent(Observable):
 
             self.notify(FluxReaderEnum.GET_FRAME, frame)
 
-            if refresh_holds or not refreshed:
-                refreshed = True
-                holds_predictions = holds_detector.predict(frame, classes=[0])
-                floor_predictions = holds_detector.predict(frame, classes=[1])
-                holds_boxes = convert_image_box_outputs(holds_predictions)
-                self.notify(FluxReaderEnum.HOLDS_PROCESSED, holds_boxes)
-                floor_boxes = convert_image_box_outputs(floor_predictions)
-                self.notify(FluxReaderEnum.FLOOR_PROCESSED, floor_boxes)
+            if True:
 
-            if frame_skipper == 0:
-                skeleton_prediction = skeleton_detector.predict(frame, img_size=512)
-                skeletons = convert_image_skeleton_outputs(skeleton_prediction)
-                self.notify(FluxReaderEnum.SKELETONS_PROCESSED, self.nbr_frame_to_skip, frame_skipper, skeletons)
-            
-            self.notify(FluxReaderEnum.FRAME_PROCESSED, frame, holds_boxes, floor_boxes, skeletons, frame_skipper)
-            frame_skipper = (frame_skipper + 1) % (self.nbr_frame_to_skip + 1)
+                if refresh_holds or not refreshed:
+                    refreshed = True
+                    holds_predictions = holds_detector.predict(frame, classes=[0])
+                    floor_predictions = holds_detector.predict(frame, classes=[1])
+                    holds_boxes = convert_image_box_outputs(holds_predictions)
+                    self.notify(FluxReaderEnum.HOLDS_PROCESSED, holds_boxes)
+                    floor_boxes = convert_image_box_outputs(floor_predictions)
+                    self.notify(FluxReaderEnum.FLOOR_PROCESSED, floor_boxes)
+
+                if frame_skipper == 0:
+                    skeleton_prediction = skeleton_detector.predict(frame, img_size=512)
+                    skeletons = convert_image_skeleton_outputs(skeleton_prediction)
+                    self.notify(FluxReaderEnum.SKELETONS_PROCESSED, self.nbr_frame_to_skip, frame_skipper, skeletons)
+                
+                self.notify(FluxReaderEnum.FRAME_PROCESSED, frame, holds_boxes, floor_boxes, skeletons, frame_skipper)
+                frame_skipper = (frame_skipper + 1) % (self.nbr_frame_to_skip + 1)
 
         self.notify(FluxReaderEnum.END_OF_FILE, holds_boxes, floor_boxes, skeletons)
         video.release()
