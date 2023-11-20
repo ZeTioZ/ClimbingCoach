@@ -1,4 +1,3 @@
-import base64
 import pickle
 
 from objects.route import Route
