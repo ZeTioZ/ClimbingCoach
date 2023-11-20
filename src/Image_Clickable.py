@@ -102,12 +102,12 @@ class image_clickable(CTk.CTkLabel, Event):
         """Called when the image is clicked."""
         default_X = int(self.default_size[0] * event.x / self.winfo_width())
         default_Y = int(self.default_size[1] * event.y / self.winfo_height())
-        self.notify(click_type.LEFT_CLICK, default_X, default_Y)
+        self.notify(ClickType.LEFT_CLICK, default_X, default_Y)
 
     
     def __click_right(self, event: Event):
         """Called when the image is clicked."""
-        self.notify(click_type.RIGHT_CLICK, event.x, event.y, self.winfo_width(), self.winfo_height())
+        self.notify(ClickType.RIGHT_CLICK, event.x, event.y, self.winfo_width(), self.winfo_height())
 
 
 if(__name__ == "__main__"):
