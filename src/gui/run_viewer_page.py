@@ -22,6 +22,7 @@ class run_viewer_page(page):
         super().__init__(parent, app)
 
         self.app = app
+        self.popup = None
 
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
@@ -31,61 +32,80 @@ class run_viewer_page(page):
         self.grid_rowconfigure((0,2), weight=0, minsize=UV(80))
         self.grid_rowconfigure(1, weight=1)
 
-        self.run_list_frame = customtkinter.CTkScrollableFrame(self, width=UV(170))
+        self.run_list_frame = customtkinter.CTkScrollableFrame(self, width=UV(150))
         self.run_list_frame.grid(row=1, column=0, sticky="nswe")
         self.run_list_frame.grid_columnconfigure((0,1), weight=1)
 
         self.run_list_title = customtkinter.CTkLabel(self, text="Run list", font=(FONT, IUV(28), "bold"))
         self.run_list_title.grid(row=0, column=0, sticky="nswe")
 
-        self.run_back_button = customtkinter.CTkButton(self, text="Back", width=UV(100)
+        self.run_back_button = customtkinter.CTkButton(self, text="Back", width=UV(10)
                                                        , command= self.__show_run_page
                                                        )
         self.run_back_button.grid(row=2, column=0, sticky="w")
 
-        self.run_add_button = customtkinter.CTkButton(self, text="Add", width=UV(100)
+        self.run_add_button = customtkinter.CTkButton(self, text="Add", width=UV(10)
                                                       #, command=lambda : self.app.change_page("AddRun")
                                                       )
         self.run_add_button.grid(row=2, column=0, sticky="e")
 
+        #TITLE
+        self.run_detail_title = customtkinter.CTkLabel(self, text="Run 1", font=(FONT, IUV(32)))
+        self.run_detail_title.grid(row=0, column=1, columnspan=4, pady=UV(25))
+
+        #RIGHT FRAME
         self.run_detail_frame = customtkinter.CTkScrollableFrame(self, width=UV(170), bg_color="transparent")
-        self.run_detail_frame.grid(row=0, column=1, rowspan=2, sticky="nswe")
+        self.run_detail_frame.grid(row=1, column=1, rowspan=2, sticky="nswe")
         self.run_detail_frame.configure(fg_color="transparent")
 
         self.run_detail_frame.grid_columnconfigure((0,1,2,3), weight=1)
         self.run_detail_frame.grid_rowconfigure(0, weight=4)
         self.run_detail_frame.grid_rowconfigure((1,2,3,4), weight=1)
 
-        self.run_detail_title = customtkinter.CTkLabel(self.run_detail_frame, text="Run 1", font=(FONT, IUV(28), "bold"))
-        self.run_detail_title.grid(row=0, column=0, columnspan=4)
-
+        #STREAM
         self.video_player_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "video_player.png")), size=(200,200))
         self.video_player = customtkinter.CTkLabel(self.run_detail_frame, image=self.video_player_img, bg_color="transparent", text="")
         self.video_player.grid(row=2, column=0, columnspan=4)
 
+        #VIDEO COMMANDS
         self.video_commands_frame = customtkinter.CTkFrame(self.run_detail_frame, bg_color="transparent")
         self.video_commands_frame.grid(row=3, column=0, columnspan=4, pady=UV(10))
-        self.video_commands_frame.grid_columnconfigure((0,1), weight=1)
+        self.video_commands_frame.grid_columnconfigure((0,1,2), weight=1)
 
-        self.video_play_button_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "play_button.png")), size=(30,30))
+        self.video_play_button_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "play_button.png")), size=(31,31))
         self.video_pause_button_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "pause_button.png")), size=(30,30))
-        self.video_play_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=UV(40), image=self.video_play_button_img, bg_color="transparent", command=self.__change_video_state)
-        self.video_play_button.grid(row=0, column=0, sticky="w")
+        self.video_play_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=UV(10), image=self.video_play_button_img, fg_color="transparent", command=self.__change_video_state)
+        self.video_play_button.grid(row=0, column=0)
         self.video_progressbar = customtkinter.CTkSlider(self.video_commands_frame, from_=0, to=100)
-        self.video_progressbar.grid(row=0, column=1, pady=UV(10))
+        self.video_progressbar.grid(row=0, column=1, pady=UV(9))
+        self.video_pop_up_button_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "pop_up.png")), size=(30,30))
+        self.video_pop_up_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=UV(10), command=self.__popup_window, image=self.video_pop_up_button_img, fg_color="transparent")
+        self.video_pop_up_button.grid(row=0, column=2)
 
-        self.run_detail_description = customtkinter.CTkLabel(self.run_detail_frame, text="Run informations", font=(FONT, IUV(32)))
-        self.run_detail_description.grid(row=4, column=0, columnspan=4)
+        #RUN INFORMATIONS
+        self.run_detail_description = customtkinter.CTkLabel(self.run_detail_frame, text="Run informations", font=(FONT, IUV(30)))
+        self.run_detail_description.grid(row=4, column=0, columnspan=4, pady=UV(20))
 
         self.run_information_frame = customtkinter.CTkFrame(self.run_detail_frame, bg_color="transparent")
         self.run_information_frame.grid(row=5, column=0, columnspan=4, sticky="nswe",padx=UV(20), pady=UV(20))
         self.run_information_frame.grid_columnconfigure((0,1), weight=1)
 
         self.user_record_label = customtkinter.CTkLabel(self.run_information_frame, text="User record", font=(FONT, IUV(26)))
-        self.user_record_label.grid(row=0, column=0)
+        self.user_record_label.grid(row=0, column=0, pady=UV(5))
 
         self.all_time_record_label = customtkinter.CTkLabel(self.run_information_frame, text="All time record", font=(FONT, IUV(26)))
-        self.all_time_record_label.grid(row=0, column=1)
+        self.all_time_record_label.grid(row=0, column=1, pady=UV(5))
+
+        #OTHER RUNS
+        self.other_runs_frame = customtkinter.CTkFrame(self.run_detail_frame, bg_color="transparent", fg_color="transparent")
+        self.other_runs_frame.grid(row=6, column=0, columnspan=4, sticky="nswe",padx=UV(20), pady=UV(20))
+        self.other_runs_frame.grid_columnconfigure((0,1), weight=1)
+
+        self.user_runs_label = customtkinter.CTkLabel(self.other_runs_frame, text="Your runs", font=(FONT, IUV(26)))
+        self.user_runs_label.grid(row=0, column=0, pady=UV(5))
+
+        self.other_runs_label = customtkinter.CTkLabel(self.other_runs_frame, text="All runs", font=(FONT, IUV(26)))
+        self.other_runs_label.grid(row=0, column=1, pady=UV(5))
 
         #get all the run in the db
         run_list= self.__fetch_run_list()
@@ -119,10 +139,13 @@ class run_viewer_page(page):
 
     def __change_video_state(self):
         """Change the state of the video."""
-        if self.video_play_button.cget("image") == self.video_play_button_img:
-            self.video_play_button.configure(image=self.video_pause_button_img)
+        if self.video_play_button.cget("image") == self.video_pause_button_img:
+            if not( self.popup is not None and self.popup.winfo_exists()):
+                self.video_play_button.configure(image=self.video_play_button_img)
+                #play the video
         else:
-            self.video_play_button.configure(image=self.video_play_button_img)
+            self.video_play_button.configure(image=self.video_pause_button_img)
+            #pause the video
 
 
     def __show_run_page(self):
@@ -141,7 +164,7 @@ class run_viewer_page(page):
             text=display_text,
         )
 
-        self.label.grid(row=index, column=column, padx=UV(10), sticky="ew")
+        self.label.grid(row=index, column=column, padx=UV(10), sticky="ew", pady=UV(10))
         return self.label
 
     def create_button(self, display_text, index):
@@ -186,9 +209,14 @@ class run_viewer_page(page):
     def onSizeChange(self, width, height):
         super().onSizeChange(width, height)
 
+        self.run_back_button.configure(height=v(4, height), width=UV(100), font=(FONT, min_max_range(IUV(8), IUV(28), int(v(1.9, width)))))
+        self.run_add_button.configure(height=v(4, height), width=UV(100), font=(FONT, min_max_range(IUV(8), IUV(28), int(v(1.9, width)))))
+
         image_size = min_max_range(UV(75), UV(1000), v(22, width))
-        #self.run_image.configure(size=(image_size, image_size))
-        #self.run_label.configure(height=IUV(image_size), width=IUV(image_size))
+        self.video_player_img.configure(size=(image_size, image_size))
+        self.video_player.configure(height=IUV(image_size), width=IUV(image_size))
+        self.video_commands_frame.configure(width=IUV(image_size))
+        self.video_progressbar.configure(width=IUV(image_size-UV(100)))
 
         font_style_default = (FONT, min_max_range(IUV(8), IUV(28), int(v(1.9, width))))
         font_style_title = (FONT, min_max_range(IUV(12), IUV(32), int(v(2.5, width))), "bold")
@@ -196,13 +224,86 @@ class run_viewer_page(page):
         #self.run_selection_button.configure(height=v(5, height), width=image_size, font=font_style_default)
         #self.detail_description.configure(font=font_style_default)
 
-        #for button in self.button_list:
-        #    button.configure(height=v(5, height), width=image_size, font=font_style_default)
+        for button in self.button_list:
+            button.configure(height=v(5, height), width=image_size, font=font_style_default)
         self.run_list_title.configure(font=font_style_title)
+        self.run_detail_title.configure(font=font_style_title)
+        self.run_detail_description.configure(font=font_style_title)
 
-        size_difficulty = min_max_range(UV(15), UV(100), v(2.5, width))
-        
+        self.user_record_label.configure(font=font_style_title)
+        self.all_time_record_label.configure(font=font_style_title)
+        self.user_runs_label.configure(font=font_style_title)
+        self.other_runs_label.configure(font=font_style_title)
 
     def get_name(self):
         return "Run selection"
+    
+    def __popup_window(self):
+        """Create the pop up window."""
+        self.video_play_button.configure(state='disabled', image=self.video_play_button_img)
+        # pause video
+        popup = pop_up(self, self.app)
+        popup.show_popup()
+        popup.mainloop()
+        
+    
+class pop_up(page):
+    """Class of the pop up page."""
+
+    def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
+        super().__init__(parent, app)
+        self.app = app
+        self.popup = None
+        self.parent = parent
+
+    def show_popup(self):
+        """Show a popup if there isn't one already."""
+        if self.popup is None or not self.popup.winfo_exists():
+            self.popup = self.__create_pop_up()
+        self.after(200, self.popup.lift)
+        
+
+    def on_close(self):
+        """Called when the popup window is closed."""
+        self.parent.video_play_button.configure(state='normal')
+        self.popup.destroy()
+
+    def __create_pop_up(self):
+        """Create the pop up window."""
+        popup = customtkinter.CTkToplevel(self)
+        popup.grid_columnconfigure(0, weight=1)
+        popup.grid_rowconfigure((0,1), weight=1)
+
+        popup.title("Run viewer")
+        popup.resizable(False, False)
+        popup.protocol("WM_DELETE_WINDOW", self.on_close)
+
+        # Create a frame for the popup to hold all other widgets
+        self.popup_frame = customtkinter.CTkFrame(popup)
+        self.popup_frame.grid(row=0, column=0, sticky="nswe")
+
+        # Stream
+        self.video_player_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "video_player.png")), size=(UV(680),UV(680)))
+        self.video_player = customtkinter.CTkLabel(self.popup_frame, image=self.video_player_img, bg_color="transparent", text="")
+        self.video_player.grid(row=0, column=0, columnspan=4)
+
+        # Video commands
+        self.video_commands_frame = customtkinter.CTkFrame(self.popup_frame, bg_color="transparent")
+        self.video_commands_frame.grid(row=1, column=0, sticky="nsew")
+        self.video_commands_frame.grid_columnconfigure((0,1), weight=1)
+
+        self.video_play_button_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "play_button.png")), size=(51,51))
+        self.video_pause_button_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "pause_button.png")), size=(50,50))
+        self.video_play_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=UV(10), image=self.video_play_button_img, fg_color="transparent", command=self.__change_video_state)
+        self.video_play_button.grid(row=0, column=0)
+        self.video_progressbar = customtkinter.CTkSlider(self.video_commands_frame, from_=0, to=100, width=UV(600))
+        self.video_progressbar.grid(row=0, column=1, sticky="ew")
+        return popup
+    
+    def __change_video_state(self):
+        """Change the state of the video."""
+        if self.video_play_button.cget("image") == self.video_play_button_img:
+            self.video_play_button.configure(image=self.video_pause_button_img)
+        else:
+            self.video_play_button.configure(image=self.video_play_button_img)
 
