@@ -8,7 +8,7 @@ import os.path
 from database import route_queries
 
 
-from gui.utils import FONT, SECONDARY_COLOR
+from gui.utils import FONT, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from gui.utils import v, UV, IUV, min_max_range
 
 from gui.app_state import AppState
@@ -17,6 +17,7 @@ state = AppState()
 
 class run_viewer_page(page):
     """Class of the run viewer page."""
+    choose_index = 0 # Index of the page we are on
 
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
         super().__init__(parent, app)
@@ -32,6 +33,8 @@ class run_viewer_page(page):
         self.grid_rowconfigure((0,2), weight=0, minsize=UV(80))
         self.grid_rowconfigure(1, weight=1)
 
+        current_run = self.__fetch_run_detail()
+
         self.run_list_frame = customtkinter.CTkScrollableFrame(self, width=UV(150))
         self.run_list_frame.grid(row=1, column=0, sticky="nswe")
         self.run_list_frame.grid_columnconfigure((0,1), weight=1)
@@ -42,12 +45,7 @@ class run_viewer_page(page):
         self.run_back_button = customtkinter.CTkButton(self, text="Back", width=UV(10)
                                                        , command= self.__show_run_page
                                                        )
-        self.run_back_button.grid(row=2, column=0, sticky="w")
-
-        self.run_add_button = customtkinter.CTkButton(self, text="Add", width=UV(10)
-                                                      #, command=lambda : self.app.change_page("AddRun")
-                                                      )
-        self.run_add_button.grid(row=2, column=0, sticky="e")
+        self.run_back_button.grid(row=2, column=0)
 
         #TITLE
         self.run_detail_title = customtkinter.CTkLabel(self, text="Run 1", font=(FONT, IUV(32)))
@@ -77,6 +75,7 @@ class run_viewer_page(page):
         self.video_play_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=UV(10), image=self.video_play_button_img, fg_color="transparent", command=self.__change_video_state)
         self.video_play_button.grid(row=0, column=0)
         self.video_progressbar = customtkinter.CTkSlider(self.video_commands_frame, from_=0, to=100)
+        self.video_progressbar.set(0)
         self.video_progressbar.grid(row=0, column=1, pady=UV(9))
         self.video_pop_up_button_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "pop_up.png")), size=(30,30))
         self.video_pop_up_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=UV(10), command=self.__popup_window, image=self.video_pop_up_button_img, fg_color="transparent")
@@ -126,15 +125,6 @@ class run_viewer_page(page):
         for all_time_record in all_time_record_list:
             self.all_time_record_button = self.create_label(all_time_record, (all_time_record_list.index(all_time_record))+1,1)
             self.all_time_record_button_list.append(self.all_time_record_button)
-
-    def __get_user_record(self):
-        """Return the user record of the run."""
-        return [f"User record {i}" for i in range(1, 3)]
-    
-
-    def __get_all_time_record(self):
-        """Return the all time record of the run."""
-        return [f"All time record {i}" for i in range(1, 3)]
         
 
     def __change_video_state(self):
@@ -184,17 +174,47 @@ class run_viewer_page(page):
 
         self.button.grid(row=index, column=0, padx=UV(10), sticky="ew")
         return self.button
+    
 
-
-    def show_run_detail(self, run_choosed):
-        """Shows the run detail page."""
-        pass
+    def __set_title(self, title: str):
+        """Set the title of the page."""
+        self.run_detail_title.configure(text=title)
 
 
     def __fetch_run_list(self):
         """Fetch the run list from the database."""
         return [f"Run {i}" for i in range(1, 13)]
         #return [f"Run {run}" for run in route_queries.get_all_routes()]
+
+
+    def __fetch_run_detail(self):
+        """Fetch the run detail from the database."""
+        return {"title": f"Run {self.choose_index+1}"}
+    
+    
+    def __get_user_record(self):
+        """Return the user record of the run."""
+        return [f"User record {i}" for i in range(1, 3)]
+    
+
+    def __get_all_time_record(self):
+        """Return the all time record of the run."""
+        return [f"All time record {i}" for i in range(1, 3)]
+
+
+    def show_run_detail(self, run_choosed):
+        """Shows the run detail page."""
+        if not self.button_list or run_choosed == self.choose_index:
+            return
+        
+        for button in self.button_list:
+            button.configure(fg_color="transparent")
+
+        self.choose_index = run_choosed
+        self.button_list[run_choosed].configure(fg_color=SECONDARY_COLOR, hover_color=SECONDARY_HOVER_COLOR)
+        
+        current_run = self.__fetch_run_detail()
+        self.__set_title(current_run["title"])
 
 
     def __skeleton_loader(self, image_name: str):
@@ -210,7 +230,6 @@ class run_viewer_page(page):
         super().onSizeChange(width, height)
 
         self.run_back_button.configure(height=v(4, height), width=UV(100), font=(FONT, min_max_range(IUV(8), IUV(28), int(v(1.9, width)))))
-        self.run_add_button.configure(height=v(4, height), width=UV(100), font=(FONT, min_max_range(IUV(8), IUV(28), int(v(1.9, width)))))
 
         image_size = min_max_range(UV(75), UV(1000), v(22, width))
         self.video_player_img.configure(size=(image_size, image_size))
@@ -220,9 +239,6 @@ class run_viewer_page(page):
 
         font_style_default = (FONT, min_max_range(IUV(8), IUV(28), int(v(1.9, width))))
         font_style_title = (FONT, min_max_range(IUV(12), IUV(32), int(v(2.5, width))), "bold")
-
-        #self.run_selection_button.configure(height=v(5, height), width=image_size, font=font_style_default)
-        #self.detail_description.configure(font=font_style_default)
 
         for button in self.button_list:
             button.configure(height=v(5, height), width=image_size, font=font_style_default)
@@ -241,6 +257,7 @@ class run_viewer_page(page):
     def __popup_window(self):
         """Create the pop up window."""
         self.video_play_button.configure(state='disabled', image=self.video_play_button_img)
+        self.video_progressbar.configure(state='disabled')
         # pause video
         popup = pop_up(self, self.app)
         popup.show_popup()
@@ -266,6 +283,8 @@ class pop_up(page):
     def on_close(self):
         """Called when the popup window is closed."""
         self.parent.video_play_button.configure(state='normal')
+        self.parent.video_progressbar.configure(state='normal')
+        self.parent.video_progressbar.set(self.video_progressbar.get())
         self.popup.destroy()
 
     def __create_pop_up(self):
@@ -297,6 +316,7 @@ class pop_up(page):
         self.video_play_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=UV(10), image=self.video_play_button_img, fg_color="transparent", command=self.__change_video_state)
         self.video_play_button.grid(row=0, column=0)
         self.video_progressbar = customtkinter.CTkSlider(self.video_commands_frame, from_=0, to=100, width=UV(600))
+        self.video_progressbar.set(self.parent.video_progressbar.get())
         self.video_progressbar.grid(row=0, column=1, sticky="ew")
         return popup
     
