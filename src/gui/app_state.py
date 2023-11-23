@@ -102,6 +102,20 @@ class AppState(metaclass=Singleton):
         """Return true if a run is selected."""
         return self.__run is not None
 
+    #Login
+    def set_username(self, username: str):
+        
+        assert username is not None, "app_state: Username is set to None"
+        assert username != "", "app_state: Username is set to empty string"
+        assert isinstance(username, str), "app_state: Username is not a string"
+
+        self.__username = username
+
+
+    def get_username(self) -> str:
+        """Return the username."""
+        if self.__username is None: return ""
+        return self.__username
 
     # Camera
     __camera_name: str = None
