@@ -28,19 +28,14 @@ class path_page(page):
         self.grid_rowconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=0, minsize=UV(80))
 
-        self.path_list_frame = customtkinter.CTkScrollableFrame(self)
+        self.path_list_frame = customtkinter.CTkScrollableFrame(self, width=UV(150))
         self.path_list_frame.grid(row=1, column=0, sticky="nswe")
         self.path_list_frame.grid_columnconfigure(0, weight=1)
-
-        self.path_list_title_frame = customtkinter.CTkFrame(self)
-        self.path_list_title_frame.grid(row=0, column=0, sticky="nswe")
-        self.path_list_title_frame.grid_columnconfigure(0, weight=1)
-        self.path_list_title_frame.grid_rowconfigure(0, weight=1)
 
         self.path_creation_frame = customtkinter.CTkFrame(self)
         self.path_creation_frame.grid(row=2, column=0, sticky="nswe")
 
-        self.path_list_tiltle = customtkinter.CTkLabel(self.path_list_title_frame, text="Path list", font=(FONT, IUV(28), "bold"))
+        self.path_list_tiltle = customtkinter.CTkLabel(self, text="Path list", font=(FONT, IUV(28), "bold"))
         self.path_list_tiltle.grid(row=0, column=0, sticky="nswe")
 
         self.create_path_button = customtkinter.CTkButton(self.path_creation_frame, text="Create path", fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR, command=lambda : self.app.show_page("create_path"))

@@ -38,16 +38,11 @@ class trail_page(page):
         self.grid_rowconfigure(0, weight=0, minsize=UV(80))
         self.grid_rowconfigure(1, weight=1)
 
-        self.trail_list_frame = customtkinter.CTkScrollableFrame(self)
+        self.trail_list_frame = customtkinter.CTkScrollableFrame(self, width=UV(150))
         self.trail_list_frame.grid(row=1, column=0, sticky="nswe")
         self.trail_list_frame.grid_columnconfigure(0, weight=1)
 
-        self.trail_list_title_frame = customtkinter.CTkFrame(self)
-        self.trail_list_title_frame.grid(row=0, column=0, sticky="nswe")
-        self.trail_list_title_frame.grid_columnconfigure(0, weight=1)
-        self.trail_list_title_frame.grid_rowconfigure(0, weight=1)
-
-        self.trail_list_title = customtkinter.CTkLabel(self.trail_list_title_frame, text="Trail list", font=(FONT, IUV(28), "bold"))
+        self.trail_list_title = customtkinter.CTkLabel(self, text="Trail list", font=(FONT, IUV(28), "bold"))
         self.trail_list_title.grid(row=0, column=0, sticky="nswe")
 
         self.trail_detail_frame = customtkinter.CTkFrame(self)
@@ -123,6 +118,11 @@ class trail_page(page):
                 self.difficulty[i].configure(fg_color="transparent", border_width=UV(2))
 
 
+    def __set_title(self, title: str):
+        """Set the title of the page."""
+        self.detail_title_name.configure(text=title)
+
+
     def __fetch_trail_list(self):
         """Fetch the trail list from the database."""
         return [f"Path {i}" for i in range(1, 13)]
@@ -131,7 +131,8 @@ class trail_page(page):
 
     def __fletch_trail_detail(self):
         """Fetch the trail detail from the database."""
-        return {"name": f"Piste {self.choose_index+1}", 
+        return {"title": f"Piste {self.choose_index+1}",
+                "name": f"Piste {self.choose_index+1}", 
                 "difficulty": self.choose_index%5, # in [0..4]
                 "image": f"trail_{self.choose_index+1}.jpg",
                 "description": f"{self.choose_index}Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget ultricies ultrices, nunc nisl ultricies nunc, nec aliquam nisl nunc eget nisl. Nulla facilisi. Nu"
@@ -193,6 +194,7 @@ class trail_page(page):
         self.trail_label.grid(row=RID_DESCR, column=CID_RIGHT)
 
         current_trail = self.__fletch_trail_detail()
+        self.__set_title(current_trail["name"])
         self.__set_difficulty(current_trail["difficulty"])
         self.__set_description(current_trail["description"])
 
