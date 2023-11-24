@@ -133,15 +133,20 @@ class run_viewer_page(page):
         if self.video_play_button.cget("image") == self.video_pause_button_img:
             if not( self.popup is not None and self.popup.winfo_exists()):
                 self.video_play_button.configure(image=self.video_play_button_img)
+                self.video_progressbar.configure(state='disabled')
                 #play the video
-                runs = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_trail())
+                print("ici c'est :",state.get_user())
+                runs = run_queries.get_runs_by_user_and_route(state.get_user(), state.get_trail())
                 for run in runs:
                     run.skeletons_record #--> obtiens une liste de liste car il peut y avoir plusieurs personnes, ajouter .frame_rate et .skeletons pour avoir les squelettes
                     #get image
-                    playback_thread.Playback(run.skeletons_record.frame_rate, run.skeletons_record.skeletons,self.background_label, run.runtime).start()
+                    playback_thread.Playback(run.skeletons_record.frame_rate, run.skeletons_record.skeletons,self.background_label, self.video_progressbar ,run.runtime).start()
                 # faire une copie de l'image
         else:
+            #stop the thread
+            #playback_thread.Playback().stop()
             self.video_play_button.configure(image=self.video_pause_button_img)
+            self.video_progressbar.configure(state='normal')
             #pause the video
 
 
@@ -151,7 +156,7 @@ class run_viewer_page(page):
 
         if self.app is not None:
             self.app.show_page(run_page)
-
+#a
 
     def create_label(self, display_text, index, column):
         """Creates a label with the given text."""

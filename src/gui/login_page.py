@@ -87,9 +87,6 @@ class login_page(page):
         self.register_button = customtkinter.CTkButton(self, text="Register", command=lambda:self.app.show_page(register_page), font=DF)
         self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=2)
 
-        #set up the enter button to login
-        self.password_entry.bind("<Return>", lambda e:self.login())
-
 
     def login(self):
         username = self.username_combobox.get()
