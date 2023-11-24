@@ -45,19 +45,21 @@ class path_page(page):
         self.path_detail_frame.grid(row=0, column=1, rowspan=2, sticky="nswe")
         self.path_detail_frame.configure(fg_color="transparent")
 
-        self.path_detail_frame.grid_columnconfigure(0, weight=1)
+        self.path_detail_frame.grid_columnconfigure(0, weight=2)
+        self.path_detail_frame.grid_columnconfigure((1,2,3), weight=1)
         self.path_detail_frame.grid_rowconfigure((0,1), weight=1)
         self.path_detail_frame.grid_rowconfigure((2,3), weight=1)
 
         self.path_image = customtkinter.CTkImage(Image.open(self.__get_image_path("trail_1.jpg")), size=(UV(200), UV(200)))
         self.path_label = customtkinter.CTkLabel(self.path_detail_frame,text="", image=self.path_image)
-        self.path_label.grid(row=1, column=0)
+        self.path_label.grid(row=1, column=1)
 
         self.path_selection_button = customtkinter.CTkButton(self.path_detail_frame,text="Select", command=lambda : self.selection_path())
-        self.path_selection_button.grid(row=2, column=0)
+        self.path_selection_button.grid(row=2, column=1)
 
-        self.path_difficulty_label = customtkinter.CTkLabel(self.path_detail_frame,text="1", corner_radius=(1000))
-        self.path_difficulty_label.grid(row=2, column=1, padx=UV(1))
+        self.difficulty_image_1 = customtkinter.CTkImage(Image.open(self.__get_image_path("diff_1.png")), size=(UV(35), UV(35)))
+        self.path_difficulty_label = customtkinter.CTkLabel(self.path_detail_frame,text="", image=self.difficulty_image_1)
+        self.path_difficulty_label.grid(row=2, column=2, sticky="w", padx=UV(30))
 
         test_list= self.__fetch_path_list()
 
@@ -120,7 +122,7 @@ class path_page(page):
         self.path_label.grid_forget()
         #self.trail_label.configure(image=self.__image_loader("trail_" + str(trail_choosed+1)),size=(300, 300))
         self.__image_loader("path_" + str(path_choosed+1))
-        self.path_label.grid(row=1, column=0)
+        self.path_label.grid(row=1, column=1)
 
 
     def __change_select_btn(self):
@@ -170,6 +172,10 @@ class path_page(page):
         image_size = min_max_range(UV(75), UV(1000), v(25, width))
         self.path_image.configure(size=(image_size, image_size))
         self.path_label.configure(height=IUV(image_size), width=IUV(image_size))
+
+        #TODO: change diff image size
+        size_difficulty = min_max_range(UV(35), UV(100), v(2.5, width))
+        self.difficulty_image_1.configure(width=size_difficulty, height=size_difficulty)
 
         font_style_default = (FONT, min_max_range(IUV(8), IUV(28), int(v(1.9, width))))
         #font_style_title = (FONT, min_max_range(IUV(12), IUV(32), int(v(2.5, width))), "bold")
