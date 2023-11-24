@@ -100,11 +100,9 @@ class login_page(page):
         if success:
             #self.toggle_menu()
             self.app.show_page(trail_page)
-            # Add your login logic here
-            #TODO:ajouter une variable qui permet de savoir quel utilisateur est connecté 
-            state.set_username(user.username)
+            state.set_user(user)
             print(f"You're now logged in as {user.username}")
-            print(state.get_username())
+            print(state.get_user().username)
 
 
     def __get_usernames(self, username: str):

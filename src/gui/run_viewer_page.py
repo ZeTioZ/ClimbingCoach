@@ -1,12 +1,13 @@
 """"Module for tkinter interface of run page."""
 import tkinter as tk
-from typing import Any
 import customtkinter
 from gui.abstract.page import page
 from PIL import Image
 import os.path
-from database import route_queries
-
+from utils.draw_utils import skeleton_visualizer
+from database.queries import run_queries
+#from database.queries import route_queries
+from threads import playback_thread
 
 from gui.utils import FONT, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from gui.utils import v, UV, IUV, min_max_range
@@ -61,7 +62,7 @@ class run_viewer_page(page):
         self.run_detail_frame.grid_rowconfigure((1,2,3,4), weight=1)
 
         #STREAM
-        self.video_player_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "video_player.png")), size=(200,200))
+        self.video_player_img = customtkinter.CTkImage(Image.open(self.__get_image_path("video_player.png")), size=(200,200))
         self.video_player = customtkinter.CTkLabel(self.run_detail_frame, image=self.video_player_img, bg_color="transparent", text="")
         self.video_player.grid(row=2, column=0, columnspan=4)
 
@@ -70,14 +71,14 @@ class run_viewer_page(page):
         self.video_commands_frame.grid(row=3, column=0, columnspan=4, pady=UV(10))
         self.video_commands_frame.grid_columnconfigure((0,1,2), weight=1)
 
-        self.video_play_button_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "play_button.png")), size=(31,31))
-        self.video_pause_button_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "pause_button.png")), size=(30,30))
+        self.video_play_button_img = customtkinter.CTkImage(Image.open(self.__get_image_path("play_button.png")), size=(31,31))
+        self.video_pause_button_img = customtkinter.CTkImage(Image.open(self.__get_image_path("pause_button.png")), size=(30,30))
         self.video_play_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=UV(10), image=self.video_play_button_img, fg_color="transparent", command=self.__change_video_state)
         self.video_play_button.grid(row=0, column=0)
         self.video_progressbar = customtkinter.CTkSlider(self.video_commands_frame, from_=0, to=100)
         self.video_progressbar.set(0)
         self.video_progressbar.grid(row=0, column=1, pady=UV(9))
-        self.video_pop_up_button_img = customtkinter.CTkImage(Image.open(os.path.join("resources", "images", "pop_up.png")), size=(30,30))
+        self.video_pop_up_button_img = customtkinter.CTkImage(Image.open(self.__get_image_path("pop_up.png")), size=(30,30))
         self.video_pop_up_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=UV(10), command=self.__popup_window, image=self.video_pop_up_button_img, fg_color="transparent")
         self.video_pop_up_button.grid(row=0, column=2)
 
@@ -133,6 +134,12 @@ class run_viewer_page(page):
             if not( self.popup is not None and self.popup.winfo_exists()):
                 self.video_play_button.configure(image=self.video_play_button_img)
                 #play the video
+                runs = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_trail())
+                for run in runs:
+                    run.skeletons_record #--> obtiens une liste de liste car il peut y avoir plusieurs personnes, ajouter .frame_rate et .skeletons pour avoir les squelettes
+                    #get image
+                    playback_thread.Playback(run.skeletons_record.frame_rate, run.skeletons_record.skeletons,self.background_label, run.runtime).start()
+                # faire une copie de l'image
         else:
             self.video_play_button.configure(image=self.video_pause_button_img)
             #pause the video
@@ -225,6 +232,14 @@ class run_viewer_page(page):
         """Return the path of the run passed in parameter."""
         pass
 
+    def __get_image_path(self, image_name: str):
+        """Return the path of the icon passed in parameter."""
+        parent_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        path = os.path.join(parent_path, 'resources','images', image_name)
+        if os.path.exists(path):
+            return path
+        else :
+            return None
 
     def onSizeChange(self, width, height):
         super().onSizeChange(width, height)

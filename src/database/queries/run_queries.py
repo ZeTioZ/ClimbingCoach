@@ -4,13 +4,13 @@ from ..models.run import Run
 from objects.skeletons_record import SkeletonsRecord
 from utils.serializer import serialize_skeletons_record 
 
-from .user_queries import get_user_by_username
+from database import user_queries
 
 DATABASE_HANDLER = database_handler.get_instance_database()
 
 
 def create_run(skeletons_record: SkeletonsRecord, runtime: int, username: str, route: str):
-    user = get_user_by_username(username)
+    user = user_queries.get_user_by_username(username)
     skeletons_record_serialized = serialize_skeletons_record(skeletons_record)
     run = Run(skeletons=skeletons_record_serialized, runtime=runtime, user=user, route=route)
     with DATABASE_HANDLER.get_session() as session:
