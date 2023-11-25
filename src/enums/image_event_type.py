@@ -1,4 +1,4 @@
-from enums import EnumType
+from enums.event_type import EventType as EnumType
 
 
 class ImageEventType(EnumType):

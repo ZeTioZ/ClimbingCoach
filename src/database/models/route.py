@@ -7,7 +7,8 @@ class Route(BaseTable):
 
     __tablename__ = 'route'
 
-    name: Mapped[str] = Column(String, primary_key=True)
+    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = Column(String)
     description: Mapped[str] = Column(String)
     difficulty: Mapped[int] = Column(Integer)
     image: Mapped[bytes] = Column(LargeBinary)
