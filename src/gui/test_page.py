@@ -10,10 +10,10 @@ from threading import Thread
 from typing import Callable
 import numpy as np
 
-from gui.abstract.page import page
+from gui.abstract.page import Page
 from gui.utils import EMPTY_IMAGE
 
-class run_page(page):
+class run_page(Page):
 
     __reading = False
     __thread_actif = False

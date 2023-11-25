@@ -2,7 +2,7 @@
 import tkinter as tk
 from typing import Any
 import customtkinter
-from gui.abstract.page import page
+from gui.abstract.page import Page
 from PIL import Image
 import os.path
 from database import route_queries
@@ -21,7 +21,7 @@ RID_DIFFICULTY = 3
 CID_LEFT = 1
 CID_RIGHT = 2
 
-class trail_page(page):
+class trail_page(Page):
     """Class of the trail page."""
     choose_index = 0 #page dans laquelle on est
     # selected_trail = None #page selectionnée

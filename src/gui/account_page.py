@@ -1,12 +1,12 @@
 """"Module for tkinter interface of account page."""
 import tkinter as tk
 import customtkinter
-from gui.abstract.page import page
+from gui.abstract.page import Page
 from gui import login_page
 
 from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 
-class account_page(page):
+class account_page(Page):
     """Class of the account page."""
 
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):

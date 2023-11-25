@@ -1,7 +1,7 @@
 """"Module for tkinter interface of path page."""
 import tkinter as tk
 import customtkinter
-from gui.abstract.page import page
+from gui.abstract.page import Page
 from PIL import Image
 import os.path
 
@@ -12,7 +12,7 @@ from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVE
 from gui.utils import v, UV, IUV, min_max_range
 
 
-class path_page(page):
+class path_page(Page):
     """Class of the path page."""
     choose_index = 0 #page dans laquelle on est
 

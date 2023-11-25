@@ -3,7 +3,7 @@ import tkinter as tk
 import customtkinter
 from tkinter import PhotoImage, messagebox
 
-from gui import login_page, run_page, page, menu_page, trail_page, path_page, account_page
+from gui import login_page, run_page, Page, menu_page, trail_page, path_page, account_page
 from gui import set_height_utils, UV
 
 import os.path
@@ -19,7 +19,7 @@ class Application(customtkinter.CTk):
 
     significant_change = 50 # Amount of pixel to consider a change as significant and then reload the page
 
-    page_frame: page | None = None
+    page_frame: Page | None = None
     menu_frame = None
 
     latest_width = 0
@@ -105,7 +105,7 @@ class Application(customtkinter.CTk):
 
     
     # Page utils
-    def show_page(self, new_page: page):
+    def show_page(self, new_page: Page):
         """Show the page passed in parameter."""
         if(not self.is_page_active(new_page)):  
             self.empty_container()
@@ -119,7 +119,7 @@ class Application(customtkinter.CTk):
         self.show_page(login_page)
 
 
-    def is_page_active(self, page: page) -> bool:
+    def is_page_active(self, page: Page) -> bool:
         """Return true if the page passed in parameter is active."""
         return isinstance(self.page_frame, page)
 
@@ -143,9 +143,9 @@ class Application(customtkinter.CTk):
         self.page_frame.grid(row=0, column=0, sticky="nsew")
 
 
-    def set_new_page_frame(self, new_page: page):
+    def set_new_page_frame(self, new_page: Page):
         """Set the new page frame."""
-        self.page_frame: page = new_page(self.container_frame, self)
+        self.page_frame: Page = new_page(self.container_frame, self)
         self.page_frame.setActive()
         self.__ungarded_onWindowsSizeChange()
         self.page_frame.update()
@@ -163,7 +163,7 @@ class Application(customtkinter.CTk):
         self.menu_frame.update()
         
     
-    def update_page(self, page: page):
+    def update_page(self, page: Page):
         """Update the page passed in parameter."""
         page(self).update()
         self.show_page(page)

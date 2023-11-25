@@ -13,5 +13,5 @@ class Run(BaseTable):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     skeletons: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
     runtime: Mapped[int] = mapped_column(Integer, nullable=False)
-    user: Mapped[User] = mapped_column(String, ForeignKey('user.username', ondelete='CASCADE'), nullable=False)
-    route: Mapped[Route] = mapped_column(String, ForeignKey('route.name', ondelete='CASCADE'), nullable=False)
+    username: Mapped[User] = mapped_column(String, ForeignKey('user.username', ondelete='CASCADE'), nullable=False)
+    route_name: Mapped[Route] = mapped_column(String, ForeignKey('route.name', ondelete='CASCADE'), nullable=False)

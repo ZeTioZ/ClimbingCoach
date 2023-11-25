@@ -11,12 +11,12 @@ from threading import Thread
 from typing import Callable
 import numpy as np
 
-from gui.abstract.page import page
+from gui.abstract.page import Page
 from gui.utils import EMPTY_IMAGE, FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from gui.utils import v, UV, IUV, min_max_range
 from gui.run_viewer_page import run_viewer_page
 
-class run_page(page):
+class run_page(Page):
 
     __reading = False
     __thread_actif = False

@@ -1,7 +1,7 @@
 """"Module for tkinter interface of run page."""
 import tkinter as tk
 import customtkinter
-from gui.abstract.page import page
+from gui.abstract.page import Page
 from PIL import Image
 import os.path
 from utils.draw_utils import skeleton_visualizer
@@ -16,7 +16,7 @@ from gui.app_state import AppState
 
 state = AppState()
 
-class run_viewer_page(page):
+class run_viewer_page(Page):
     """Class of the run viewer page."""
     choose_index = 0 # Index of the page we are on
 
@@ -135,8 +135,7 @@ class run_viewer_page(page):
                 self.video_play_button.configure(image=self.video_play_button_img)
                 self.video_progressbar.configure(state='disabled')
                 #play the video
-                print("ici c'est :",state.get_user())
-                runs = run_queries.get_runs_by_user_and_route(state.get_user(), state.get_trail())
+                runs = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_trail())
                 for run in runs:
                     run.skeletons_record #--> obtiens une liste de liste car il peut y avoir plusieurs personnes, ajouter .frame_rate et .skeletons pour avoir les squelettes
                     #get image
@@ -284,7 +283,7 @@ class run_viewer_page(page):
         popup.mainloop()
         
     
-class pop_up(page):
+class pop_up(Page):
     """Class of the pop up page."""
 
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):

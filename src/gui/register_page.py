@@ -1,11 +1,11 @@
 """"Module for tkinter interface of register page."""
 import customtkinter
-from gui.abstract.page import page
+from gui.abstract.page import Page
 
 from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from database import user_queries
 
-class register_page(page):
+class register_page(Page):
     """Class of the register page."""
 
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):

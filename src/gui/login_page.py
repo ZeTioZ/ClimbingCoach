@@ -6,7 +6,7 @@ from gui.app_state import AppState
 
 from PIL import Image
 from database import user_queries
-from gui.abstract.page import page
+from gui.abstract.page import Page
 from gui.trail_page import trail_page
 from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, PARENT_PATH, FONT
 from gui.register_page import register_page
@@ -23,7 +23,7 @@ DFB = DEFAULT_FONT_BIG
 v = lambda x, view: x * (view/100)
 
 
-class login_page(page):
+class login_page(Page):
     """Class for the login page."""
 
     RI_TITLE = 1

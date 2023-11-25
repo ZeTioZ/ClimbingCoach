@@ -1,7 +1,7 @@
 from customtkinter import CTkFrame, CTk
 from gui.abstract.singleton import Singleton
 
-class page(CTkFrame, metaclass=Singleton):
+class Page(CTkFrame, metaclass=Singleton):
 
     # __instance = None
     app = None

@@ -23,14 +23,14 @@ def create_run(skeletons_record: SkeletonsRecord, runtime: int, username: str, r
             raise
 
 
-def get_runs_by_user(user: str) -> list[Run]:
+def get_runs_by_user(username: str) -> list[Run]:
     with DATABASE_HANDLER.get_session() as session:
-        return session.query(Run).filter(Run.user.username == user).all()
+        return session.query(Run).filter(Run.username == username).all()
 
 
-def get_runs_by_route(route: str) -> list[Run]:
+def get_runs_by_route(route_name: str) -> list[Run]:
     with DATABASE_HANDLER.get_session() as session:
-        return session.query(Run).filter(Run.route.name == route).all()
+        return session.query(Run).filter(Run.route_name == route_name).all()
 
 
 def get_run_by_id(id: int) -> Run:
@@ -38,9 +38,9 @@ def get_run_by_id(id: int) -> Run:
         return session.query(Run).filter(Run.id == id).first()
 
 
-def get_runs_by_user_and_route(user: str, route: str) -> list[Run]:
+def get_runs_by_user_and_route(username: str, route_name: str) -> list[Run]:
     with DATABASE_HANDLER.get_session() as session:
-        return session.query(Run).filter(Run.user.username == user, Run.route.name == route).all()
+        return session.query(Run).filter(Run.username == username, Run.route_name == route_name).all()
 
 
 def delete_run_by_id(id: int):
