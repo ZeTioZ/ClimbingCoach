@@ -1,7 +1,7 @@
-from enums import EventTypeEnum
+from enums.event_type import EventType
 
 
-class FluxReaderEventType(EventTypeEnum):
+class FluxReaderEventType(EventType):
     """
     Flux Reader Event Type
 

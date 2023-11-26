@@ -3,7 +3,7 @@ import tkinter as tk
 import customtkinter
 from tkinter import PhotoImage, messagebox
 
-from gui import login_page, run_page, page, menu_page, trail_page, path_page, account_page
+from gui import login_page, run_page, page, menu_page, trail_page, path_page, account_page, test_page
 from gui import set_height_utils, UV
 
 import os.path
@@ -52,7 +52,7 @@ class Application(customtkinter.CTk):
         self.__os_init()
 
         self.init_frame()
-        self.show_page(login_page)
+        self.show_page(test_page)
         self.show_menu()
 
 

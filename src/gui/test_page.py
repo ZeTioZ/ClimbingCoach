@@ -9,11 +9,12 @@ import platform
 from threading import Thread
 from typing import Callable
 import numpy as np
+import os.path as path
 
 from gui.abstract.page import page
 from gui.utils import EMPTY_IMAGE
 
-class run_page(page):
+class test_page(page):
 
     __reading = False
     __thread_actif = False
@@ -66,12 +67,14 @@ class run_page(page):
         if not self.__thread_actif: return
 
         #check the os of the user
-        if self.app.is_windows() or self.app.is_linux():
-            video_cap = 0
-        elif self.app.is_macos():
-            video_cap = 1
-        else:
-            raise Exception("Your os is not supported")
+        # if self.app.is_windows() or self.app.is_linux():
+        #     video_cap = 0
+        # elif self.app.is_macos():
+        #     video_cap = 1
+        # else:
+        #     raise Exception("Your os is not supported")
+
+        video_cap = path.join(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))),"resources","videos","Escalade_Fixe.mp4")
 
         self.cap = cv2.VideoCapture(video_cap)
         self.baseW = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)

@@ -11,6 +11,7 @@ VIDEOS_DIRECTORY = "./resources/videos/"
 
 class FluxReaderEvent(Event):
     def __init__(self, flux: str = "0", width: int = 640, height: int = 480, nbr_frame_to_skip: int = 2):
+        super().__init__()
         self.flux = flux
         self.video = cv2.VideoCapture(self.flux)
         self.video.set(cv2.CAP_PROP_FRAME_WIDTH, width)
@@ -43,7 +44,7 @@ class FluxReaderEvent(Event):
             if not success:
                 break
 
-            self.notify(FluxReaderEventType.GET_FRAME, frame)
+            self.notify(FluxReaderEventType.GET_FRAME_EVENT, frame)
 
             if (refresh_holds or not refreshed) and (super().has_listener(FluxReaderEventType.HOLDS_PROCESSED_EVENT) or super().has_listener(FluxReaderEventType.FRAME_PROCESSED_EVENT)):
                 refreshed = True
