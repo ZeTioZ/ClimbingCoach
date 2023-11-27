@@ -22,6 +22,11 @@ class Event(ABC):
             if event_type in self.handlers:
                 self.handlers[event_type].remove(listener)
 
+    
+    def unregister_listner_for_event_type(self, listener, event_type):
+        if event_type in self.handlers and listener in self.handlers[event_type]:
+            self.handlers[event_type].remove(listener)
+
 
     def has_listener(self, event_type):
         if event_type in self.handlers:

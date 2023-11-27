@@ -18,11 +18,32 @@ def box_visualizer(image: np.ndarray | Image, boxes: list[Box], box_path: list[B
     """
     if isinstance(image, Image):
         image = np.array(image)
+    draw_path(image, box_path, color_path, thickness)
     for box in boxes:
         if box_path is not None and box in box_path:
             cv2.rectangle(image, (int(box.positions[0].x), int(box.positions[0].y)), (int(box.positions[1].x), int(box.positions[1].y)), color_path, thickness)
         else:
             cv2.rectangle(image, (int(box.positions[0].x), int(box.positions[0].y)), (int(box.positions[1].x), int(box.positions[1].y)), color, thickness)
+    
+    return image
+
+def draw_path(image: np.ndarray, box_path: list[Box], color: tuple = (0, 0, 255), thickness: int = 2):
+    """
+    Draws a line representing the path that passes through all the boxes in box_path.
+
+    :param image: A numpy array representing the image.
+    :param box_path: A list containing the boxes in the path.
+    :param color: The color of the line.
+    :param thickness: The thickness of the line.
+    """
+    if len(box_path) < 2:
+        return image
+
+    for i in range(len(box_path) - 1):
+        start = box_path[i].get_center()
+        end = box_path[i + 1].get_center()
+        cv2.line(image, start, end, color, thickness)
+
     return image
 
 

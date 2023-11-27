@@ -51,13 +51,13 @@ class FluxReaderEvent(Event):
                 holds_predictions = holds_detector.predict(frame, classes=[0])
                 floor_predictions = holds_detector.predict(frame, classes=[1])
                 holds_boxes = convert_image_box_outputs(holds_predictions)
-                self.notify(FluxReaderEventType.HOLDS_PROCESSED_EVENT, holds_boxes)
+                self.notify(FluxReaderEventType.HOLDS_PROCESSED_EVENT, holds_boxes, frame)
                 floor_boxes = convert_image_box_outputs(floor_predictions)
-                self.notify(FluxReaderEventType.FLOOR_PROCESSED_EVENT, floor_boxes)
+                self.notify(FluxReaderEventType.FLOOR_PROCESSED_EVENT, floor_boxes, frame)
 
             if frame_skipper == 0 and (super().has_listener(FluxReaderEventType.SKELETONS_PROCESSED_EVENT) or super().has_listener(FluxReaderEventType.FRAME_PROCESSED_EVENT)):
                 skeleton_prediction = skeleton_detector.predict(frame, img_size=512)
-                skeletons = convert_image_skeleton_outputs(skeleton_prediction)
+                skeletons = convert_image_skeleton_outputs(skeleton_prediction, frame)
                 self.notify(FluxReaderEventType.SKELETONS_PROCESSED_EVENT, self.nbr_frame_to_skip, frame_skipper, skeletons)
             
             if super().has_listener(FluxReaderEventType.FRAME_PROCESSED_EVENT):
