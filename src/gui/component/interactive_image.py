@@ -16,14 +16,13 @@ class InteractiveImage(CTk.CTkLabel):
 
     def __init__(self, parent: CTk.CTkFrame, image: Image| None = None, width: int = None, height: int = None):
         """Constructor."""
+        super().__init__(parent, text= "", image= self.ctkimage)
 
         if(image is not None):
             self.__load_image(image=image)
 
         if(width is not None and height is not None):
             self.change_size(width, height)
-
-        super().__init__(parent, text= "", image= self.ctkimage)
 
 
     def change_image(self, image: Image):

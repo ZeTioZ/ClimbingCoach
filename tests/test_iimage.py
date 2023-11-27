@@ -12,11 +12,11 @@ root = Tk()
 root.title("test")
 root.geometry("500x500")
 
-root.bind("<Configure>", lambda e: image_composant.change_size(e.width, e.height))
-
 
 image_composant = InteractiveImage(root, width=500, height=500)
 image_composant.pack()
+
+root.bind("<Configure>", lambda e: image_composant.change_size(e.width, e.height))
 
 id = ImageDriver(image_composant)
 

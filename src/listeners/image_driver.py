@@ -53,7 +53,7 @@ class ImageDriver(Listener):
         selected_box = self.__click(event)
         if selected_box is not None and selected_box in self.path:
             self.path.remove(selected_box)
-            self.iimage.change_image(self.draw_holds(self.image, self.holds))
+            self.iimage.change_image(self.draw_holds_and_path(self.image, self.holds))
 
 
     def click_left(self, event):
@@ -61,7 +61,7 @@ class ImageDriver(Listener):
         selected_box = self.__click(event)
         if selected_box is not None:
             self.path.append(selected_box)
-            self.iimage.change_image(self.draw_holds(self.image, self.holds))
+            self.iimage.change_image(self.draw_holds_and_path(self.image, self.holds))
 
 
     def __click(self, event) -> Box:
@@ -80,6 +80,9 @@ class ImageDriver(Listener):
 
         if FluxReaderEventType.HOLDS_PROCESSED_EVENT in event_types:
             self.__on_hold_recived(args[0], args[1])
+    
+        # if FluxReaderEventType.GET_FRAME_EVENT in event_types:
+        #     self.change_image(self.holds, args[0])
 
 
     def __on_hold_recived(self, holds: list[Box], frame: np.ndarray):
@@ -92,4 +95,4 @@ class ImageDriver(Listener):
 
     def change_image(self, holds: list[Box], image: np.ndarray):
         """Change the image."""
-        self.iimage.change_image(self.draw_holds(image, holds))
+        self.iimage.change_image(self.draw_holds_and_path(image, holds))

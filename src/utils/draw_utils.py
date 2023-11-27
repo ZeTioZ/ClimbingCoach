@@ -6,7 +6,7 @@ from objects.box import Box
 from PIL.Image import Image
 
 
-def box_visualizer(image: np.ndarray | Image, boxes: list[Box], box_path: list[Box] = [], color: tuple = (0, 255, 0), color_path: tuple = (255, 0, 0), thickness: int = 2):
+def box_visualizer(param_image: np.ndarray | Image, boxes: list[Box], box_path: list[Box] = [], color: tuple = (0, 255, 0), color_path: tuple = (255, 0, 0), thickness: int = 2):
     """
     Visualizes boxes in the given image.
 
@@ -16,8 +16,9 @@ def box_visualizer(image: np.ndarray | Image, boxes: list[Box], box_path: list[B
     :param thickness: The thickness of the bounding boxes.
     :param wait_key: The amount of time to wait before closing the image.
     """
-    if isinstance(image, Image):
-        image = np.array(image)
+    if isinstance(param_image, Image):
+        param_image = np.array(image)
+    image = param_image.copy()
     draw_path(image, box_path, color_path, thickness)
     for box in boxes:
         if box_path is not None and box in box_path:
@@ -36,12 +37,13 @@ def draw_path(image: np.ndarray, box_path: list[Box], color: tuple = (0, 0, 255)
     :param color: The color of the line.
     :param thickness: The thickness of the line.
     """
+
     if len(box_path) < 2:
         return image
 
     for i in range(len(box_path) - 1):
-        start = box_path[i].get_center()
-        end = box_path[i + 1].get_center()
+        start = box_path[i].get_center().to_tuple()
+        end = box_path[i + 1].get_center().to_tuple()
         cv2.line(image, start, end, color, thickness)
 
     return image
