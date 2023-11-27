@@ -4,7 +4,9 @@ import customtkinter
 from gui.abstract.page import Page
 from gui import login_page
 from utils.camera_discover_utils import get_available_cameras_names
+
 from gui.app_state import AppState
+state = AppState()
 
 from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR, FONT
 from gui.utils import v, UV, IUV, min_max_range
@@ -50,13 +52,14 @@ class account_page(Page):
 
     def choose_cam(self):
         """Choose the camera."""
-        # AppState.set_camera_name(self, self.choose_cam_combobox.get())
-        # print("Camera set to", self.choose_cam_combobox.get())
+        state.set_camera_name(self.choose_cam_combobox.get())
+        print("Camera set to", self.choose_cam_combobox.get())
         pass
 
     def choose_frame_rate(self):
         """Choose the frame rate."""
-        # print("Frame rate set to", self.frame_rate_combobox.get())
+        #state.set_framerate(self.frame_rate_combobox.get())
+        print("Frame rate set to", self.frame_rate_combobox.get())
         pass
 
     def desconnect(self):
