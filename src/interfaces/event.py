@@ -1,5 +1,7 @@
 from abc import ABC
 
+from enums.event_type import EventType
+
 class Event(ABC):
     def __init__(self):
         self.listeners = []
@@ -20,6 +22,11 @@ class Event(ABC):
             if event_type in self.handlers:
                 self.handlers[event_type].remove(listener)
 
+    
+    def unregister_listner_for_event_type(self, listener, event_type):
+        if event_type in self.handlers and listener in self.handlers[event_type]:
+            self.handlers[event_type].remove(listener)
+
 
     def has_listener(self, event_type):
         if event_type in self.handlers:
@@ -27,7 +34,9 @@ class Event(ABC):
         return False
 
 
-    def notify(self, event_types = [], *args, **kwargs):
+    def notify(self, event_types: list[EventType] | EventType= [], *args, **kwargs):
+        if isinstance(event_types, EventType):
+            event_types = [event_types]
         if len(event_types) > 0:
             for event_type in event_types:
                 if event_type in self.handlers:

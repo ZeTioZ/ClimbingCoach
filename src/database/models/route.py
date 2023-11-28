@@ -7,6 +7,7 @@ class Route(BaseTable):
 
     __tablename__ = 'route'
 
+
     name: Mapped[str] = mapped_column(String, primary_key=True)
     description: Mapped[str] = mapped_column(String)
     difficulty: Mapped[int] = mapped_column(Integer)

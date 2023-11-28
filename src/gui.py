@@ -3,8 +3,11 @@ import tkinter as tk
 import customtkinter
 from tkinter import PhotoImage, messagebox
 
-from gui import login_page, run_page, Page, menu_page, trail_page, path_page, account_page
+
+from gui import login_page, run_page, page, menu_page, trail_page, path_page, account_page, test_page, add_path_page
 from gui import set_height_utils, UV
+
+from threads.camera_thread import Camera
 
 import os.path
 import platform
@@ -16,6 +19,7 @@ class Application(customtkinter.CTk):
     """
     Interface of the application.
     """
+    camera: Camera
 
     significant_change = 50 # Amount of pixel to consider a change as significant and then reload the page
 
@@ -28,6 +32,8 @@ class Application(customtkinter.CTk):
     def __init__(self):
         """Constructor."""
         super().__init__()
+        self.camera = Camera()
+        self.camera.start()
         set_height_utils(self.winfo_screenheight())
 
         self.geometry(f"{UV(700)}x{UV(600)}+600+300")
@@ -52,7 +58,7 @@ class Application(customtkinter.CTk):
         self.__os_init()
 
         self.init_frame()
-        self.show_page(login_page)
+        self.show_page(add_path_page)
         self.show_menu()
 
 
