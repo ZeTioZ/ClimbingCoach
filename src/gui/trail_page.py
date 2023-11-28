@@ -1,11 +1,10 @@
 """"Module for tkinter interface of trail page."""
-import tkinter as tk
-from typing import Any
+import os.path
 import customtkinter
+import tkinter as tk
+
 from gui.abstract.page import Page
 from PIL import Image
-import os.path
-from database import route_queries
 
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, COLOR_DIFFICULTY
 from gui.utils import v, UV, IUV, min_max_range
@@ -21,7 +20,7 @@ RID_DIFFICULTY = 3
 CID_LEFT = 1
 CID_RIGHT = 2
 
-class trail_page(Page):
+class TrailPage(Page):
     """Class of the trail page."""
     choose_index = 0 #page dans laquelle on est
     # selected_trail = None #page selectionnée

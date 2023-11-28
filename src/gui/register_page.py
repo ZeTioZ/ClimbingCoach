@@ -60,10 +60,10 @@ class register_page(Page):
 
     def cancel(self):
         """Cancel the registration."""
-        from gui.login_page import login_page
+        from gui.login_page import LoginPage
 
         if self.app is not None:
-            self.app.show_page(login_page)
+            self.app.show_page(LoginPage)
 
     def __get_all_usernames(self):
         username_list = []

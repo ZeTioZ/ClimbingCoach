@@ -20,21 +20,20 @@ class ImageDriver(Listener):
 
     image: np.ndarray = None
 
-    def __init__(self, iimage: InteractiveImage):
-        Event.__init__(self)
-        Listener.__init__(self, [
+    def __init__(self, i_image: InteractiveImage):
+        super().__init__([
             FluxReaderEventType.HOLDS_PROCESSED_EVENT,
             FluxReaderEventType.GET_FRAME_EVENT
         ])
 
-        self.iimage = iimage
-        iimage.bind_right_click(self.click_right)
-        iimage.bind_left_click(self.click_left)
+        self.i_image = i_image
+        self.i_image.bind_right_click(self.click_right)
+        self.i_image.bind_left_click(self.click_left)
 
 
     def get_interactive_image(self):
         """Return the interactive image."""
-        return self.iimage
+        return self.i_image
 
 
     def draw_holds_and_path(self, image: np.ndarray, holds: list[Box]) -> Image:
@@ -53,7 +52,7 @@ class ImageDriver(Listener):
         selected_box = self.__click(event)
         if selected_box is not None and selected_box in self.path:
             self.path.remove(selected_box)
-            self.iimage.change_image(self.draw_holds_and_path(self.image, self.holds))
+            self.i_image.change_image(self.draw_holds_and_path(self.image, self.holds))
 
 
     def click_left(self, event):
@@ -61,14 +60,14 @@ class ImageDriver(Listener):
         selected_box = self.__click(event)
         if selected_box is not None:
             self.path.append(selected_box)
-            self.iimage.change_image(self.draw_holds_and_path(self.image, self.holds))
+            self.i_image.change_image(self.draw_holds_and_path(self.image, self.holds))
 
 
     def __click(self, event) -> Box:
         """Called when the image is clicked."""
         if self.image is None: return
-        default_x = int(self.iimage.default_size_width * event.x / self.iimage.winfo_width())
-        default_y = int(self.iimage.default_size_height * event.y / self.iimage.winfo_height())
+        default_x = int(self.i_image.default_size_width * event.x / self.i_image.winfo_width())
+        default_y = int(self.i_image.default_size_height * event.y / self.i_image.winfo_height())
         return find_selected_hold(self.holds, default_x, default_y)
 
 
@@ -81,8 +80,8 @@ class ImageDriver(Listener):
         if FluxReaderEventType.HOLDS_PROCESSED_EVENT in event_types:
             self.__on_hold_recived(args[0], args[1])
     
-        # if FluxReaderEventType.GET_FRAME_EVENT in event_types:
-        #     self.change_image(self.holds, args[0])
+        if FluxReaderEventType.GET_FRAME_EVENT in event_types:
+            self.image = args[0]
 
 
     def __on_hold_recived(self, holds: list[Box], frame: np.ndarray):
@@ -95,4 +94,4 @@ class ImageDriver(Listener):
 
     def change_image(self, holds: list[Box], image: np.ndarray):
         """Change the image."""
-        self.iimage.change_image(self.draw_holds_and_path(image, holds))
+        self.i_image.change_image(self.draw_holds_and_path(image, holds))

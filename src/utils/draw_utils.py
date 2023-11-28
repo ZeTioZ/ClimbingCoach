@@ -6,7 +6,7 @@ from objects.box import Box
 from PIL.Image import Image
 
 
-def box_visualizer(param_image: np.ndarray | Image, boxes: list[Box], box_path: list[Box] = [], color: tuple = (0, 255, 0), color_path: tuple = (255, 0, 0), thickness: int = 2):
+def box_visualizer(param_image: np.ndarray | Image, boxes: list[Box], color: tuple = (0, 255, 0), thickness: int = 2):
     """
     Visualizes boxes in the given image.
 
@@ -17,14 +17,11 @@ def box_visualizer(param_image: np.ndarray | Image, boxes: list[Box], box_path: 
     :param wait_key: The amount of time to wait before closing the image.
     """
     if isinstance(param_image, Image):
-        param_image = np.array(image)
+        param_image = np.array(param_image)
     image = param_image.copy()
-    draw_path(image, box_path, color_path, thickness)
+    
     for box in boxes:
-        if box_path is not None and box in box_path:
-            cv2.rectangle(image, (int(box.positions[0].x), int(box.positions[0].y)), (int(box.positions[1].x), int(box.positions[1].y)), color_path, thickness)
-        else:
-            cv2.rectangle(image, (int(box.positions[0].x), int(box.positions[0].y)), (int(box.positions[1].x), int(box.positions[1].y)), color, thickness)
+        cv2.rectangle(image, box.positions[0].to_tuple(), box.positions[1].to_tuple(), color, thickness)
     
     return image
 

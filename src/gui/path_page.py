@@ -12,7 +12,7 @@ from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVE
 from gui.utils import v, UV, IUV, min_max_range
 
 
-class path_page(Page):
+class PathPage(Page):
     """Class of the path page."""
     choose_index = 0 #page dans laquelle on est
 

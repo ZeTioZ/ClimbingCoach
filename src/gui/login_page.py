@@ -7,7 +7,7 @@ from gui.app_state import AppState
 from PIL import Image
 from database import user_queries
 from gui.abstract.page import Page
-from gui.trail_page import trail_page
+from gui.trail_page import TrailPage
 from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, PARENT_PATH, FONT
 from gui.register_page import register_page
 
@@ -23,7 +23,7 @@ DFB = DEFAULT_FONT_BIG
 v = lambda x, view: x * (view/100)
 
 
-class login_page(Page):
+class LoginPage(Page):
     """Class for the login page."""
 
     RI_TITLE = 1
@@ -96,7 +96,7 @@ class login_page(Page):
         print(user_queries.user_can_connect(username, password))
         if success:
             #self.toggle_menu()
-            self.app.show_page(trail_page)
+            self.app.show_page(TrailPage)
             state.set_user(user)
             print(f"You're now logged in as {user.username}")
             print(state.get_user().username)

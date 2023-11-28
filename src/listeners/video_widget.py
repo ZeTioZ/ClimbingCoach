@@ -9,9 +9,9 @@ from interfaces.listener import Listener
 from utils.draw_utils import box_visualizer, skeleton_visualizer
 
 class VideoWidget(Listener):
-    def __init__(self, event_types, video_widget):
+    def __init__(self, event_types):
         super().__init__(event_types)
-        self.video_widget = video_widget
+        self.last_image = None
 
 
     def update(self, event: Event, event_types: [EventType], *args, **kwargs):
@@ -22,10 +22,12 @@ class VideoWidget(Listener):
             skeletons = args[3]
             frame_skipper = args[4]
 
-            for hold_box in holds_boxes:
-                frame_with_holds = box_visualizer(frame, hold_box, (0, 255, 0))
-            for floor_box in floors_boxes:
-                frame_with_floors = box_visualizer(frame_with_holds, floor_box, (0, 0, 255))
+            frame_with_holds = frame
+            frame_with_floors = frame
+            frame_with_all = frame
+            
+            frame_with_holds = box_visualizer(frame, holds_boxes, (0, 255, 0))
+            frame_with_floors = box_visualizer(frame_with_holds, floors_boxes, (0, 0, 255))
             for skeleton in skeletons:
                 frame_with_all = skeleton_visualizer(frame_with_floors, skeleton, (255, 0, 0))
 
@@ -36,7 +38,8 @@ class VideoWidget(Listener):
                             if member in members_to_check:
                                 member_position = skeleton.body[member]
                                 if hold_box.position_collide(member_position, margin=10):
-                                    cv2.rectangle(frame_with_all, (int(hold_box.positions[0].x), int(hold_box.positions[0].y)), (int(hold_box.positions[1].x), int(hold_box.positions[1].y)), (0, 0, 255), 2)
-                                    cv2.circle(frame_with_all, (int(member_position.x), int(member_position.y)), 5, (0, 255, 0), 1)
+                                    cv2.rectangle(frame_with_all, hold_box.positions[0].to_tuple(), hold_box.positions[1].to_tuple(), (0, 0, 255), 2)
+                                    cv2.circle(frame_with_all, member_position.to_tuple(), 5, (0, 255, 0), 1)
                                     members_to_check.remove(member)
                                     break
+            self.last_image = frame_with_all

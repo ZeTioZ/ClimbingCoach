@@ -14,7 +14,7 @@ import os.path as path
 from gui.abstract.page import Page
 from gui.utils import EMPTY_IMAGE
 
-class test_page(Page):
+class TestPage(Page):
     __reading = False
     __thread_actif = False
     __isCameraLoaded = False

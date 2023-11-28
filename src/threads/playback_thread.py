@@ -19,8 +19,7 @@ class Playback(Thread):
         self.video_progressbar = video_progressbar
 
 
-    def start(self):
-
+    def run(self):
         for skeletons in self.skeletons_list:
             image_copy = self.image.copy()
 

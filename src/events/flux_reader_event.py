@@ -1,4 +1,4 @@
-import cv2, os
+import cv2, os, time
 from interfaces.event import Event
 
 from enums.flux_reader_event_type import FluxReaderEventType
@@ -10,12 +10,12 @@ VIDEOS_DIRECTORY = "./resources/videos/"
 
 
 class FluxReaderEvent(Event):
-    def __init__(self, flux: str = "0", width: int = 640, height: int = 480, nbr_frame_to_skip: int = 2):
+    def __init__(self, flux: int | str = 0, width: int = 640, height: int = 480, nbr_frame_to_skip: int = 2):
         super().__init__()
         self.flux = flux
         self.video = cv2.VideoCapture(self.flux)
-        self.video.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-        self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        # self.video.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        # self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
         self.cancelled = False
 
         self.nbr_frame_to_skip = nbr_frame_to_skip
@@ -32,17 +32,17 @@ class FluxReaderEvent(Event):
         holds_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "holds_model_yolov8l.pt"))
         skeleton_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "yolov8l-pose.pt"))
 
-        video = cv2.VideoCapture(self.flux)
-        video.set(cv2.CAP_PROP_FRAME_WIDTH, video.get(cv2.CAP_PROP_FRAME_WIDTH)/4)
-        video.set(cv2.CAP_PROP_FRAME_HEIGHT, video.get(cv2.CAP_PROP_FRAME_HEIGHT)/4)
-
         refresh_holds = False
         refreshed = False
         frame_skipper = 0
-        while video.isOpened() and not self.cancelled:
-            success, frame = video.read()
+        skeletons = []
+        while self.video.isOpened() and not self.cancelled:
+            time.sleep(1/self.video.get(cv2.CAP_PROP_FPS))
+            success, frame = self.video.read()
             if not success:
                 break
+
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
             self.notify(FluxReaderEventType.GET_FRAME_EVENT, frame)
 
@@ -57,7 +57,7 @@ class FluxReaderEvent(Event):
 
             if frame_skipper == 0 and (super().has_listener(FluxReaderEventType.SKELETONS_PROCESSED_EVENT) or super().has_listener(FluxReaderEventType.FRAME_PROCESSED_EVENT)):
                 skeleton_prediction = skeleton_detector.predict(frame, img_size=512)
-                skeletons = convert_image_skeleton_outputs(skeleton_prediction, frame)
+                skeletons = convert_image_skeleton_outputs(skeleton_prediction)
                 self.notify(FluxReaderEventType.SKELETONS_PROCESSED_EVENT, self.nbr_frame_to_skip, frame_skipper, skeletons)
             
             if super().has_listener(FluxReaderEventType.FRAME_PROCESSED_EVENT):
@@ -65,4 +65,4 @@ class FluxReaderEvent(Event):
             frame_skipper = (frame_skipper + 1) % (self.nbr_frame_to_skip + 1)
 
         self.notify(FluxReaderEventType.END_OF_FILE_EVENT)
-        video.release()
+        self.video.release()

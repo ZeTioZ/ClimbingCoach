@@ -1,28 +1,26 @@
 """Module tkinter for the test page."""
-import tkinter as tk
-import customtkinter
-from PIL import Image, ImageTk 
-import os.path
-
 import cv2
-import platform
+import os.path
+import numpy as np
+import customtkinter
 
 from threading import Thread
+from PIL import Image
 from typing import Callable
-import numpy as np
+
+from listeners.video_widget import VideoWidget
 
 from gui.abstract.page import Page
-from gui.utils import EMPTY_IMAGE, FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
-from gui.utils import v, UV, IUV, min_max_range
-from gui.run_viewer_page import run_viewer_page
+from gui.run_viewer_page import RunViewerPage
+from gui.utils import EMPTY_IMAGE, FONT, SECONDARY_COLOR, UV
+from enums.flux_reader_event_type import FluxReaderEventType
 
-class run_page(Page):
+class RunPage(Page):
 
     __reading = False
     __thread_actif = False
     __isCameraLoaded = False
     __imageSize = None
-    __model: Callable[[np.ndarray], np.ndarray] = lambda self, x: x
 
     """test page."""
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
@@ -39,6 +37,8 @@ class run_page(Page):
         self.grid_columnconfigure(2, weight=1)
         self.grid_rowconfigure(0, weight=3)
         self.grid_rowconfigure(1, weight=1)
+
+        self.video_widget = VideoWidget([FluxReaderEventType.FRAME_PROCESSED_EVENT])
         
         #Image with slider over there
         #TODO: Take the current trail image with app_state
@@ -110,28 +110,13 @@ class run_page(Page):
 
 
     def __init_cap(self, scale_percent: int = 100):
-
-        if not self.__thread_actif: return
-
-        #check the os of the user
-        if self.app.is_windows() or self.app.is_linux():
-            video_cap = 0
-        elif self.app.is_macos():
-            video_cap = 1
-        else:
-            raise Exception("Your os is not supported")
-
-        self.cap = cv2.VideoCapture(video_cap)
+        self.cap = self.app.camera.flux_reader_event.video
         self.baseW = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.baseH = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
         self.__imageSize = (self.baseW, self.baseH)
 
         if(scale_percent != 100): self.__scale(scale_percent)
-
-        self.__isCameraLoaded = True
-
-        if not self.__thread_actif: return
         self.visibility_button.configure(state=customtkinter.NORMAL)
         self.app.onWindowsSizeChange()
         self.__toggle_camera()
@@ -144,31 +129,24 @@ class run_page(Page):
 
 
     def __toggle_camera(self):
-        if self.__reading or not self.__thread_actif: 
+        if self.__reading:
             self.__reading = False
             self.visibility_button.configure(image=self.show_cam)
             self.test_label.configure(image=EMPTY_IMAGE)
         else:
             self.__reading = True
             self.visibility_button.configure(image=self.hide_cam)
-            self.__read_camera()
+            thread = Thread(target=self.__read_camera)
+            thread.start()
 
 
     def __read_camera(self):
-
-        if not self.__reading or self.cap is None or not self.__thread_actif: return
+        if not self.__reading: return
     
-        _, frame = self.cap.read() 
-    
-        # Convert image from one color space to other 
-        opencv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA) 
-
-        model_image = self.__model(opencv_image)
-
-        image_array = Image.fromarray(model_image)
-        image_to_show = customtkinter.CTkImage(image_array, size=self.__imageSize) 
-        self.test_label.configure(image=image_to_show) 
-    
+        frame = self.video_widget.last_image
+        if frame is not None:
+            self.__display_image(frame)
+        
         self.test_label.after(10, self.__read_camera) 
 
 
@@ -191,14 +169,7 @@ class run_page(Page):
 
     def setUnactive(self):
         super().setUnactive()
-
-        # Stop the camera
-        self.__thread_actif = False
-        self.__reading = False
-        self.__isCameraLoaded = False
-        self.visibility_button.configure(image=self.show_cam)
-        if self.cap is not None:
-            self.cap.release()
+        self.app.camera.flux_reader_event.unregister(self.video_widget)
         
         # Set empty image
         self.test_label.configure(image=EMPTY_IMAGE)
@@ -207,13 +178,8 @@ class run_page(Page):
 
     def setActive(self):
         super().setActive()
-
-        # Start the camera
-        self.__thread_actif = True
-        self.cap = None
-        self.__annimation_camera_loading()
-        self.camLoader = Thread(target=self.__init_cap, args=(40,))
-        self.camLoader.start()
+        self.app.camera.flux_reader_event.register(self.video_widget)
+        self.__init_cap()
 
 
     def get_name(self):
@@ -241,7 +207,7 @@ class run_page(Page):
 
     def __load_recording(self):
         print("load recording")
-        self.app.show_page(run_viewer_page)
+        self.app.show_page(RunViewerPage)
         
     def __slider_event(self, event):
         print("slider event")

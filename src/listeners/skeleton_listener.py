@@ -9,6 +9,7 @@ from utils.serializer import serialize_skeletons_record, deserialize_skeletons_r
 
 class SkeletonRecordSaverListener(Listener):
     def __init__(self):
+        super().__init__([FluxReaderEventType.SKELETONS_PROCESSED_EVENT, FluxReaderEventType.END_OF_FILE_EVENT])
         self.skeleton_record = SkeletonsRecord()
 
 

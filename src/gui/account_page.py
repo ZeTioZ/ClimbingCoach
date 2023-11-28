@@ -1,8 +1,7 @@
 """"Module for tkinter interface of account page."""
-import tkinter as tk
 import customtkinter
 from gui.abstract.page import Page
-from gui import login_page
+from gui import LoginPage
 from utils.camera_discover_utils import get_available_cameras_names
 
 from gui.app_state import AppState
@@ -11,7 +10,7 @@ state = AppState()
 from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR, FONT
 from gui.utils import v, UV, IUV, min_max_range
 
-class account_page(Page):
+class AccountPage(Page):
     """Class of the account page."""
 
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
@@ -65,4 +64,4 @@ class account_page(Page):
     def desconnect(self):
         """Desconnect the user."""
         #TODO: desconnect the user
-        self.app.show_page(login_page)
+        self.app.show_page(LoginPage)

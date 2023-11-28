@@ -16,7 +16,7 @@ from gui.app_state import AppState
 
 state = AppState()
 
-class run_viewer_page(Page):
+class RunViewerPage(Page):
     """Class of the run viewer page."""
     choose_index = 0 # Index of the page we are on
 
@@ -151,10 +151,10 @@ class run_viewer_page(Page):
 
     def __show_run_page(self):
         """Show the page passed in parameter."""
-        from gui.run_page import run_page
+        from gui.run_page import RunPage
 
         if self.app is not None:
-            self.app.show_page(run_page)
+            self.app.show_page(RunPage)
 #a
 
     def create_label(self, display_text, index, column):
