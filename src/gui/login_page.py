@@ -2,15 +2,16 @@
 import tkinter as tk
 import customtkinter
 import os.path
+from gui.app_state import AppState
 
 from PIL import Image
 from database import user_queries
-from gui.abstract.page import page
+from gui.abstract.page import Page
 from gui.trail_page import trail_page
 from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, PARENT_PATH, FONT
 from gui.register_page import register_page
 
-
+state = AppState()
 DEFAULT_FONT = (FONT, IUV(16))
 TITLE_FONT = (FONT, IUV(24))
 DF = DEFAULT_FONT
@@ -22,7 +23,7 @@ DFB = DEFAULT_FONT_BIG
 v = lambda x, view: x * (view/100)
 
 
-class login_page(page):
+class login_page(Page):
     """Class for the login page."""
 
     RI_TITLE = 1
@@ -67,13 +68,15 @@ class login_page(page):
         self.username_combobox.set("")
         self.username_label.grid(row = self.RI_USERNAME_LABEL, column = self.CI_LEFT, sticky="sw", columnspan=2)       
         self.username_combobox.grid(row = self.RI_USERNAME, column = self.CI_LEFT, sticky="nwe", columnspan=2)
-        
+        self.username_combobox.bind("<Return>", lambda event: self.login())
+
         #Password
         self.password_label = customtkinter.CTkLabel(self, text="Password", font=DF)
         self.password_entry = customtkinter.CTkEntry(self, show="*")
         self.password_label.grid(row = self.RI_PASSWORD_LABEL, column = self.CI_LEFT, sticky="sw", columnspan=2)
         self.password_entry.grid(row = self.RI_PASSWORD, column = self.CI_LEFT, sticky="nwe", columnspan=2)
-        
+        self.password_entry.bind("<Return>", lambda event: self.login())
+
         #Login button
         self.login_button = customtkinter.CTkButton(self, text="Login", command=self.login, font=DF)
         self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
@@ -83,9 +86,6 @@ class login_page(page):
 
         self.register_button = customtkinter.CTkButton(self, text="Register", command=lambda:self.app.show_page(register_page), font=DF)
         self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=2)
-
-        #set up the enter button to login
-        self.password_entry.bind("<Return>", lambda e:self.login())
 
 
     def login(self):
@@ -97,10 +97,9 @@ class login_page(page):
         if success:
             #self.toggle_menu()
             self.app.show_page(trail_page)
-            # Add your login logic here
-            #TODO:ajouter une variable qui permet de savoir quel utilisateur est connecté 
-            
+            state.set_user(user)
             print(f"You're now logged in as {user.username}")
+            print(state.get_user().username)
 
 
     def __get_usernames(self, username: str):

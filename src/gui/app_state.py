@@ -3,7 +3,7 @@ from gui.abstract.singleton import Singleton
 import pickle
 import os
 from gui.utils import RESSOURCES_PATH
-from utils.camera_discover_utils import get_available_cameras_names
+#from utils.camera_discover_utils import get_available_cameras_names
 
 class AppState(metaclass=Singleton):
 
@@ -102,7 +102,20 @@ class AppState(metaclass=Singleton):
         """Return true if a run is selected."""
         return self.__run is not None
 
+    #Login
+    def set_user(self, user: str):
+        
+        assert user is not None, "app_state: user is set to None"
+        assert user != "", "app_state: user is set to empty string"
 
+        self.__user = user
+
+
+    def get_user(self) -> str:
+        """Return the user."""
+        if self.__user is None: return ""
+        return self.__user
+    
     # Camera
     __camera_name: str = None
 
@@ -113,12 +126,12 @@ class AppState(metaclass=Singleton):
     
 
     def get_index_camera(self) -> int:
-        """Return the index of the camera."""
-        cameras = get_available_cameras_names()
-        if self.__camera_name in cameras: 
-            return str(cameras.index(self.__camera_name))
-        else: 
-            return "0"
+        # """Return the index of the camera."""
+        # cameras = get_available_cameras_names()
+        # if self.__camera_name in cameras: 
+        #     return str(cameras.index(self.__camera_name))
+        # else: 
+        return "1"
 
 
     def set_camera_name(self, camera_name: str):
@@ -134,9 +147,4 @@ class AppState(metaclass=Singleton):
 
 
 if __name__ == "__main__":
-    app_state = AppState()
-    print(app_state.get_camera_name())
-    app_state.set_camera_name(get_available_cameras_names()[0])
-    print(app_state.get_camera_name())
-    print(app_state.get_index_camera())
-    app_state.set_camera_name("")
+    pass

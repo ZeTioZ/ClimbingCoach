@@ -1,11 +1,11 @@
 """"Module for tkinter interface of register page."""
 import customtkinter
-from gui.abstract.page import page
+from gui.abstract.page import Page
 
 from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from database import user_queries
 
-class register_page(page):
+class register_page(Page):
     """Class of the register page."""
 
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
@@ -28,11 +28,15 @@ class register_page(page):
         self.pseudo_label.grid(row=2, column=1, sticky="sw", columnspan=2)
         self.pseudo_entry = customtkinter.CTkEntry(self, width=200)
         self.pseudo_entry.grid(row=3, column=1, sticky="nw", columnspan=2)
+        self.pseudo_entry.bind("<Return>", lambda event: self.register())
+
 
         self.password_label = customtkinter.CTkLabel(self, text="Password")
         self.password_label.grid(row=4, column=1, sticky="sw", columnspan=2)
         self.password_entry = customtkinter.CTkEntry(self, show="*", width=200)
         self.password_entry.grid(row=5, column=1, sticky="nw", columnspan=2)
+        self.password_entry.bind("<Return>", lambda event: self.register())
+
 
         self.register_button = customtkinter.CTkButton(self, text="Register", fg_color=SECONDARY_COLOR, hover_color=SECONDARY_HOVER_COLOR, command=self.register)
         self.register_button.grid(row=7, column=0, columnspan=2)
@@ -44,6 +48,7 @@ class register_page(page):
         """Register the user."""
         pseudo = self.pseudo_entry.get()
         password = self.password_entry.get()
+        print(password)
 
         if pseudo not in self.__get_all_usernames():
             user_queries.create_user(pseudo, password)

@@ -1,7 +1,7 @@
 """"Module for tkinter interface of menu page."""
 import tkinter as tk
 import customtkinter
-from gui.abstract.page import page
+from gui.abstract.page import Page
 from PIL import Image
 
 from gui.utils import v, min_max_range, IUV, UV, PRIMARY_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, EMPTY_IMAGE
@@ -19,7 +19,7 @@ DEFAULT_RADIUS_ACTIVE = 4
 COLOR_ACTIVE = SECONDARY_COLOR #"#2ab9d4"
 
 
-class menu_page(page):
+class menu_page(Page):
     """Class of the menu page"""
 
     __active_elem = None

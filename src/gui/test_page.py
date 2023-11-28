@@ -11,11 +11,10 @@ from typing import Callable
 import numpy as np
 import os.path as path
 
-from gui.abstract.page import page
+from gui.abstract.page import Page
 from gui.utils import EMPTY_IMAGE
 
-class test_page(page):
-
+class test_page(Page):
     __reading = False
     __thread_actif = False
     __isCameraLoaded = False
