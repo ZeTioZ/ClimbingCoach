@@ -1,8 +1,8 @@
 import customtkinter
-from gui.component.interactive_image import InteractiveImage
-from listeners.image_driver import ImageDriver
 
 from gui.abstract.page import Page
+from gui.component.interactive_image import InteractiveImage
+from listeners.image_driver import ImageDriver
 
 
 class AddPathPage(Page):
