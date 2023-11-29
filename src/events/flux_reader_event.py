@@ -3,7 +3,12 @@ import os
 import time
 
 from enums.flux_reader_event_type import FluxReaderEventType
-from gui import utils
+# from gui import utils
+def get_parent_path(path: str, level: int = 1) -> str:
+	"""Return the parent path of the path."""
+	for _ in range(level):
+		path = os.path.dirname(path)
+	return path
 from interfaces.event import Event
 from libs.model_loader import ModelLoader
 from utils.yolov8_converter_utils import convert_image_box_outputs, convert_image_skeleton_outputs
@@ -25,7 +30,7 @@ class FluxReaderEvent(Event):
 		self.cancelled = cancelled
 
 	def process(self):
-		parent_path = utils.get_parent_path(__file__, 3)
+		parent_path = get_parent_path(__file__, 3)
 		models_path = os.path.join(parent_path, "resources", "models")
 		holds_detector = ModelLoader(os.path.join(models_path, "holds_model_yolov8l.pt"))
 		skeleton_detector = ModelLoader(os.path.join(models_path, "yolov8l-pose.pt"))

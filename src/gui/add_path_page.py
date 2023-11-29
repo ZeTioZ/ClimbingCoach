@@ -15,9 +15,15 @@ class AddPathPage(Page):
 		self.__config_grid()
 		self.__create_widgets()
 
+
 	def __config_grid(self):
 		self.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
 		self.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
+
+
+	def create_widgets(self):
+		"""Create the widgets for the page."""
+		self.__create_widgets()
 
 	def __create_widgets(self):
 		"""Creates the widgets for the add path page."""

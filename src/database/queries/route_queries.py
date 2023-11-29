@@ -10,7 +10,7 @@ DATABASE_HANDLER = database_handler.get_instance_database()
 
 def create_route(route: RouteObject, description: str = None, difficulty: int = None, image: ndarray = None):
 	serialized_route = serialize_route(route)
-	route = Route(name=RouteObject.name, description=description, difficulty=difficulty, image=image,
+	route = Route(name=route.name, description=description, difficulty=difficulty, image=image,
 	              holds=serialized_route)
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()
@@ -20,6 +20,11 @@ def create_route(route: RouteObject, description: str = None, difficulty: int = 
 		except:
 			session.rollback()
 			raise
+
+
+# def get_route_by_id(id: int) -> Route:
+# 	with DATABASE_HANDLER.get_session() as session:
+# 		return session.query(Route).filter(Route.id == id).first()
 
 
 def get_route_by_name(name: str) -> Route:
