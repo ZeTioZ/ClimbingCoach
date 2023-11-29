@@ -9,5 +9,5 @@ from gui.register_page import register_page
 from gui.run_viewer_page import RunViewerPage
 from gui.test_page import TestPage
 from gui.add_path_page import AddPathPage
-from gui.add_path_page import AddPathPage
+
 from gui.utils import set_height_utils, UV
