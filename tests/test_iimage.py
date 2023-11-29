@@ -22,7 +22,7 @@ root.bind("<Configure>", lambda e: image_composant.change_size(e.width, e.height
 
 id = ImageDriver(image_composant)
 
-video_path = 0# path.join(path.dirname(path.dirname(path.abspath(__file__))),"resources","videos","Escalade_Fixe.mp4")
+video_path = path.join(path.dirname(path.dirname(path.abspath(__file__))),"resources","videos","Escalade_Fixe.mp4")
 camera = Camera(video_path)
 camera.flux_reader_event.register(id)
 camera.start()
