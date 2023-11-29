@@ -6,6 +6,7 @@ from PIL import Image
 import os.path
 
 from gui.app_state import AppState
+from gui.add_path_page import AddPathPage
 state = AppState()
 
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
@@ -38,7 +39,7 @@ class PathPage(Page):
         self.path_list_tiltle = customtkinter.CTkLabel(self, text="Path list", font=(FONT, IUV(28), "bold"))
         self.path_list_tiltle.grid(row=0, column=0, sticky="nswe")
 
-        self.create_path_button = customtkinter.CTkButton(self.path_creation_frame, text="Create path", fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR, command=lambda : self.app.show_page("create_path"))
+        self.create_path_button = customtkinter.CTkButton(self.path_creation_frame, text="Create path", fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR, command=lambda : self.app.show_page(AddPathPage))
         self.create_path_button.grid(row=0, column=0)
 
         self.path_detail_frame = customtkinter.CTkFrame(self)
