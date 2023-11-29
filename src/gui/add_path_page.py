@@ -116,8 +116,8 @@ class AddPathPage(Page):
 	def __config_grid(self):
 		self.grid_columnconfigure((0, 1, 2, 3), weight=1)
 		self.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
-
 	
+  
 	def __config_pop_up(self):
 		"""Configure the pop up."""
 		pop_up = customtkinter.CTkToplevel(self)
@@ -139,7 +139,7 @@ class AddPathPage(Page):
 		#self.after(3000, self.image_driver.refresh())
 		pass
 
-
+  
 	def __create_widgets(self):
 		"""Creates the widgets for the add path page."""
 
