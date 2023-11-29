@@ -1,7 +1,7 @@
 """"Module for tkinter interface of menu page."""
 import tkinter as tk
 import customtkinter
-from gui.page import page
+from gui.abstract.page import Page
 from PIL import Image
 
 from gui.utils import v, min_max_range, IUV, UV, PRIMARY_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, EMPTY_IMAGE
@@ -19,7 +19,7 @@ DEFAULT_RADIUS_ACTIVE = 4
 COLOR_ACTIVE = SECONDARY_COLOR #"#2ab9d4"
 
 
-class menu_page(page):
+class MenuPage(Page):
     """Class of the menu page"""
 
     __active_elem = None
@@ -149,6 +149,12 @@ class menu_page(page):
             self.show_run()
         else:
             self.hide_run()
+
+
+    def setActive(self):
+        """Set the page active."""
+        super().setActive()
+        self.__change_active(self.piste_label)
 
 
     def onSizeChange(self, width, height):

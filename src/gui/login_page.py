@@ -1,14 +1,17 @@
 """Module for tkinter interface of the login page."""
 import tkinter as tk
 import customtkinter
-from gui.page import page
-from gui.register_page import register_page
 import os.path
+from gui.app_state import AppState
+
 from PIL import Image
+from database import user_queries
+from gui.abstract.page import Page
+from gui.trail_page import TrailPage
 from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, PARENT_PATH, FONT
+from gui.register_page import register_page
 
-
-
+state = AppState()
 DEFAULT_FONT = (FONT, IUV(16))
 TITLE_FONT = (FONT, IUV(24))
 DF = DEFAULT_FONT
@@ -19,7 +22,8 @@ DFB = DEFAULT_FONT_BIG
 
 v = lambda x, view: x * (view/100)
 
-class login_page(page):
+
+class LoginPage(Page):
     """Class for the login page."""
 
     RI_TITLE = 1
@@ -38,8 +42,6 @@ class login_page(page):
         """Constructor. Singleton then init executed only once."""
         super().__init__(parent, app)  # Call the __init__ method of the parent class
         app_path = PARENT_PATH
-
-        self.toggle_menu = app.toggle_menu
         
         #Frame configure
         parent.grid_rowconfigure(0, weight=1) 
@@ -62,39 +64,55 @@ class login_page(page):
         
         #Username
         self.username_label = customtkinter.CTkLabel(self, text="Username", font=DF)
-        self.username_combobox = customtkinter.CTkComboBox(self, values=self.__get_usernames(), font=DF, dropdown_font=DF) #Faire appel a la fonction qui permet de choper tous les users
+        self.username_combobox = customtkinter.CTkComboBox(self, values=self.__get_all_usernames(), font=DF, dropdown_font=DF) #Faire appel a la fonction qui permet de choper tous les users
         self.username_combobox.set("")
         self.username_label.grid(row = self.RI_USERNAME_LABEL, column = self.CI_LEFT, sticky="sw", columnspan=2)       
         self.username_combobox.grid(row = self.RI_USERNAME, column = self.CI_LEFT, sticky="nwe", columnspan=2)
-        
+        self.username_combobox.bind("<Return>", lambda event: self.login())
+
         #Password
         self.password_label = customtkinter.CTkLabel(self, text="Password", font=DF)
         self.password_entry = customtkinter.CTkEntry(self, show="*")
         self.password_label.grid(row = self.RI_PASSWORD_LABEL, column = self.CI_LEFT, sticky="sw", columnspan=2)
         self.password_entry.grid(row = self.RI_PASSWORD, column = self.CI_LEFT, sticky="nwe", columnspan=2)
-        
+        self.password_entry.bind("<Return>", lambda event: self.login())
+
         #Login button
-        self.login_button = customtkinter.CTkButton(self, text="Login", command=self.toggle_menu, font=DF)
+        self.login_button = customtkinter.CTkButton(self, text="Login", command=self.login, font=DF)
         self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
         self.guest_button = customtkinter.CTkButton(self, text="Guest", font=DF, fg_color="#027148", hover_color="#013220")
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
-        self.register_button = customtkinter.CTkButton(self, text="Register", command=lambda:self.show_page(register_page), font=DF)
+        self.register_button = customtkinter.CTkButton(self, text="Register", command=lambda:self.app.show_page(register_page), font=DF)
         self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=2)
 
 
     def login(self):
         username = self.username_combobox.get()
         password = self.password_entry.get()
-        if username not in self.__get_usernames():
-            print(f"User {username} not found")
-            return
-        # Add your login logic here
-        print(f"You'r logged in as {username}")
+        self.__get_usernames(username)
+        success, user = user_queries.user_can_connect(username, password)
+        print(user_queries.user_can_connect(username, password))
+        if success:
+            #self.toggle_menu()
+            self.app.show_page(TrailPage)
+            state.set_user(user)
+            print(f"You're now logged in as {user.username}")
+            print(state.get_user().username)
 
-    def __get_usernames(self):
-        return ["Admin", "User"]
+
+    def __get_usernames(self, username: str):
+        self.user = user_queries.get_user_by_name(username)
+        return self.user
+
+
+    def __get_all_usernames(self):
+        username_list = []
+        for user in user_queries.get_all_users():
+            username_list.append(user.username)
+        return username_list
+
 
     def __setup_smallScreen(self):
         """Setup the container for small screen."""
@@ -104,6 +122,7 @@ class login_page(page):
         self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=1, sticky="ne", pady=(10, 4))
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2, sticky="swe")
     
+
     def __setup_bigScreen(self):
         """Setup the container for big screen."""
         self.grid_rowconfigure((0), weight=1)
@@ -112,6 +131,7 @@ class login_page(page):
         self.login_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=1, sticky="nw", pady=0)
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=1, sticky="ne")
         self.register_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=1, sticky="w", pady=0)
+
 
     def onSizeChange(self, width, height):
         """Called when the windows size change."""
@@ -150,6 +170,7 @@ class login_page(page):
 
         self.password_entry.configure(font=default_font)
         self.username_combobox.configure(font=default_font, dropdown_font=default_font)
+
 
     def setUnactive(self):
         super().setActive()

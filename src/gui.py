@@ -1,20 +1,25 @@
 """Module for the interface of the application."""
-import tkinter as tk
-import customtkinter
-from tkinter import PhotoImage, messagebox
-from gui import login_page, test_page, page, menu_page, trail_page, path_page, account_page
-from gui import set_height_utils, UV
 import os.path
 import platform
+from tkinter import PhotoImage
+
+import customtkinter
+
+from database.database_handler import DatabaseHandler
+from gui import LoginPage, RunPage, Page, MenuPage, TrailPage, PathPage, AccountPage, AddPathPage
+from gui import set_height_utils, UV
+from threads.camera_thread import Camera
+
 
 class Application(customtkinter.CTk):
     """
     Interface of the application.
     """
+    camera: Camera
 
-    significant_change = 50 # Amount of pixel to consider a change as significant and then reload the page
+    significant_change = 50  # Amount of pixel to consider a change as significant and then reload the page
 
-    page_frame: page | None = None
+    page_frame: Page | None = None
     menu_frame = None
 
     latest_width = 0
@@ -23,20 +28,23 @@ class Application(customtkinter.CTk):
     def __init__(self):
         """Constructor."""
         super().__init__()
+        self.camera = Camera()
+        self.camera.start()
         set_height_utils(self.winfo_screenheight())
 
         self.geometry(f"{UV(700)}x{UV(600)}+600+300")
         self.title("Climbing Coach")
 
+        self.database = DatabaseHandler()
+        self.database.create_tables()
         self.minsize(UV(700), UV(600))
-
 
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.parent_dir = os.path.dirname(self.current_dir)
 
-        themeDir = os.path.join(self.parent_dir, 'resources', 'themes', 'cc.json')
+        theme_dir = os.path.join(self.parent_dir, 'resources', 'themes', 'cc.json')
 
-        customtkinter.set_default_color_theme(themeDir)
+        customtkinter.set_default_color_theme(theme_dir)
 
         # detect windows size change
         self.bind("<Configure>", lambda e: self.onWindowsSizeChange())
@@ -46,8 +54,7 @@ class Application(customtkinter.CTk):
         self.__os_init()
 
         self.init_frame()
-        #self.show_page(login_page)
-        self.show_page(trail_page)
+        self.show_page(LoginPage)
         self.show_menu()
 
 
@@ -83,14 +90,14 @@ class Application(customtkinter.CTk):
         """Initialisation for windows"""
         icon_path = os.path.join(self.parent_dir, 'resources', 'images', 'climbing_coach.ico')
         self.iconbitmap(icon_path)
-    
+
 
     def __os_linux_init(self):
         """Initialisation for Linux"""
         icon_path = os.path.join(self.parent_dir, 'resources', 'images', 'incroyable_logo_climbing_coach.png')
         img = PhotoImage(file=icon_path)
         self.tk.call('wm', 'iconphoto', self._w, img)
-        
+
 
     def __os_macos_init(self):
         """Initialisation for MacOS"""
@@ -98,18 +105,23 @@ class Application(customtkinter.CTk):
         img = PhotoImage(file=icon_path)
         self.tk.call('wm', 'iconphoto', self._w, img)
 
-    
+
     # Page utils
-    def show_page(self, new_page: page):
+    def show_page(self, new_page: Page):
         """Show the page passed in parameter."""
-        if(not self.is_page_active(new_page)): 
-            
+        if(not self.is_page_active(new_page)):
             self.empty_container()
             self.set_new_page_frame(new_page)
+            self. __hide_show_menu_if_login()
             self.fill_container()
 
 
-    def is_page_active(self, page: page) -> bool:
+    def show_login_page(self):
+        """Show the login page."""
+        self.show_page(LoginPage)
+
+
+    def is_page_active(self, page: Page) -> bool:
         """Return true if the page passed in parameter is active."""
         return isinstance(self.page_frame, page)
 
@@ -121,7 +133,7 @@ class Application(customtkinter.CTk):
 
     def empty_container(self):
         """Empty the page container."""
-        if self.is_a_page_in_container(): 
+        if self.is_a_page_in_container():
             self.page_frame.grid_forget()
             self.page_frame.setUnactive()
             self.page_frame = None
@@ -133,32 +145,31 @@ class Application(customtkinter.CTk):
         self.page_frame.grid(row=0, column=0, sticky="nsew")
 
 
-    def set_new_page_frame(self, new_page: page):
+    def set_new_page_frame(self, new_page: Page):
         """Set the new page frame."""
-        self.page_frame: page = new_page(self.container_frame, self)
+        self.page_frame: Page = new_page(self.container_frame, self)
         self.page_frame.setActive()
         self.__ungarded_onWindowsSizeChange()
         self.page_frame.update()
 
 
-
     def show_menu(self):
         """Show the menu page."""
         if self.menu_frame is not None: return
-        self.menu_frame = menu_page(self.menu_container_frame, self)
+        self.menu_frame = MenuPage(self.menu_container_frame, self)
         self.menu_frame.grid(row=0, column=0, sticky="nsew")
-        self.menu_frame.set_command_piste(lambda: self.show_page(trail_page))
-        self.menu_frame.set_command_chemin(lambda: self.show_page(path_page))
-        self.menu_frame.set_command_run(lambda: self.show_page(test_page))
-        self.menu_frame.set_command_compte(lambda: self.show_page(account_page))
+        self.menu_frame.set_command_piste(lambda: self.show_page(TrailPage))
+        self.menu_frame.set_command_chemin(lambda: self.show_page(PathPage))
+        self.menu_frame.set_command_run(lambda: self.show_page(RunPage))
+        self.menu_frame.set_command_compte(lambda: self.show_page(AccountPage))
         self.menu_frame.update()
-        
-    
-    def update_page(self, page: page):
+
+
+    def update_page(self, page: Page):
         """Update the page passed in parameter."""
         page(self).update()
         self.show_page(page)
-    
+
 
     def onWindowsSizeChange(self):
         """Called when the windows size change."""
@@ -173,8 +184,8 @@ class Application(customtkinter.CTk):
             self.page_frame.onSizeChange(self.winfo_width(), self.winfo_height())
         if self.menu_frame is not None:
             self.menu_frame.onSizeChange(self.winfo_width(), self.winfo_height())
-            
-    
+
+
     def __is_significant_change(self):
         """Return true if the change is significant."""
         return abs(self.latest_width - self.winfo_width()) > self.significant_change or abs(self.latest_height - self.winfo_height()) > self.significant_change
@@ -189,12 +200,12 @@ class Application(customtkinter.CTk):
         self.grid_rowconfigure(0, weight=1)
 
         self.menu_container_frame = customtkinter.CTkFrame(self, width=UV(170))
-        self.menu_container_frame.grid(row=0, column=0, sticky="nswe")    
+        self.menu_container_frame.grid(row=0, column=0, sticky="nswe")
 
         self.container_frame = customtkinter.CTkFrame(self)
         self.container_frame.grid(row=0, column=1, sticky="nswe")
 
-        #self.main_frame.grid()
+        # self.main_frame.grid()
 
 
     def __collapse_menu(self):
@@ -212,13 +223,26 @@ class Application(customtkinter.CTk):
         self.container_frame.grid(row=0, column=1, sticky="nswe")
 
 
+    def __hide_show_menu_if_login(self):
+        """Hide the menu if the user is not logged in."""
+        if self.__is_page_login():
+            self.__collapse_menu()
+        else:
+            self.__expand_menu()
+
+
     def toggle_menu(self):
         """Toggle the menu."""
         if self.menu_frame.winfo_ismapped():
             self.__collapse_menu()
         else:
             self.__expand_menu()
-    
+
+
+    def __is_page_login(self) -> bool:
+        """Return true if the page is the login page."""
+        return isinstance(self.page_frame, LoginPage)
+
 
     def change_title(self, title: str):
         """Change the title of the application."""
@@ -229,6 +253,7 @@ class Application(customtkinter.CTk):
         """Update the menu."""
         if self.menu_frame is not None:
             self.menu_frame.update()
+
 
 if __name__ == "__main__":
     app = Application()

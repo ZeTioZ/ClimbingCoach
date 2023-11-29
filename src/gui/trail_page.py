@@ -1,10 +1,10 @@
 """"Module for tkinter interface of trail page."""
-import tkinter as tk
-from typing import Any
-import customtkinter
-from gui.page import page
-from PIL import Image
 import os.path
+import customtkinter
+import tkinter as tk
+
+from gui.abstract.page import Page
+from PIL import Image
 
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, COLOR_DIFFICULTY
 from gui.utils import v, UV, IUV, min_max_range
@@ -20,7 +20,7 @@ RID_DIFFICULTY = 3
 CID_LEFT = 1
 CID_RIGHT = 2
 
-class trail_page(page):
+class TrailPage(Page):
     """Class of the trail page."""
     choose_index = 0 #page dans laquelle on est
     # selected_trail = None #page selectionnée
@@ -37,17 +37,12 @@ class trail_page(page):
         self.grid_rowconfigure(0, weight=0, minsize=UV(80))
         self.grid_rowconfigure(1, weight=1)
 
-        self.trail_list_frame = customtkinter.CTkScrollableFrame(self)
+        self.trail_list_frame = customtkinter.CTkScrollableFrame(self, width=UV(150))
         self.trail_list_frame.grid(row=1, column=0, sticky="nswe")
         self.trail_list_frame.grid_columnconfigure(0, weight=1)
 
-        self.trail_list_title_frame = customtkinter.CTkFrame(self)
-        self.trail_list_title_frame.grid(row=0, column=0, sticky="nswe")
-        self.trail_list_title_frame.grid_columnconfigure(0, weight=1)
-        self.trail_list_title_frame.grid_rowconfigure(0, weight=1)
-
-        self.tail_list_title = customtkinter.CTkLabel(self.trail_list_title_frame, text="Trail list", font=(FONT, IUV(28), "bold"))
-        self.tail_list_title.grid(row=0, column=0, sticky="nswe")
+        self.trail_list_title = customtkinter.CTkLabel(self, text="Trail list", font=(FONT, IUV(28), "bold"))
+        self.trail_list_title.grid(row=0, column=0, sticky="nswe")
 
         self.trail_detail_frame = customtkinter.CTkFrame(self)
         self.trail_detail_frame.grid(row=0, column=1, rowspan=2, sticky="nswe")
@@ -93,7 +88,8 @@ class trail_page(page):
 
         #get all the trails in the db
         test_list= self.__fetch_trail_list()
-    
+
+        
         self.button_list: list[customtkinter.CTkButton] = []
         for trail in test_list:
             self.trail_button = self.create_button(trail, test_list.index(trail))
@@ -121,14 +117,21 @@ class trail_page(page):
                 self.difficulty[i].configure(fg_color="transparent", border_width=UV(2))
 
 
+    def __set_title(self, title: str):
+        """Set the title of the page."""
+        self.detail_title_name.configure(text=title)
+
+
     def __fetch_trail_list(self):
         """Fetch the trail list from the database."""
-        return [f"Piste {i}" for i in range(1, 17)]
+        return [f"Path {i}" for i in range(1, 13)]
+        #return [f"Piste {run}" for run in route_queries.get_all_routes()]
 
 
     def __fletch_trail_detail(self):
         """Fetch the trail detail from the database."""
-        return {"name": f"Piste {self.choose_index+1}", 
+        return {"title": f"Piste {self.choose_index+1}",
+                "name": f"Piste {self.choose_index+1}", 
                 "difficulty": self.choose_index%5, # in [0..4]
                 "image": f"trail_{self.choose_index+1}.jpg",
                 "description": f"{self.choose_index}Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget ultricies ultrices, nunc nisl ultricies nunc, nec aliquam nisl nunc eget nisl. Nulla facilisi. Nu"
@@ -190,6 +193,7 @@ class trail_page(page):
         self.trail_label.grid(row=RID_DESCR, column=CID_RIGHT)
 
         current_trail = self.__fletch_trail_detail()
+        self.__set_title(current_trail["name"])
         self.__set_difficulty(current_trail["difficulty"])
         self.__set_description(current_trail["description"])
 
@@ -225,7 +229,7 @@ class trail_page(page):
 
         for button in self.button_list:
             button.configure(height=v(5, height), width=image_size, font=font_style_default)
-        self.tail_list_title.configure(font=font_style_title)
+        self.trail_list_title.configure(font=font_style_title)
 
         size_difficulty = min_max_range(UV(15), UV(100), v(2.5, width))
         for i in range(5):

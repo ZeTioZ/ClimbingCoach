@@ -82,3 +82,4 @@ if __name__ == "__main__":
     # cv2.namedWindow("Holds")
     # cv2.setMouseCallback("Holds", mouse_callback)
     # test_holds_detector(3)
+    pass

@@ -9,12 +9,12 @@ import platform
 from threading import Thread
 from typing import Callable
 import numpy as np
+import os.path as path
 
-from gui.page import page
+from gui.abstract.page import Page
 from gui.utils import EMPTY_IMAGE
 
-class test_page(page):
-
+class TestPage(Page):
     __reading = False
     __thread_actif = False
     __isCameraLoaded = False
@@ -44,8 +44,10 @@ class test_page(page):
 
         self.camLoader = None
 
+
     def set_model(self, model: Callable[[np.ndarray], np.ndarray]):
         self.__model = model
+
 
     def __annimation_camera_loading(self):
         if not self.__thread_actif: return
@@ -57,18 +59,21 @@ class test_page(page):
             self.test_label.configure(text="")
             return
         self.after(1000, self.__annimation_camera_loading)
-     
+
+
     def __init_cap(self, scale_percent: int = 100):
 
         if not self.__thread_actif: return
 
         #check the os of the user
-        if self.app.is_windows() or self.app.is_linux():
-            video_cap = 0
-        elif self.app.is_macos():
-            video_cap = 1
-        else:
-            raise Exception("Your os is not supported")
+        # if self.app.is_windows() or self.app.is_linux():
+        #     video_cap = 0
+        # elif self.app.is_macos():
+        #     video_cap = 1
+        # else:
+        #     raise Exception("Your os is not supported")
+
+        video_cap = path.join(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))),"resources","videos","Escalade_Fixe.mp4")
 
         self.cap = cv2.VideoCapture(video_cap)
         self.baseW = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -86,11 +91,11 @@ class test_page(page):
         self.__toggle_camera()
         
 
-
     def __scale(self, scale_percent: int = 100):
         if self.cap is None: return
         rate = scale_percent/100
         self.__imageSize = (self.baseW*rate, self.baseH*rate)
+
 
     def __toggle_camera(self):
         if self.__reading or not self.__thread_actif: 
@@ -101,6 +106,7 @@ class test_page(page):
             self.__reading = True
             self.test_button.configure(text="stop")
             self.__read_camera()
+
 
     def __read_camera(self):
 
@@ -119,11 +125,13 @@ class test_page(page):
     
         self.test_label.after(10, self.__read_camera) 
 
+
     def __display_image(self, image: Image):
         """Display the image passed in parameter."""
         image_array = Image.fromarray(image)
         image_to_show = customtkinter.CTkImage(image_array, size=self.__imageSize) 
         self.test_label.configure(image=image_to_show)
+
 
     def onSizeChange(self, width, height):
         """Called when the windows size change."""
@@ -133,6 +141,7 @@ class test_page(page):
         wrate = (width*0.5)/640
         rate = min(hrate, wrate)
         self.__scale(rate*100) 
+
 
     def setUnactive(self):
         super().setUnactive()
@@ -148,7 +157,8 @@ class test_page(page):
         # Set empty image
         self.test_label.configure(image=EMPTY_IMAGE)
         self.test_button.configure(state=customtkinter.DISABLED, text="start")
-    
+
+
     def setActive(self):
         super().setActive()
 
@@ -158,7 +168,8 @@ class test_page(page):
         self.__annimation_camera_loading()
         self.camLoader = Thread(target=self.__init_cap, args=(40,))
         self.camLoader.start()
-    
+
+
     def get_name(self):
         return "test"
 
