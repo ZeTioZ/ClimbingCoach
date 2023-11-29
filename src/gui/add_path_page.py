@@ -1,9 +1,8 @@
 import customtkinter
-from gui.component.interactive_image import InteractiveImage
-from listeners.image_driver import ImageDriver
 
 from gui.abstract.page import Page
-from gui.run_page import RunPage
+from gui.component.interactive_image import InteractiveImage
+from listeners.image_driver import ImageDriver
 
 
 class AddPathPage(Page):
@@ -17,7 +16,7 @@ class AddPathPage(Page):
 		self.__create_widgets()
 		self.calibrate_button = customtkinter.CTkButton(self, text="Calibrate", command=lambda : self.app.show_page(AddPathPage))
 		self.calibrate_button.grid(row=4, column=0)
-		
+
 		self.create_path_button = customtkinter.CTkButton(self, text="Create path", command=lambda : self.create_path())
 		self.create_path_button.grid(row=4, column=1)
 
@@ -37,7 +36,6 @@ class AddPathPage(Page):
 	def __config_grid(self):
 		self.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
 		self.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
-
 
 	def __create_widgets(self):
 		"""Creates the widgets for the add path page."""
