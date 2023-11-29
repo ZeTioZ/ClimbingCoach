@@ -22,11 +22,6 @@ def create_route(route: RouteObject, description: str = None, difficulty: int = 
 			raise
 
 
-# def get_route_by_id(id: int) -> Route:
-# 	with DATABASE_HANDLER.get_session() as session:
-# 		return session.query(Route).filter(Route.id == id).first()
-
-
 def get_route_by_name(name: str) -> Route:
 	with DATABASE_HANDLER.get_session() as session:
 		return session.query(Route).filter(Route.name == name).first()
