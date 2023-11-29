@@ -12,10 +12,10 @@ from threads.camera_thread import Camera
 
 
 class Application(customtkinter.CTk):
-    """
-    Interface of the application.
-    """
-    camera: Camera
+	"""
+	Interface of the application.
+	"""
+	camera: Camera
 
 	significant_change = 50  # Amount of pixel to consider a change as significant and then reload the page
 
@@ -135,7 +135,7 @@ class Application(customtkinter.CTk):
 		"""Set the new page frame."""
 		self.page_frame: Page = new_page(self.container_frame, self)
 		self.page_frame.set_active()
-		self.__ungarded_on_windows_size_change()
+		self.__unguarded_on_windows_size_change()
 		self.page_frame.update()
 
 	def show_menu(self):
@@ -156,11 +156,11 @@ class Application(customtkinter.CTk):
 		self.show_page(page)
 
 	def on_windows_size_change(self):
-		"""Called when the windows size change."""
+		"""Called when the window size change."""
 		if self.__is_significant_change():
-			self.__ungarded_on_windows_size_change()
+			self.__unguarded_on_windows_size_change()
 
-	def __ungarded_on_windows_size_change(self):
+	def __unguarded_on_windows_size_change(self):
 		self.latest_width = self.winfo_width()
 		self.latest_height = self.winfo_height()
 		if self.page_frame is not None:
