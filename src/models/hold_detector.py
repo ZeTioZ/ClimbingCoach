@@ -46,7 +46,8 @@ class HoldDetector:
         if(not self.__is_already_analysed()):
             self.analyse_image(image)
 
-        res_np_image = box_visualizer(np_image, self.__holds, box_path=path)
+        res_np_image = box_visualizer(np_image, self.__holds)
+        res_np_image = box_visualizer(res_np_image, path, (0, 0, 255))
 
         res_image = Image.fromarray(res_np_image)
         return res_image

@@ -39,7 +39,11 @@ class ImageDriver(Listener):
     def draw_holds_and_path(self, image: np.ndarray, holds: list[Box]) -> Image:
         """Draw the holds on the image."""
         
-        return Image.fromarray(box_visualizer(image, holds, self.path))
+        drawed_image = box_visualizer(image, holds)
+        drawed_image = box_visualizer(drawed_image, self.path, (0, 0, 255))
+        drawed_image = draw_path(drawed_image, self.path)
+
+        return Image.fromarray(drawed_image)
 
 
     # PATH MANAGER
