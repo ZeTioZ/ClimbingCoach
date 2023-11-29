@@ -6,7 +6,7 @@ from interfaces.event import Event
 from interfaces.listener import Listener
 from objects.box import Box
 from utils.click import find_selected_hold
-from utils.draw_utils import box_visualizer, draw_path
+from utils.draw_utils import box_visualizer, draw_path, path_box_visualizer
 
 
 import numpy as np
@@ -40,7 +40,7 @@ class ImageDriver(Listener):
         """Draw the holds on the image."""
         
         drawed_image = box_visualizer(image, holds)
-        drawed_image = box_visualizer(drawed_image, self.path, (0, 0, 255))
+        drawed_image = path_box_visualizer(drawed_image, self.path)
         drawed_image = draw_path(drawed_image, self.path)
 
         return Image.fromarray(drawed_image)
@@ -55,9 +55,10 @@ class ImageDriver(Listener):
         """Called when the image is clicked."""
         selected_box = self.__click(event)
         if selected_box is not None and selected_box in self.path:
+            self.path.reverse()
             self.path.remove(selected_box)
+            self.path.reverse()
             self.i_image.change_image(self.draw_holds_and_path(self.image, self.holds))
-
 
     def click_left(self, event):
         """Called when the image is clicked."""

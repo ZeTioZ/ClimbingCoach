@@ -54,7 +54,7 @@ class Application(customtkinter.CTk):
         self.__os_init()
 
         self.init_frame()
-        self.show_page(LoginPage)
+        self.show_page(AddPathPage)
         self.show_menu()
 
 
@@ -89,7 +89,7 @@ class Application(customtkinter.CTk):
     def __os_windows_init(self):
         """Initialisation for windows"""
         icon_path = os.path.join(self.parent_dir, 'resources', 'images', 'climbing_coach.ico')
-        self.iconbitmap(icon_path)
+        self.iconbitmap(icon_path)  # Set the icon of the application
 
 
     def __os_linux_init(self):
@@ -145,7 +145,7 @@ class Application(customtkinter.CTk):
         self.page_frame.grid(row=0, column=0, sticky="nsew")
 
 
-    def set_new_page_frame(self, new_page: Page):
+    def set_new_page_frame(self, new_page: type):
         """Set the new page frame."""
         self.page_frame: Page = new_page(self.container_frame, self)
         self.page_frame.setActive()
