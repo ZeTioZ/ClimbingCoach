@@ -10,3 +10,4 @@ SQLAlchemy
 typing_extensions
 ultralytics
 pygrabber
+torch
