@@ -6,6 +6,7 @@ from PIL import Image
 
 from gui.abstract.page import Page
 from gui.app_state import AppState
+from gui.add_path_page import AddPathPage
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, \
 	SECONDARY_HOVER_COLOR
 from gui.utils import v, uv, iuv, min_max_range
@@ -38,10 +39,8 @@ class PathPage(Page):
 
 		self.path_list_tiltle = customtkinter.CTkLabel(self, text="Path list", font=(FONT, iuv(28), "bold"))
 		self.path_list_tiltle.grid(row=0, column=0, sticky="nswe")
-
-		self.create_path_button = customtkinter.CTkButton(self.path_creation_frame, text="Create path",
-		                                                  fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR,
-		                                                  command=lambda: self.app.show_page("create_path"))
+		
+		self.create_path_button = customtkinter.CTkButton(self.path_creation_frame, text="Create path", fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR, command=lambda : self.app.show_page(AddPathPage))
 		self.create_path_button.grid(row=0, column=0)
 
 		self.path_detail_frame = customtkinter.CTkFrame(self)
@@ -54,18 +53,18 @@ class PathPage(Page):
 		self.path_detail_frame.grid_rowconfigure((2, 3), weight=1)
 
 		self.path_image = customtkinter.CTkImage(Image.open(self.__get_image_path("trail_1.jpg")),
-		                                         size=(uv(200), uv(200)))
+												 size=(uv(200), uv(200)))
 		self.path_label = customtkinter.CTkLabel(self.path_detail_frame, text="", image=self.path_image)
 		self.path_label.grid(row=1, column=1)
 
 		self.path_selection_button = customtkinter.CTkButton(self.path_detail_frame, text="Select",
-		                                                     command=lambda: self.selection_path())
+															 command=lambda: self.selection_path())
 		self.path_selection_button.grid(row=2, column=1)
 
 		self.difficulty_image_1 = customtkinter.CTkImage(Image.open(self.__get_image_path("diff_1.png")),
-		                                                 size=(uv(35), uv(35)))
+														 size=(uv(35), uv(35)))
 		self.path_difficulty_label = customtkinter.CTkLabel(self.path_detail_frame, text="",
-		                                                    image=self.difficulty_image_1)
+															image=self.difficulty_image_1)
 		self.path_difficulty_label.grid(row=2, column=2, sticky="w", padx=uv(30))
 
 		test_list = self.__fetch_path_list()
@@ -151,7 +150,7 @@ class PathPage(Page):
 		"""Loads an image from the given path."""
 		image_size = self.path_image.cget("size")
 		self.path_image = customtkinter.CTkImage(Image.open(self.__get_image_path(image_name + ".jpg")),
-		                                         size=image_size)
+												 size=image_size)
 		self.path_label.configure(image=self.path_image)
 
 	def __get_image_path(self, image_name: str):

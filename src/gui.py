@@ -28,7 +28,7 @@ class Application(customtkinter.CTk):
 	def __init__(self):
 		"""Constructor."""
 		super().__init__()
-		self.camera = Camera()
+		self.camera = Camera("resources/videos/Escalade_Fixe.mp4")
 		self.camera.start()
 		set_height_utils(self.winfo_screenheight())
 
@@ -59,7 +59,7 @@ class Application(customtkinter.CTk):
 
 	# OS Init Section
 	def __os_init(self):
-		"""Os specific initialisation for the application"""
+		"""Os specific initialization for the application"""
 		if self.is_windows():
 			self.__os_windows_init()
 		elif self.is_linux():

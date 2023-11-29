@@ -2,6 +2,7 @@ from gui.abstract.page import Page
 from gui.account_page import AccountPage
 from gui.register_page import RegisterPage
 from gui.add_path_page import AddPathPage
+
 from gui.login_page import LoginPage
 from gui.menu_page import MenuPage
 from gui.path_page import PathPage

@@ -88,7 +88,6 @@ class ImageDriver(Listener):
 		else:
 			raise Exception("The name of the route is not set.")
 
-
 	def click_right(self, event):
 		"""Called when the image is clicked."""
 		selected_box = self.__click(event)
@@ -142,3 +141,6 @@ class ImageDriver(Listener):
 		if holds is None:
 			holds = self.holds
 		self.i_image.change_image(self.draw_holds_and_path(image, holds))
+
+	#TODO : update holds
+	#def __refresh_holds(self)
