@@ -9,6 +9,7 @@ from database.queries import run_queries
 #from database.queries import route_queries
 from threads import playback_thread
 
+from gui.utils import get_parent_path
 from gui.utils import FONT, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from gui.utils import v, UV, IUV, min_max_range
 
@@ -238,7 +239,7 @@ class RunViewerPage(Page):
 
     def __get_image_path(self, image_name: str):
         """Return the path of the icon passed in parameter."""
-        parent_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        parent_path = get_parent_path(__file__, 3)
         path = os.path.join(parent_path, 'resources','images', image_name)
         if os.path.exists(path):
             return path

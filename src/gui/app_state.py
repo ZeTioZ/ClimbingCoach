@@ -2,7 +2,7 @@
 from gui.abstract.singleton import Singleton
 import pickle
 import os
-from gui.utils import RESSOURCES_PATH
+from gui.utils import get_ressources_path
 #from utils.camera_discover_utils import get_available_cameras_names
 
 class AppState(metaclass=Singleton):
@@ -55,7 +55,7 @@ class AppState(metaclass=Singleton):
     
     def __get_configuration_file_path(self) -> str:
         """Return the configuration file path."""
-        return os.path.join(RESSOURCES_PATH, self.CONFIG_FILE_NAME)
+        return os.path.join(get_ressources_path(), self.CONFIG_FILE_NAME)
 
 
     # Trail

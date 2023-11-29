@@ -8,7 +8,7 @@ from PIL import Image
 from database import user_queries
 from gui.abstract.page import Page
 from gui.trail_page import TrailPage
-from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, PARENT_PATH, FONT
+from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, get_parent_path, FONT
 from gui.register_page import register_page
 
 state = AppState()
@@ -41,7 +41,7 @@ class LoginPage(Page):
     def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
         """Constructor. Singleton then init executed only once."""
         super().__init__(parent, app)  # Call the __init__ method of the parent class
-        app_path = PARENT_PATH
+        app_path = get_parent_path(__file__, 3)
         
         #Frame configure
         parent.grid_rowconfigure(0, weight=1) 
