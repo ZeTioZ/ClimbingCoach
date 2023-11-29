@@ -13,8 +13,6 @@ DARK_GREEN = "#1b7254"
 
 COLOR_DIFFICULTY = ["#5bbc67", "#98bc5b", "#bcaf5b", "#bc8d5b", "#bc5b5b"]
 
-PARENT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-RESSOURCES_PATH = os.path.join(PARENT_PATH, 'resources')
 
 FONT = "Helvetica"
 
@@ -22,6 +20,18 @@ EMPTY_IMAGE = CTkImage(Image.frombytes("RGBA", (1, 1), b"\x00\x00\x00\x00"))
 
 actual_height = 0
 
+def get_parent_path(path: str, level: int = 1) -> str:
+    """Return the parent path of the path."""
+    for _ in range(level):
+        path = os.path.dirname(path)
+    return path
+
+def get_ressources_path() -> str:
+    """Return the path to the ressources folder."""
+    PARENT_PATH = get_parent_path(__file__, 3)
+    #os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    RESSOURCES_PATH = os.path.join(PARENT_PATH, 'resources')
+    return RESSOURCES_PATH
 
 def set_height_utils(height):
     global actual_height

@@ -4,9 +4,7 @@ from interfaces.event import Event
 from enums.flux_reader_event_type import FluxReaderEventType
 from libs.model_loader import ModelLoader
 from utils.yolov8_converter_utils import convert_image_box_outputs, convert_image_skeleton_outputs
-
-MODELS_DIRECTORY = "./resources/models/"
-VIDEOS_DIRECTORY = "./resources/videos/"
+from gui import utils
 
 
 class FluxReaderEvent(Event):
@@ -29,8 +27,10 @@ class FluxReaderEvent(Event):
         
 
     def process(self):
-        holds_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "holds_model_yolov8l.pt"))
-        skeleton_detector = ModelLoader(os.path.join(MODELS_DIRECTORY, "yolov8l-pose.pt"))
+        parent_path = utils.get_parent_path(__file__, 3)
+        models_path = os.path.join(parent_path, "resources", "models")
+        holds_detector = ModelLoader(os.path.join(models_path, "holds_model_yolov8l.pt"))
+        skeleton_detector = ModelLoader(os.path.join(models_path, "yolov8l-pose.pt"))
 
         refresh_holds = False
         refreshed = False
