@@ -42,7 +42,7 @@ class ImageDriver(Listener):
 	# PATH MANAGER
 	holds: list[Box] = []
 	path: list[Box] = []
-
+	
 	def click_right(self, event):
 		"""Called when the image is clicked."""
 		selected_box = self.__click(event)
@@ -89,3 +89,6 @@ class ImageDriver(Listener):
 	def change_image(self, holds: list[Box], image: np.ndarray):
 		"""Change the image."""
 		self.i_image.change_image(self.draw_holds_and_path(image, holds))
+
+	#TODO : update holds
+	#def __refresh_holds(self)
