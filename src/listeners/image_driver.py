@@ -33,9 +33,9 @@ class ImageDriver(Listener):
 	def draw_holds_and_path(self, image: np.ndarray, holds: list[Box]) -> Image:
 		"""Draw the holds on the image."""
 
-		drawn_image = box_visualizer(image, holds)
-		drawn_image = box_visualizer(drawn_image, self.path, (0, 0, 255))
-		drawn_image = draw_path(drawn_image, self.path)
+		drawed_image = box_visualizer(image, holds)
+		drawed_image = path_box_visualizer(drawed_image, self.path)
+		drawed_image = draw_path(drawed_image, self.path)
 
 		return Image.fromarray(drawn_image)
 
@@ -47,7 +47,9 @@ class ImageDriver(Listener):
 		"""Called when the image is clicked."""
 		selected_box = self.__click(event)
 		if selected_box is not None and selected_box in self.path:
+			self.path.reverse()
 			self.path.remove(selected_box)
+			self.path.reverse()
 			self.i_image.change_image(self.draw_holds_and_path(self.image, self.holds))
 
 	def click_left(self, event):

@@ -12,10 +12,10 @@ from threads.camera_thread import Camera
 
 
 class Application(customtkinter.CTk):
-	"""
-	Interface of the application.
-	"""
-	camera: Camera
+    """
+    Interface of the application.
+    """
+    camera: Camera
 
 	significant_change = 50  # Amount of pixel to consider a change as significant and then reload the page
 
