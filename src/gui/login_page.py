@@ -9,7 +9,7 @@ from database import user_queries
 from gui.abstract.page import Page
 from gui.trail_page import TrailPage
 from gui.utils import v, UV, IUV, SECONDARY_COLOR, SECONDARY_HOVER_COLOR, get_parent_path, FONT
-from gui.register_page import register_page
+from gui.register_page import RegisterPage
 
 state = AppState()
 DEFAULT_FONT = (FONT, IUV(16))
@@ -84,7 +84,7 @@ class LoginPage(Page):
         self.guest_button = customtkinter.CTkButton(self, text="Guest", font=DF, fg_color="#027148", hover_color="#013220")
         self.guest_button.grid(row = self.RI_LOGIN, column = self.CI_LEFT, columnspan=2)
 
-        self.register_button = customtkinter.CTkButton(self, text="Register", command=lambda:self.app.show_page(register_page), font=DF)
+        self.register_button = customtkinter.CTkButton(self, text="Register", command=lambda:self.app.show_page(RegisterPage), font=DF)
         self.register_button.grid(row = self.RI_LOGIN, column = self.CI_RIGHT, columnspan=2)
 
 

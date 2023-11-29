@@ -6,7 +6,7 @@ from tkinter import PhotoImage
 import customtkinter
 
 from database.database_handler import DatabaseHandler
-from gui import LoginPage, RunPage, Page, MenuPage, TrailPage, PathPage, AccountPage, AddPathPage
+from gui import LoginPage, RunPage, Page, MenuPage, TrailPage, PathPage, AccountPage, AddPathPage, RegisterPage
 from gui import set_height_utils, UV
 from threads.camera_thread import Camera
 
@@ -112,7 +112,7 @@ class Application(customtkinter.CTk):
         if(not self.is_page_active(new_page)):
             self.empty_container()
             self.set_new_page_frame(new_page)
-            self. __hide_show_menu_if_login()
+            self.__hide_show_menu_if_login_or_register()
             self.fill_container()
 
 
@@ -223,9 +223,9 @@ class Application(customtkinter.CTk):
         self.container_frame.grid(row=0, column=1, sticky="nswe")
 
 
-    def __hide_show_menu_if_login(self):
+    def __hide_show_menu_if_login_or_register(self):
         """Hide the menu if the user is not logged in."""
-        if self.__is_page_login():
+        if self.__is_page_login() or self.__is_page_register():
             self.__collapse_menu()
         else:
             self.__expand_menu()
@@ -242,6 +242,11 @@ class Application(customtkinter.CTk):
     def __is_page_login(self) -> bool:
         """Return true if the page is the login page."""
         return isinstance(self.page_frame, LoginPage)
+    
+
+    def __is_page_register(self) -> bool:
+        """Return true if the page is the register page."""
+        return isinstance(self.page_frame, RegisterPage)
 
 
     def change_title(self, title: str):
