@@ -6,7 +6,7 @@ from tkinter import PhotoImage
 import customtkinter
 
 from database.database_handler import DatabaseHandler
-from gui import LoginPage, RunPage, Page, MenuPage, TrailPage, PathPage, AccountPage, RegisterPage
+from gui import LoginPage, RunPage, Page, MenuPage, TrailPage, PathPage, AccountPage, RegisterPage, AddPathPage
 from gui import set_height_utils, uv
 from threads.camera_thread import Camera
 
@@ -28,7 +28,8 @@ class Application(customtkinter.CTk):
 	def __init__(self):
 		"""Constructor."""
 		super().__init__()
-		self.camera = Camera("resources/videos/Escalade_Fixe.mp4")
+		#self.camera = Camera("resources/videos/Escalade_Fixe.mp4")
+		self.camera = Camera()
 		self.camera.start()
 		set_height_utils(self.winfo_screenheight())
 

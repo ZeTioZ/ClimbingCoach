@@ -65,6 +65,7 @@ class AppState(metaclass=Singleton):
 
 	def set_trail(self, trail: int | None):
 		"""Set the trail. (Id of the current selected trail)"""
+		#create_wall()
 		if trail is not None and trail < 0:
 			print("set_trail error: trail < 0\nNormalize to None")
 			trail = None

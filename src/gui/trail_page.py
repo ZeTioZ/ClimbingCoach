@@ -207,7 +207,7 @@ class TrailPage(Page):
 		if os.path.exists(path):
 			return path
 		return os.path.join(parent_path, 'resources', 'images', "trail_1.jpg")
-
+	
 	def on_size_change(self, width, height):
 		super().on_size_change(width, height)
 

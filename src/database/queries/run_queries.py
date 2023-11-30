@@ -7,10 +7,10 @@ from ..models.run import Run
 DATABASE_HANDLER = database_handler.get_instance_database()
 
 
-def create_run(skeletons_record: SkeletonsRecord, runtime: int, username: str, route: str):
+def create_run(skeletons_record: SkeletonsRecord, runtime: int, username: str, route_name: str):
 	user = user_queries.get_user_by_username(username)
 	skeletons_record_serialized = serialize_skeletons_record(skeletons_record)
-	run = Run(skeletons=skeletons_record_serialized, runtime=runtime, user=user, route=route)
+	run = Run(skeletons=skeletons_record_serialized, runtime=runtime, username=username, route_name=route_name)
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()
 		try:

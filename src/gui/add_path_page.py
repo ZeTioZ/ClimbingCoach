@@ -1,16 +1,17 @@
 import customtkinter
+import time
+import os
 
 from gui.component.interactive_image import InteractiveImage
 from listeners.image_driver import ImageDriver
-import time
 
+from PIL import Image
 
 from gui.abstract.page import Page
 from gui.component.interactive_image import InteractiveImage
-from listeners.image_driver import ImageDriver
-from gui.utils import v, uv, iuv, get_parent_path, FONT
+from gui.utils import v, uv, iuv, FONT, get_ressources_path
 
-from gui.utils import FONT
+from utils.color_holds import rgb_to_hex, generate_gradient_colors
 
 
 class AddPathPage(Page):
@@ -24,46 +25,53 @@ class AddPathPage(Page):
 		#self.__config_pop_up()
 		self.__create_widgets()
 
-		self.calibrate_button = customtkinter.CTkButton(self, text="Take a picture", command=self.__config_pop_up)
+		self.calibrate_button = customtkinter.CTkButton(self, text="Take a picture", command=self.__take_a_picture)
 		self.calibrate_button.grid(row=4, column=1, pady=iuv(10))
 		self.create_path_button = customtkinter.CTkButton(self, text="Validate", command=lambda : self.create_path())
 		self.create_path_button.grid(row=4, column=2, pady=iuv(10))
 
-		self.hold_frame = customtkinter.CTkScrollableFrame(self, width=uv(150))
+		self.hold_frame = customtkinter.CTkScrollableFrame(self, width=uv(175))
 
-		#create a list of 12 colors that will be present of the hold list with the rgb code
-		colors = ["red", "orange", "yellow", "green", "blue", "purple", "rose", "black", "grey", "white", "maroon", "olive"]
-		self.color_dic={"red":"#FF0000","orange":"#FFA500","yellow":"#FFFF00","green":"#008000","blue":"#0000FF","purple":"#4B0082","rose":"#EE82EE","black":"#000000","grey":"#808080","white":"#FFFFFF","maroon":"#800000","olive":"#808000"}
-		#self.color_dic={"red":(255, 0, 0),"orange":(255, 165, 0),"yellow":(255, 255, 0),"green":(0, 128, 0),"blue":(0, 0, 255),"purple":(75, 0, 130),"rose":(238, 130, 238),"black":(0, 0, 0),"grey":(128, 128, 128),"white":(255, 255, 255),"maroon":(128, 0, 0),"olive":(128, 128, 0)}
-		#for i, color in enumerate(colors):
-		#	button = customtkinter.CTkButton(self, text=" eterea ", fg_color=self.color_dic[color], command=lambda color=color: self.app.show_page(AddPathPage))
-		#	button.grid(row=4, column=i+2)
+		self.label_list = []
 
+		if self.label_list != []:
+			self.modify_frame()
 
-	def create_button(self, display_text, index):
+	def create_hold_label(self, hold, index: int, color: tuple[int,int,int]):
 		"""Creates a button with the given text."""
 
-		is_first = index == 0
-
-		self.button = customtkinter.CTkButton(
-			self.path_list_frame,
-			text=display_text,
-			#fg_color= ,
-			#hover_color=, TODO : get the color of the hold
-			border_spacing=uv(17),
-			command=lambda: self.show_path_detail(index),
-			anchor="w"
+		hold_label = customtkinter.CTkLabel(
+			self.hold_frame,
+			text=f"hold {index+1}",
+			fg_color= rgb_to_hex(color),
+			anchor="center",
+			corner_radius=uv(1000000000000),
+			width=uv(50),
+			height=uv(30),
+			font=(FONT, 15)
 		)
+		
+		bin_img = customtkinter.CTkImage(Image.open(os.path.join(get_ressources_path(), "images", "bin.png")))
+		hold_trash_button = customtkinter.CTkLabel(self.hold_frame, text="",image=bin_img, width=uv(15), height=uv(30), fg_color=rgb_to_hex(color), corner_radius=uv(1000000000000))
+		
+		def remove_hold():
+			"""Remove the hold."""
+			self.image_driver.route_remove_box_by_index(index)
+			self.__refresh_hold_menu()
+			self.image_driver.display_holds(self.image_driver.holds)
 
-		self.button.grid(row=index, column=0, padx=uv(10), sticky="ew")
-		return self.button
+		hold_trash_button.bind("<Button-1>", lambda event: remove_hold())
+		hold_trash_button.grid(row=index, column=1, sticky="e")
+		# hold_label.bind("<Button-1>", lambda event: self.image_driver.route_remove_box_by_index(index))
+
+		hold_label.grid(row=index, column=0, padx=uv(10), sticky="ew", pady=uv(10))
+		return hold_label, hold_trash_button
 
 
 	def get_path(self):
 		"""Return the path of the holds."""
-		return self.image_driver.path
+		return self.image_driver.route.get_route()
 	
-
 	def refresh_color(self):
 		"""Refresh the color of the holds when a hold is deleted."""
 		#Check if the color is correctly changed in the run page
@@ -86,37 +94,58 @@ class AddPathPage(Page):
 		entry_route_name = customtkinter.CTkEntry(route_name_pop_up)
 		entry_route_name.grid(row=1, column=0)
 
-		#TODO : faire appel a la fonction qui save la route
-		route_name_pop_up_button = customtkinter.CTkButton(route_name_pop_up, text="Save", command=lambda : [route_name_pop_up.destroy(), self.save_function()])
+		route_name_pop_up_button = customtkinter.CTkButton(route_name_pop_up, text="Save", command=lambda : [self.save_function(entry_route_name.get()), route_name_pop_up.destroy()])
 		route_name_pop_up_button.grid(row=2, column=0, pady=iuv(10))
 		
 		#get all the holds
-		self.button_list : list[customtkinter.CTkButton] = []
+		self.label_list : list[customtkinter.CTkLabel] = []
 		hold_list = self.get_path()
-		for hold in hold_list:
-			self.hold_button = self.create_button(hold, hold_list.index(hold))
-			self.button_list.append(self.hold_button)
+		print(hold_list)
+		colors = generate_gradient_colors(len(hold_list))
+
+		for hold_num in range(len(hold_list)):
+			hold_label, trash_label = self.create_hold_label(hold_list[hold_num], hold_num, colors[hold_num])
+			self.label_list.append((hold_label, trash_label))
 
 		#Check if the path is correctly showed in the run page
 
+	def __refresh_hold_menu(self):
+		self.__empty_label_list()
+		hold_list = self.get_path()
+		colors = generate_gradient_colors(len(hold_list))
+		for hold_num in range (len(hold_list)):
+			hold_label, trash_label = self.create_hold_label(hold_list[hold_num], hold_num, colors[hold_num])
+			self.label_list.append((hold_label, trash_label))
 
-	def save_function(self):
+		self.__modify_frame()
+
+	def __empty_label_list(self):
+		if len(self.label_list) > 0:
+			for label_tuple in self.label_list:
+				label_tuple[0].destroy()
+				label_tuple[1].destroy()
+			self.label_list = []
+
+	def __modify_frame(self):
 		"""Save the path."""
 		#grid the frame with the holds
 		self.hold_frame.grid(row=0, column=0, rowspan=5, sticky="nswe")
 		self.calibrate_button.grid_forget()
 		self.create_path_button.grid_forget()
+
 		self.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
 
 		self.calibrate_button.grid(row=4, column=2, pady=iuv(10))
 		self.create_path_button.grid(row=4, column=3, pady=iuv(10))
-		#TODO : faire appel a la fonction qui save la route
-
+		
+	def save_function(self, name : str):
+		print(name)
+		self.image_driver.route_set_name(name)
+		self.image_driver.save_route()
 
 	def __config_grid(self):
 		self.grid_columnconfigure((0, 1, 2, 3), weight=1)
 		self.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
-	
   
 	def __config_pop_up(self):
 		"""Configure the pop up."""
@@ -133,13 +162,11 @@ class AddPathPage(Page):
 		pop_up_button = customtkinter.CTkButton(pop_up, text="OK", command=lambda : [pop_up.destroy(), self.__take_a_picture()])
 		pop_up_button.grid(row=1, column=0)
 
-	
 	def __take_a_picture(self):
 		"""Take a picture."""
 		#self.after(3000, self.image_driver.refresh())
 		pass
 
-  
 	def __create_widgets(self):
 		"""Creates the widgets for the add path page."""
 
@@ -148,3 +175,4 @@ class AddPathPage(Page):
 
 		self.image_driver = ImageDriver(self.i_image)
 		self.app.camera.flux_reader_event.register(self.image_driver)
+		self.image_driver.bind_click(self.__refresh_hold_menu)
