@@ -203,9 +203,10 @@ class RunPage(Page):
 	def __stop_recording(self):
 		# add logical
 		self.app.camera.flux_reader_event.unregister(self.skeleton_record_saver_listener)
-		skeleton_record = self.skeleton_record_saver_listener.save_skeletons_record()[0]
-		print(skeleton_record.frame_rate)
+		skeleton_record = self.skeleton_record_saver_listener.save_skeletons_record()
 		image = self.video_widget.last_image
+
+		print("Recording took", int(skeleton_record[1]), "seconds")
 
 		video_pop_up = customtkinter.CTkToplevel(self)
 		video_pop_up_lable = customtkinter.CTkLabel(video_pop_up, text="", font=("Helvetica", 32), image=EMPTY_IMAGE)
@@ -214,17 +215,15 @@ class RunPage(Page):
 
 		def run_playback():
 			skeleton_index = 0
-			while skeleton_index < len(skeleton_record.skeletons):
-				if skeleton_index >= len(skeleton_record.skeletons):
-					return
+			while skeleton_index < len(skeleton_record[0].skeletons):
 				skeletonned_image = image.copy()
-				for skeleton in skeleton_record.skeletons[skeleton_index]:
+				for skeleton in skeleton_record[0].skeletons[skeleton_index]:
 					skeletonned_image = skeleton_visualizer(skeletonned_image, skeleton)
 				image_array = Image.fromarray(skeletonned_image)
 				image_to_show = customtkinter.CTkImage(image_array, size=self.__imageSize)
 				video_pop_up_lable.configure(image=image_to_show)
 				skeleton_index += 1
-				time.sleep(1/skeleton_record.frame_rate)
+				time.sleep(1/skeleton_record[0].frame_rate)
 
 		Thread(target=run_playback).start()
 

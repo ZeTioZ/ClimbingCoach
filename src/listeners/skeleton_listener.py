@@ -20,7 +20,6 @@ class SkeletonRecordSaverListener(Listener):
 	def update(self, event, event_types, *args, **kwargs):
 		if FluxReaderEventType.SKELETONS_PROCESSED_EVENT in event_types and isinstance(event, FluxReaderEvent):
 			nbr_frame_to_skip = args[0]
-			print(event.video.get(cv2.CAP_PROP_FPS))
 			self.skeleton_record.frame_rate = event.video.get(cv2.CAP_PROP_FPS) / nbr_frame_to_skip
 			frame_skipper = args[1]
 			skeletons = args[2]
