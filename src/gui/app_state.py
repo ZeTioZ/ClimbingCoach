@@ -6,6 +6,7 @@ import pickle
 
 from gui.abstract.singleton import Singleton
 from gui.utils import get_ressources_path
+from database.models.user import User
 
 
 class AppState(metaclass=Singleton):
@@ -95,20 +96,21 @@ class AppState(metaclass=Singleton):
 		"""Return true if a run is selected."""
 		return self.__run is not None
 
-	# Login
-	def set_username(self, user: str):
+	# Login	
+	def set_user(self, user: User):
 
 		assert user is not None, "app_state: user is set to None"
 		assert user != "", "app_state: user is set to empty string"
-
+		print(id(user))
 		self.__user = user
 
-	def get_username(self) -> str:
+	def get_user(self) -> User:
 		"""Return the user."""
 		if self.__user is None:
-			return ""
+			return None
+		print(dir(self.__user))
 		return self.__user
-
+    
 	def get_camera_name(self) -> str:
 		"""Return the camera name."""
 		return self.__camera_name

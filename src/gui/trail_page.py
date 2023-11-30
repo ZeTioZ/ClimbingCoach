@@ -5,6 +5,7 @@ import tkinter as tk
 import customtkinter
 from PIL import Image
 
+from gui.create_wall import CreateWall
 from gui.abstract.page import Page
 from gui.app_state import AppState
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, \
@@ -56,21 +57,21 @@ class TrailPage(Page):
 		current_trail = self.__fletch_trail_detail()
 
 		self.trail_image = customtkinter.CTkImage(Image.open(self.__get_trail_image_path(current_trail["image"])),
-		                                          size=(uv(200), uv(200)))
+												  size=(uv(200), uv(200)))
 		self.trail_label = customtkinter.CTkLabel(self.trail_detail_frame, text="", image=self.trail_image)
 		self.trail_label.grid(row=RID_DESCR, rowspan=1, column=CID_RIGHT, sticky="we")
 
 		self.trail_selection_button = customtkinter.CTkButton(self.trail_detail_frame, text="Select",
-		                                                      command=lambda: self.selection_trail())
+															  command=lambda: self.selection_trail())
 		self.trail_selection_button.grid(row=RID_DIFFICULTY, column=CID_RIGHT, sticky="n")
 
 		self.detail_title_name = customtkinter.CTkLabel(self.trail_detail_frame, text=current_trail["name"],
-		                                                font=(FONT, iuv(32), "bold"), fg_color=SECONDARY_COLOR,
-		                                                corner_radius=20, width=uv(350))
+														font=(FONT, iuv(32), "bold"), fg_color=SECONDARY_COLOR,
+														corner_radius=20, width=uv(350))
 		self.detail_title_name.grid(row=RID_TITLE, column=CID_LEFT, columnspan=2, sticky="", ipady=uv(10))
 
 		self.detail_description = customtkinter.CTkTextbox(self.trail_detail_frame, font=(FONT, iuv(16)), wrap=tk.WORD,
-		                                                   fg_color="transparent")
+														   fg_color="transparent")
 		self.detail_description.insert(tk.END, current_trail["description"])
 		self.detail_description.configure(state=tk.DISABLED)
 		self.detail_description.grid(row=RID_DESCR, column=CID_LEFT, sticky="nswe", pady=(uv(50), uv(0)))
@@ -85,7 +86,7 @@ class TrailPage(Page):
 		for i in range(5):
 			self.difficulty.append(
 				customtkinter.CTkFrame(self.detail_difficulty, fg_color="green", corner_radius=uv(1000), width=uv(25),
-				                       height=uv(25), border_color="white"))
+									   height=uv(25), border_color="white"))
 			self.difficulty[i].grid(row=0, column=i + 1)
 
 		self.__set_difficulty(current_trail["difficulty"])
@@ -98,6 +99,19 @@ class TrailPage(Page):
 			self.trail_button = self.create_button(trail, test_list.index(trail))
 			self.button_list.append(self.trail_button)
 
+
+		#if state.get_user().role == "admin":    
+		#self.add_wall_button = customtkinter.CTkButton(self.trail_detail_frame, text="Add wall", command=self.show_page(CreateWall))
+
+	def set_active(self):
+		"""Set the page active."""
+		self.user = state.get_user()
+		if self.user.role == "admin":
+			self.add_wall_button = customtkinter.CTkButton(self.trail_list_frame, text="Add wall", command=lambda: self.app.show_page(CreateWall))
+			self.add_wall_button.grid(row=0, column=0)
+
+		#deplacer dans myspace
+		
 	def __set_description(self, description: str):
 		"""Set the description of the trail."""
 		self.detail_description.configure(state=tk.NORMAL)
@@ -129,11 +143,11 @@ class TrailPage(Page):
 	def __fletch_trail_detail(self):
 		"""Fetch the trail detail from the database."""
 		return {"title": f"Piste {self.choose_index + 1}",
-		        "name": f"Piste {self.choose_index + 1}",
-		        "difficulty": self.choose_index % 5,  # in [0..4]
-		        "image": f"trail_{self.choose_index + 1}.jpg",
-		        "description": f"{self.choose_index}Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget ultricies ultrices, nunc nisl ultricies nunc, nec aliquam nisl nunc eget nisl. Nulla facilisi. Nu"
-		        }
+				"name": f"Piste {self.choose_index + 1}",
+				"difficulty": self.choose_index % 5,  # in [0..4]
+				"image": f"trail_{self.choose_index + 1}.jpg",
+				"description": f"{self.choose_index}Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget ultricies ultrices, nunc nisl ultricies nunc, nec aliquam nisl nunc eget nisl. Nulla facilisi. Nu"
+				}
 
 	def create_button(self, display_text, index):
 		"""Creates a button with the given text."""
@@ -150,7 +164,7 @@ class TrailPage(Page):
 			anchor="w"
 		)
 
-		self.button.grid(row=index, column=0, padx=uv(10), sticky="ew")
+		self.button.grid(row=index+1, column=0, padx=uv(10), sticky="ew")
 		return self.button
 
 	def selection_trail(self):
@@ -161,7 +175,7 @@ class TrailPage(Page):
 			state.set_trail(self.choose_index)
 		else:
 			self.trail_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR,
-			                                      hover_color=PRIMARY_HOVER_COLOR)
+												  hover_color=PRIMARY_HOVER_COLOR)
 			state.set_trail(None)
 		self.app.update_menu()
 
@@ -180,7 +194,7 @@ class TrailPage(Page):
 			self.trail_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
 		else:
 			self.trail_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR,
-			                                      hover_color=PRIMARY_HOVER_COLOR)
+												  hover_color=PRIMARY_HOVER_COLOR)
 
 		self.button_list[trail_chosen].configure(fg_color=SECONDARY_COLOR, hover_color=SECONDARY_HOVER_COLOR)
 		self.trail_label.grid_forget()
@@ -197,7 +211,7 @@ class TrailPage(Page):
 		"""Loads an image from the given path."""
 		image_size = self.trail_image.cget("size")
 		self.trail_image = customtkinter.CTkImage(Image.open(self.__get_trail_image_path(image_name + ".jpg")),
-		                                          size=image_size)
+												  size=image_size)
 		self.trail_label.configure(image=self.trail_image)
 
 	def __get_trail_image_path(self, trail_image_name: str):

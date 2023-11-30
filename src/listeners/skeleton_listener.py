@@ -44,4 +44,4 @@ class SkeletonRecordSaverListener(Listener):
 	def save_skeletons_record(self):
 		state = AppState()
 		#run_queries.create_run(self.skeleton_record, time.time() - self.start_time, state.get_username(), state.get_route_name())
-		return self.skeleton_record, time.time() - self.start_time, state.get_username()
+		return self.skeleton_record, time.time() - self.start_time, state.get_user()

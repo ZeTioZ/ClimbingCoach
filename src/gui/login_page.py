@@ -97,13 +97,14 @@ class LoginPage(Page):
 		password = self.password_entry.get()
 		self.__get_usernames(username)
 		success, user = user_queries.user_can_connect(username, password)
+        
 		print(user_queries.user_can_connect(username, password))
 		if success:
 			# self.toggle_menu()
+			state.set_user(user)
 			self.app.show_page(TrailPage)
-			state.set_username(user)
 			print(f"You're now logged in as {user.username}")
-			print(state.get_username())
+			print(state.get_user())
 
 	def __get_usernames(self, username: str):
 		self.user = user_queries.get_user_by_name(username)
