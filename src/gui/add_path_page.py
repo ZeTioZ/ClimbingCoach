@@ -176,3 +176,9 @@ class AddPathPage(Page):
 		self.image_driver = ImageDriver(self.i_image)
 		self.app.camera.flux_reader_event.register(self.image_driver)
 		self.image_driver.bind_click(self.__refresh_hold_menu)
+
+	# Page methods
+
+	def on_size_change(self, width, height):
+		"""Called when the size of the window change."""
+		self.i_image.change_size(v(50, height), v(50, height))

@@ -1,7 +1,6 @@
 from tkinter import Event
 from typing import Callable
 
-import cv2
 import numpy as np
 from PIL import Image
 
@@ -127,6 +126,7 @@ class ImageDriver(Listener):
 			return
 		default_x = int(self.i_image.default_size_width * event.x / self.i_image.winfo_width())
 		default_y = int(self.i_image.default_size_height * event.y / self.i_image.winfo_height())
+		print(default_x, default_y)
 		return find_selected_hold(self.holds, default_x, default_y)
 
 	__click_callback = None
