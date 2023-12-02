@@ -23,13 +23,18 @@ class CreateWall(Page):
 	__reading = False
 	__thread_actif = False
 	__isCameraLoaded = False
-	__imageSize = None
+	__imageSize = (1,1)
 
-	"""test page."""
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
 		"""Constructor. Singleton then init executed only once."""
 		super().__init__(parent, app)
+
+		self.cap = self.app.camera.flux_reader_event.video
+		self.baseW = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+		self.baseH = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+
+		self.__imageSize = (self.baseW, self.baseH)
 
 		parent.grid_rowconfigure(0, weight=1)
 		parent.grid_columnconfigure(0, weight=1)
@@ -59,14 +64,13 @@ class CreateWall(Page):
 	def __get_frame(self):
 		"""Get the frame from the camera."""
 		frame = self.video_widget.last_image
-		if frame is not None:
-			frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-			self.__display_image(frame)
-
+		return frame
 
 	def __read_video(self):	
 		if self.is_recording:
-			self.__get_frame()
+			frame = self.__get_frame()
+			if frame is not None:
+				self.__display_image(frame)
 			self.after(10,self.__read_video)
 		else:
 			return
@@ -86,8 +90,14 @@ class CreateWall(Page):
 	def __display_image(self, image: Image):
 		"""Display the image passed in parameter."""
 		image_array = Image.fromarray(image)
-		image_to_show = customtkinter.CTkImage(image_array)
+		image_to_show = customtkinter.CTkImage(image_array,size=self.__imageSize)
 		self.image_label.configure(image=image_to_show)
+
+	def __scale(self, scale_percent: int = 100):
+		if self.cap is None:
+			return
+		rate = scale_percent / 100
+		self.__imageSize = (self.baseW * rate, self.baseH * rate)
 
 	def on_size_change(self, width, height):
 		"""Called when the windows size change."""
@@ -96,20 +106,24 @@ class CreateWall(Page):
 		hrate = (height * 0.5) / 480
 		wrate = (width * 0.5) / 640
 		rate = min(hrate, wrate)
-		# self.__scale(rate * 100)
+		self.__scale(rate * 100)
 
 	def __save(self, image, name, difficulty, text_box):
 		print(name, difficulty, text_box)
+		#faire appel a l'api pour save
+		#changer de page +fermer la window
 
 	def __screener(self):
 		# add logical
-		self.__stop_video()
 		video_pop_up = customtkinter.CTkToplevel(self)
+		video_pop_up.geometry("300x300")
 
-		scrollable_frame = customtkinter.CTkFrame(video_pop_up)
+		scrollable_frame = customtkinter.CTkScrollableFrame(video_pop_up)
 		scrollable_frame.grid(row=0, column=0, sticky="nsew")
 
-		video_pop_up_lable = customtkinter.CTkLabel(scrollable_frame, text="", font=("Helvetica", 32), image=image)
+		image = Image.fromarray(self.__get_frame())
+		image_to_show = customtkinter.CTkImage(image,size=self.__imageSize)
+		video_pop_up_lable = customtkinter.CTkLabel(scrollable_frame, text="", font=("Helvetica", 32), image=image_to_show)
 		video_pop_up_lable.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
 		#set name with entry
@@ -130,7 +144,7 @@ class CreateWall(Page):
 		description_label = customtkinter.CTkLabel(scrollable_frame, text="Description", font=("Helvetica", 32))
 		description_label.grid(row=3, column=0, pady=uv(10))
 
-		text_box = customtkinter.CTkTextBox(scrollable_frame)
+		text_box = customtkinter.CTkTextbox(scrollable_frame)
 		text_box.grid(row=4, column=0, pady=uv(10))
 
 		#set button to save
@@ -138,5 +152,3 @@ class CreateWall(Page):
 		save_button = customtkinter.CTkButton(scrollable_frame, text="Save", command=self.__save("image", name.get(), difficulty.get(), text_box.get("0.0","end")), font=(FONT, 22))
 		save_button.grid(row=5, column=0, pady=uv(10))
 
-		self.stop_recording.grid_forget()
-		self.start_recording.grid(row=1, column=0, pady=uv(10))
