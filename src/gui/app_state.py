@@ -101,14 +101,12 @@ class AppState(metaclass=Singleton):
 
 		assert user is not None, "app_state: user is set to None"
 		assert user != "", "app_state: user is set to empty string"
-		print(id(user))
 		self.__user = user
 
 	def get_user(self) -> User:
 		"""Return the user."""
 		if self.__user is None:
 			return None
-		print(dir(self.__user))
 		return self.__user
     
 	def get_camera_name(self) -> str:

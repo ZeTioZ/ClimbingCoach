@@ -14,6 +14,7 @@ class VideoWidget(Listener):
 		self.last_image = None
 
 	def update(self, event: Event, event_types: [EventType], *args, **kwargs):
+		print("update")
 		if FluxReaderEventType.FRAME_PROCESSED_EVENT in event_types:
 			frame = args[0]
 			holds_boxes = args[1]
@@ -41,3 +42,8 @@ class VideoWidget(Listener):
 									members_to_check.remove(member)
 									break
 			self.last_image = frame_with_all
+			
+		if FluxReaderEventType.GET_FRAME_EVENT in event_types:
+			frame = args[0]
+			print("frame")
+			self.last_image = frame

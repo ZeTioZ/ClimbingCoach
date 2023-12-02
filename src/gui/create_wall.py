@@ -8,6 +8,7 @@ import cv2
 import numpy as np
 import time
 from PIL import Image
+from threads.camera_thread import Camera
 
 from utils.draw_utils import skeleton_visualizer
 from listeners.skeleton_listener import SkeletonRecordSaverListener
@@ -30,9 +31,6 @@ class CreateWall(Page):
 		"""Constructor. Singleton then init executed only once."""
 		super().__init__(parent, app)
 
-		if app is not None:
-			app.title("Run Page")
-
 		parent.grid_rowconfigure(0, weight=1)
 		parent.grid_columnconfigure(0, weight=1)
 
@@ -41,124 +39,55 @@ class CreateWall(Page):
 		self.grid_rowconfigure(0, weight=3)
 		self.grid_rowconfigure(1, weight=1)
 
-		self.video_widget = VideoWidget([FluxReaderEventType.FRAME_PROCESSED_EVENT])
-		self.skeleton_record_saver_listener: SkeletonRecordSaverListener = SkeletonRecordSaverListener()
+		self.image_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 32))
+		self.image_label.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
-		self.test_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 32))
-		self.test_label.grid(row=0, column=0, columnspan=2, sticky="nsew")
-
-		# Add two button
-		# this button will start recording, but we'll stay on this page
-		self.start_recording = customtkinter.CTkButton(self, text="Start recording", command=self.__start_recording,
-		                                               font=(FONT, 22))
-		self.start_recording.grid(row=1, column=0, pady=uv(10))
-
-		self.load_recording = customtkinter.CTkButton(self, text="Load recording", command=self.__load_recording,
+		self.screen = customtkinter.CTkButton(self, text="ScreenShot", command=self.__screener,
 		                                              font=(FONT, 22))
-		self.load_recording.grid(row=1, column=1, pady=uv(10))
+		self.screen.grid(row=1, column=0, pady=uv(10))
 
-		self.stop_recording = customtkinter.CTkButton(self, text="Stop recording", command=self.__stop_recording,
-		                                              font=(FONT, 22), fg_color="red")
+		self.video_widget = VideoWidget([FluxReaderEventType.GET_FRAME_EVENT])
 
-		self.show_cam = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("show_cam.png")),
-		                                       size=(25, 25))
-		self.hide_cam = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("hide_cam.png")),
-		                                       size=(25, 25))
-		self.visibility_button = customtkinter.CTkButton(self, text="", command=self.__toggle_camera,
-		                                                 state=customtkinter.DISABLED, image=self.hide_cam,
-		                                                 width=uv(50), height=uv(50))
-		self.visibility_button.grid(row=0, column=2, padx=uv(10))
 
-		self.camLoader = None
+	def set_active(self):
+		self.thread_video = Thread(target=self.__start_video)
+		self.thread_video.start()
+	
+	def set_inactive(self):
+		self.__stop_video()
 
-	def __get_icon_path(self, icon_name: str):
-		"""Return the path of the icon passed in parameter."""
-		return os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'resources',
-		                    'images', icon_name)
-
-	def __fetch_run_list(self):
-		"""Fetch the run list from the database."""
-		return [f"Run {i}" for i in range(1, 7)]
-
-	def create_button(self, display_text, index):
-		"""Creates a button with the given text."""
-
-		is_first = index == 0
-
-		self.button = customtkinter.CTkButton(
-			self.run_list_frame,
-			text=display_text,
-			fg_color=SECONDARY_COLOR if is_first else "transparent",
-			hover_color=SECONDARY_COLOR,
-			border_spacing=uv(17),
-			# command=,
-			anchor="w"
-		)
-
-		self.button.grid(row=index, column=0, padx=uv(10), sticky="ew")
-		return self.button
-
-	def set_model(self, model: Callable[[np.ndarray], np.ndarray]):
-		self.__model = model
-
-	def __animation_camera_loading(self):
-		if not self.__thread_actif:
-			return
-		inner_text = self.test_label.cget("text")
-		if len(inner_text) > 3:
-			inner_text = ""
-		inner_text += "."
-		self.test_label.configure(text=inner_text)
-		if self.__isCameraLoaded:
-			self.test_label.configure(text="")
-			return
-		self.after(1000, self.__animation_camera_loading)
-
-	def __init_cap(self, scale_percent: int = 100):
-		self.cap = self.app.camera.flux_reader_event.video
-		self.baseW = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-		self.baseH = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-
-		self.__imageSize = (self.baseW, self.baseH)
-
-		if scale_percent != 100:
-			self.__scale(scale_percent)
-		self.visibility_button.configure(state=customtkinter.NORMAL)
-		self.app.on_windows_size_change()
-		self.__toggle_camera()
-
-	def __scale(self, scale_percent: int = 100):
-		if self.cap is None:
-			return
-		rate = scale_percent / 100
-		self.__imageSize = (self.baseW * rate, self.baseH * rate)
-
-	def __toggle_camera(self):
-		if self.__reading:
-			self.__reading = False
-			self.visibility_button.configure(image=self.show_cam)
-			self.test_label.configure(image=EMPTY_IMAGE)
-		else:
-			self.__reading = True
-			self.visibility_button.configure(image=self.hide_cam)
-			thread = Thread(target=self.__read_camera)
-			thread.start()
-
-	def __read_camera(self):
-		if not self.__reading:
-			return
-
+	def __get_frame(self):
+		"""Get the frame from the camera."""
 		frame = self.video_widget.last_image
 		if frame is not None:
+			frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 			self.__display_image(frame)
 
-		self.test_label.after(10, self.__read_camera)
 
+	def __read_video(self):	
+		if self.is_recording:
+			self.__get_frame()
+			self.after(10,self.__read_video)
+		else:
+			return
+
+	def __start_video(self):
+		self.is_recording = True
+		self.app.camera.flux_reader_event.register(self.video_widget)
+		self.__read_video()
+
+	def __stop_video(self):
+		self.is_recording = False
+		self.app.camera.flux_reader_event.unregister(self.video_widget)
+
+	def get_name(self):
+		return "AddWall"
+	
 	def __display_image(self, image: Image):
 		"""Display the image passed in parameter."""
 		image_array = Image.fromarray(image)
-		image_to_show = customtkinter.CTkImage(image_array, size=self.__imageSize)
-		self.test_label.configure(image=image_to_show)
+		image_to_show = customtkinter.CTkImage(image_array)
+		self.image_label.configure(image=image_to_show)
 
 	def on_size_change(self, width, height):
 		"""Called when the windows size change."""
@@ -167,74 +96,47 @@ class CreateWall(Page):
 		hrate = (height * 0.5) / 480
 		wrate = (width * 0.5) / 640
 		rate = min(hrate, wrate)
-		self.__scale(rate * 100)
+		# self.__scale(rate * 100)
 
-	def set_inactive(self):
-		super().set_inactive()
-		self.app.camera.flux_reader_event.unregister(self.video_widget)
+	def __save(self, image, name, difficulty, text_box):
+		print(name, difficulty, text_box)
 
-		# Set empty image
-		self.test_label.configure(image=EMPTY_IMAGE)
-		self.visibility_button.configure(state=customtkinter.DISABLED, image=self.show_cam)
-
-	def set_active(self):
-		super().set_active()
-		self.app.camera.flux_reader_event.register(self.video_widget)
-		self.__init_cap()
-
-	def get_name(self):
-		return "Run"
-
-	def __clear_run_record_frame(self):
-		print("clear run record frame")
-		for widget in self.run_record_frame.grid_slaves():
-			widget.grid_forget()
-
-	def __start_recording(self):
-		self.skeleton_record_saver_listener.start_timer()
-		self.app.camera.flux_reader_event.register(self.skeleton_record_saver_listener)
-		
-		if self.visibility_button.cget("image") == self.hide_cam:
-			self.start_recording.grid_forget()
-			self.load_recording.grid_forget()
-			self.visibility_button.grid_forget()
-			self.stop_recording.grid(row=1, column=0, columnspan=2, pady=uv(10))
-
-	def __stop_recording(self):
+	def __screener(self):
 		# add logical
-		self.app.camera.flux_reader_event.unregister(self.skeleton_record_saver_listener)
-		skeleton_record = self.skeleton_record_saver_listener.save_skeletons_record()
-		image = self.video_widget.last_image
-
-		print("Recording took", int(skeleton_record[1]), "seconds")
-
+		self.__stop_video()
 		video_pop_up = customtkinter.CTkToplevel(self)
-		video_pop_up_lable = customtkinter.CTkLabel(video_pop_up, text="", font=("Helvetica", 32), image=EMPTY_IMAGE)
+
+		scrollable_frame = customtkinter.CTkFrame(video_pop_up)
+		scrollable_frame.grid(row=0, column=0, sticky="nsew")
+
+		video_pop_up_lable = customtkinter.CTkLabel(scrollable_frame, text="", font=("Helvetica", 32), image=image)
 		video_pop_up_lable.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
+		#set name with entry
+		name_label = customtkinter.CTkLabel(scrollable_frame, text="Name of the wall :", font=("Helvetica", 32))
+		name_label.grid(row=1, column=0, pady=uv(10), padx=uv(10))
 
-		def run_playback():
-			skeleton_index = 0
-			while skeleton_index < len(skeleton_record[0].skeletons):
-				skeletonned_image = image.copy()
-				for skeleton in skeleton_record[0].skeletons[skeleton_index]:
-					skeletonned_image = skeleton_visualizer(skeletonned_image, skeleton)
-				image_array = Image.fromarray(skeletonned_image)
-				image_to_show = customtkinter.CTkImage(image_array, size=self.__imageSize)
-				video_pop_up_lable.configure(image=image_to_show)
-				skeleton_index += 1
-				time.sleep(1/skeleton_record[0].frame_rate)
+		name = customtkinter.CTkEntry(scrollable_frame)
+		name.grid(row=1, column=1, pady=uv(10))
 
-		Thread(target=run_playback).start()
+		#set difficulty with combobox
+		difficulty_label = customtkinter.CTkLabel(scrollable_frame, text="Difficulty", font=("Helvetica", 32))
+		difficulty_label.grid(row=2, column=0, pady=uv(10), padx=uv(10))
+
+		difficulty = customtkinter.CTkComboBox(scrollable_frame, values=["1", "2", "3", "4", "5"])
+		difficulty.grid(row=2, column=1, pady=uv(10))
+
+		#set description with textbox
+		description_label = customtkinter.CTkLabel(scrollable_frame, text="Description", font=("Helvetica", 32))
+		description_label.grid(row=3, column=0, pady=uv(10))
+
+		text_box = customtkinter.CTkTextBox(scrollable_frame)
+		text_box.grid(row=4, column=0, pady=uv(10))
+
+		#set button to save
+		print(text_box.get("0.0","end"))
+		save_button = customtkinter.CTkButton(scrollable_frame, text="Save", command=self.__save("image", name.get(), difficulty.get(), text_box.get("0.0","end")), font=(FONT, 22))
+		save_button.grid(row=5, column=0, pady=uv(10))
 
 		self.stop_recording.grid_forget()
 		self.start_recording.grid(row=1, column=0, pady=uv(10))
-		self.load_recording.grid(row=1, column=1, pady=uv(10))
-		self.visibility_button.grid(row=0, column=2, padx=uv(10))
-
-	def __load_recording(self):
-		print("load recording")
-		self.app.show_page(RunViewerPage)
-
-	def __slider_event(self, event):
-		print("slider event")

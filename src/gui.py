@@ -28,8 +28,8 @@ class Application(customtkinter.CTk):
 	def __init__(self):
 		"""Constructor."""
 		super().__init__()
-		#self.camera = Camera("resources/videos/Escalade_Fixe.mp4")
-		self.camera = Camera()
+		self.camera = Camera("resources/videos/Escalade_Fixe.mp4")
+		#self.camera = Camera()
 		self.camera.start()
 		set_height_utils(self.winfo_screenheight())
 
