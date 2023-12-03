@@ -25,7 +25,7 @@ class AddPathPage(Page):
 		#self.__config_pop_up()
 		self.__create_widgets()
 
-		self.calibrate_button = customtkinter.CTkButton(self, text="Take a picture", command=self.__take_a_picture)
+		self.calibrate_button = customtkinter.CTkButton(self, text="Refresh", command=self.__refresh_image)
 		self.calibrate_button.grid(row=4, column=1, pady=iuv(10))
 		self.create_path_button = customtkinter.CTkButton(self, text="Validate", command=lambda : self.create_path())
 		self.create_path_button.grid(row=4, column=2, pady=iuv(10))
@@ -54,6 +54,11 @@ class AddPathPage(Page):
 		bin_img = customtkinter.CTkImage(Image.open(os.path.join(get_ressources_path(), "images", "bin.png")))
 		hold_trash_button = customtkinter.CTkLabel(self.hold_frame, text="",image=bin_img, width=uv(15), height=uv(30), fg_color=rgb_to_hex(color), corner_radius=uv(1000000000000))
 		
+
+		hold_label.bind("<Enter>", lambda event: self.image_driver.set_hold_to_highlight(self.image_driver.get_hold_by_index(index)))
+		hold_label.bind("<Leave>", lambda event: self.image_driver.remove_hold_to_highlight())
+
+
 		def remove_hold():
 			"""Remove the hold."""
 			self.image_driver.route_remove_box_by_index(index)
@@ -71,11 +76,6 @@ class AddPathPage(Page):
 	def get_path(self):
 		"""Return the path of the holds."""
 		return self.image_driver.route.get_route()
-	
-	def refresh_color(self):
-		"""Refresh the color of the holds when a hold is deleted."""
-		#Check if the color is correctly changed in the run page
-		pass
 
 	def create_path(self):
 		"""Create the path."""
@@ -100,7 +100,6 @@ class AddPathPage(Page):
 		#get all the holds
 		self.label_list : list[customtkinter.CTkLabel] = []
 		hold_list = self.get_path()
-		print(hold_list)
 		colors = generate_gradient_colors(len(hold_list))
 
 		for hold_num in range(len(hold_list)):
@@ -117,7 +116,10 @@ class AddPathPage(Page):
 			hold_label, trash_label = self.create_hold_label(hold_list[hold_num], hold_num, colors[hold_num])
 			self.label_list.append((hold_label, trash_label))
 
-		self.__modify_frame()
+		if len(hold_list) > 0:
+			self.__show_hold_menu()
+		else:
+			self.__hide_hold_menu()
 
 	def __empty_label_list(self):
 		if len(self.label_list) > 0:
@@ -126,7 +128,7 @@ class AddPathPage(Page):
 				label_tuple[1].destroy()
 			self.label_list = []
 
-	def __modify_frame(self):
+	def __show_hold_menu(self):
 		"""Save the path."""
 		#grid the frame with the holds
 		self.hold_frame.grid(row=0, column=0, rowspan=5, sticky="nswe")
@@ -137,6 +139,20 @@ class AddPathPage(Page):
 
 		self.calibrate_button.grid(row=4, column=2, pady=iuv(10))
 		self.create_path_button.grid(row=4, column=3, pady=iuv(10))
+
+	
+	def __hide_hold_menu(self):
+		"""Save the path."""
+		#grid the frame with the holds
+		self.hold_frame.grid_forget()
+		self.calibrate_button.grid_forget()
+		self.create_path_button.grid_forget()
+
+		self.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
+
+		self.calibrate_button.grid(row=4, column=1, pady=iuv(10))
+		self.create_path_button.grid(row=4, column=2, pady=iuv(10))
+
 		
 	def save_function(self, name : str):
 		print(name)
@@ -167,14 +183,22 @@ class AddPathPage(Page):
 		#self.after(3000, self.image_driver.refresh())
 		pass
 
+
+	def __refresh_image(self):
+		"""Refresh the image."""
+		self.image_driver.route_clear()
+		self.__refresh_hold_menu()
+		self.app.camera.flux_reader_event.refresh_holds()
+
+
 	def __create_widgets(self):
 		"""Creates the widgets for the add path page."""
 
 		self.i_image = InteractiveImage(self, width=iuv(500), height=iuv(500))
-		self.i_image.grid(row=0, column=1, columnspan=5, sticky="nswe")
+		self.i_image.grid(row=0, column=1, columnspan=5) # Don't use sticky here, it will break the image
 
 		self.image_driver = ImageDriver(self.i_image)
-		self.app.camera.flux_reader_event.register(self.image_driver)
+		# self.app.camera.flux_reader_event.register(self.image_driver)
 		self.image_driver.bind_click(self.__refresh_hold_menu)
 
 	# Page methods
@@ -182,3 +206,14 @@ class AddPathPage(Page):
 	def on_size_change(self, width, height):
 		"""Called when the size of the window change."""
 		self.i_image.change_size(v(50, height), v(50, height))
+
+	
+	def set_active(self):
+		super().set_active()
+		self.app.camera.flux_reader_event.register(self.image_driver)
+		self.app.camera.flux_reader_event.refresh_holds()
+
+
+	def set_inactive(self):
+		super().set_inactive()
+		self.app.camera.flux_reader_event.unregister(self.image_driver)

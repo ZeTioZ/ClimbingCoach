@@ -31,7 +31,7 @@ class ImageDriver(Listener):
 		self.holds: list[Box] = []
 		self.route: Route = Route()
 
-		print(f"Image driver created: said {id(self)}")
+		self.hold_to_highlight: Box | None = None
 
 
 	def get_interactive_image(self):
@@ -39,22 +39,25 @@ class ImageDriver(Listener):
 		return self.i_image
 
 
-	def draw_holds_and_path(self, image: np.ndarray|None = None, holds: list[Box]|None = None) -> Image:
+	def draw_element(self, image: np.ndarray|None = None, holds: list[Box]|None = None) -> Image:
 		"""Draw the holds on the image."""
 		if image is None:
 			image = self.image
 		if holds is None:
 			holds = self.holds
 
+
 		drawn_image = box_visualizer(image, holds)
-		drawn_image = path_box_visualizer(drawn_image, self.route.get_route())
 		drawn_image = draw_path(drawn_image, self.route.get_route())
+		drawn_image = path_box_visualizer(drawn_image, self.route.get_route())
+
+		if self.hold_to_highlight is not None:
+			drawn_image = box_visualizer(drawn_image, [self.hold_to_highlight], color=(127, 187, 30))
 
 		return Image.fromarray(drawn_image)
 
 	def route_add_box(self, box: Box):
 		"""Add a box to the path."""
-		print(f"Add box to route {box}: said {id(self)}")
 		self.route.add_step(box)
 
 	
@@ -62,17 +65,12 @@ class ImageDriver(Listener):
 		"""Remove a box from the path."""
 		if self.route.is_hold_in_route(box):
 			self.route.remove_step(box)
-		else:
-			print(f"The box is not in the route: {box}: said {id(self)}")
 
 	
 	def route_remove_box_by_index(self, index: int):
 		"""Remove a box from the path."""
 		if index < len(self.route.get_route()):
 			self.route_remove_box(self.route.get_route()[index])
-		else:
-			print(f"The index is out of range: {index} > {len(self.route.get_route())}: said {id(self)}")
-			print(f"Route: {self.route.get_route()}")
 	
 
 	def route_clear(self):
@@ -99,13 +97,32 @@ class ImageDriver(Listener):
 			create_route(self.route, "", 2)
 		else:
 			raise Exception("The name of the route is not set.")
+		
+
+	def set_hold_to_highlight(self, hold: Box):
+		"""Set the hold to highlight."""
+		self.hold_to_highlight = hold
+		print("hold to highlight : ", hold)
+		self.display_holds()
+	
+
+	def remove_hold_to_highlight(self):
+		"""Remove the hold to highlight."""
+		self.hold_to_highlight = None
+		self.display_holds()
+
+
+	def get_hold_by_index(self, index: int) -> Box:
+		"""Return the hold at the index."""
+		return self.route.route[index]
+
 
 	def click_right(self, event):
 		"""Called when the image is clicked."""
 		selected_box = self.__click(event)
 		if selected_box is not None and self.route.is_hold_in_route(selected_box):
 			self.route_remove_box(selected_box)
-			self.i_image.change_image(self.draw_holds_and_path())
+			self.i_image.change_image(self.draw_element())
 			if self.__click_callback is not None:
 				self.__click_callback()
 
@@ -115,7 +132,7 @@ class ImageDriver(Listener):
 		selected_box = self.__click(event)
 		if selected_box is not None:
 			self.route_add_box(selected_box)
-			self.i_image.change_image(self.draw_holds_and_path())
+			self.i_image.change_image(self.draw_element())
 			if self.__click_callback is not None:
 				self.__click_callback()
 
@@ -126,13 +143,17 @@ class ImageDriver(Listener):
 			return
 		default_x = int(self.i_image.default_size_width * event.x / self.i_image.winfo_width())
 		default_y = int(self.i_image.default_size_height * event.y / self.i_image.winfo_height())
-		print(default_x, default_y)
 		return find_selected_hold(self.holds, default_x, default_y)
 
 	__click_callback = None
 
 	def bind_click(self, callback: Callable[[None], None]):
 		self.__click_callback = callback
+
+
+	def underlight_hold(self, hold: Box):
+		"""Underlight the hold."""
+		self.i_image.change_image(self.draw_element())
 
 	# LISTENER
 
@@ -142,8 +163,10 @@ class ImageDriver(Listener):
 			return
 
 		if FluxReaderEventType.HOLDS_PROCESSED_EVENT in event_types:
-			self.image = args[1]
-			self.__on_hold_received(args[0], args[1])
+			frame = args[1]
+			if frame is not None:
+				self.image = args[1]
+				self.__on_hold_received(args[0], args[1])
 
 
 	def __on_hold_received(self, holds: list[Box], frame: np.ndarray):
@@ -158,7 +181,7 @@ class ImageDriver(Listener):
 		"""Change the image."""
 		if holds is None:
 			holds = self.holds
-		self.i_image.change_image(self.draw_holds_and_path(self.image, holds))
+		self.i_image.change_image(self.draw_element(self.image, holds))
 
 	#TODO : update holds
 	#def __refresh_holds(self)
