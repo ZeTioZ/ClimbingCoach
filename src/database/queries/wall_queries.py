@@ -6,8 +6,8 @@ from ..models.wall import Wall
 DATABASE_HANDLER = database_handler.get_instance_database()
 
 
-def create_wall(name: str, description: str = None, image: ndarray = None):
-	wall = Wall(name=name, description=description, image=image)
+def create_wall(name: str, difficulty: int, description: str = None, image: bytes = None):
+	wall = Wall(name=name, difficulty=difficulty, description=description, image=image)
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()
 		try:

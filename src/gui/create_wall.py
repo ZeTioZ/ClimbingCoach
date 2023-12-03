@@ -1,22 +1,16 @@
 """Module tkinter for the test page."""
-import os.path
-from threading import Thread
-from typing import Callable
-
-import customtkinter
 import cv2
-import numpy as np
-import time
-from PIL import Image
-from threads.camera_thread import Camera
+import pickle
+import customtkinter
 
-from utils.draw_utils import skeleton_visualizer
-from listeners.skeleton_listener import SkeletonRecordSaverListener
+from PIL import Image
+from threading import Thread
+
 from enums.flux_reader_event_type import FluxReaderEventType
 from gui.abstract.page import Page
-from gui.run_viewer_page import RunViewerPage
-from gui.utils import EMPTY_IMAGE, FONT, SECONDARY_COLOR, uv
+from gui.utils import FONT, uv
 from listeners.video_widget import VideoWidget
+from database.queries import wall_queries
 
 
 class CreateWall(Page):
@@ -47,9 +41,9 @@ class CreateWall(Page):
 		self.image_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 32))
 		self.image_label.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
-		self.screen = customtkinter.CTkButton(self, text="ScreenShot", command=self.__screener,
+		self.screen = customtkinter.CTkButton(self, text="Screenshot", command=self.__screener,
 		                                              font=(FONT, 22))
-		self.screen.grid(row=1, column=0, pady=uv(10))
+		self.screen.grid(row=1, column=0, pady=uv(10), columnspan=2)
 
 		self.video_widget = VideoWidget([FluxReaderEventType.GET_FRAME_EVENT])
 
@@ -110,45 +104,54 @@ class CreateWall(Page):
 
 	def __save(self, image, name, difficulty, text_box):
 		print(name, difficulty, text_box)
-		#faire appel a l'api pour save
-		#changer de page +fermer la window
+		wall_queries.create_wall(name=name, difficulty=difficulty, description=text_box, image=pickle.dumps(image))
+		#TODO: ajouter difficulty dans l'appel quand se sera set up
+
 
 	def __screener(self):
 		# add logical
 		video_pop_up = customtkinter.CTkToplevel(self)
-		video_pop_up.geometry("300x300")
+		video_pop_up.geometry("600x600")
+
+		video_pop_up.grid_rowconfigure(0, weight=1)
+		video_pop_up.grid_columnconfigure(0, weight=1)
 
 		scrollable_frame = customtkinter.CTkScrollableFrame(video_pop_up)
 		scrollable_frame.grid(row=0, column=0, sticky="nsew")
 
+		scrollable_frame.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
+		scrollable_frame.grid_columnconfigure((0, 1), weight=1)
+
 		image = Image.fromarray(self.__get_frame())
 		image_to_show = customtkinter.CTkImage(image,size=self.__imageSize)
-		video_pop_up_lable = customtkinter.CTkLabel(scrollable_frame, text="", font=("Helvetica", 32), image=image_to_show)
-		video_pop_up_lable.grid(row=0, column=0, columnspan=2, sticky="nsew")
+		video_pop_up_label = customtkinter.CTkLabel(scrollable_frame, text="", font=(FONT, 32), image=image_to_show)
+		video_pop_up_label.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
 		#set name with entry
-		name_label = customtkinter.CTkLabel(scrollable_frame, text="Name of the wall :", font=("Helvetica", 32))
-		name_label.grid(row=1, column=0, pady=uv(10), padx=uv(10))
+		name_label = customtkinter.CTkLabel(scrollable_frame, text="Name of the wall :", font=(FONT, 32))
+		name_label.grid(row=1, column=0, pady=uv(10), padx=uv(10), sticky="e")
 
-		name = customtkinter.CTkEntry(scrollable_frame)
-		name.grid(row=1, column=1, pady=uv(10))
+		name = customtkinter.CTkEntry(scrollable_frame, width= uv(150))
+		name.grid(row=1, column=1, pady=uv(10), sticky="w")
 
 		#set difficulty with combobox
-		difficulty_label = customtkinter.CTkLabel(scrollable_frame, text="Difficulty", font=("Helvetica", 32))
-		difficulty_label.grid(row=2, column=0, pady=uv(10), padx=uv(10))
+		difficulty_label = customtkinter.CTkLabel(scrollable_frame, text="Difficulty :", font=(FONT, 32))
+		difficulty_label.grid(row=2, column=0, pady=uv(10), padx=uv(10), sticky="e")
 
-		difficulty = customtkinter.CTkComboBox(scrollable_frame, values=["1", "2", "3", "4", "5"])
-		difficulty.grid(row=2, column=1, pady=uv(10))
+		difficulty = customtkinter.CTkComboBox(scrollable_frame, values=["1", "2", "3", "4"], state = "readonly", width= uv(150))
+		difficulty.grid(row=2, column=1, pady=uv(10), sticky="w")
 
 		#set description with textbox
-		description_label = customtkinter.CTkLabel(scrollable_frame, text="Description", font=("Helvetica", 32))
-		description_label.grid(row=3, column=0, pady=uv(10))
+		description_label = customtkinter.CTkLabel(scrollable_frame, text="Description", font=(FONT, 32))
+		description_label.grid(row=3, column=0, columnspan = 2, pady=uv(10))
 
-		text_box = customtkinter.CTkTextbox(scrollable_frame)
-		text_box.grid(row=4, column=0, pady=uv(10))
+		text_box = customtkinter.CTkTextbox(scrollable_frame, width= uv(400))
+		text_box.grid(row=4, column=0, pady=uv(10), columnspan = 2)
 
 		#set button to save
 		print(text_box.get("0.0","end"))
-		save_button = customtkinter.CTkButton(scrollable_frame, text="Save", command=self.__save("image", name.get(), difficulty.get(), text_box.get("0.0","end")), font=(FONT, 22))
-		save_button.grid(row=5, column=0, pady=uv(10))
+		save_button = customtkinter.CTkButton(scrollable_frame, text="Save",
+										command=lambda : [self.__save(self.__get_frame(), name.get(), difficulty.get(), text_box.get("0.0","end")), video_pop_up.destroy()], #circular import si on show_page(TrailPage)
+										font=(FONT, 22))
+		save_button.grid(row=5, column=0, columnspan=2, pady=uv(10))
 

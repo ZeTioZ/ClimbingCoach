@@ -1,8 +1,10 @@
 """Module for tkinter interface of trail page."""
 import os.path
+import pickle
+import numpy as np
 import tkinter as tk
-
 import customtkinter
+
 from PIL import Image
 
 from gui.create_wall import CreateWall
@@ -10,7 +12,8 @@ from gui.abstract.page import Page
 from gui.app_state import AppState
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, \
 	SECONDARY_HOVER_COLOR, COLOR_DIFFICULTY
-from gui.utils import v, uv, iuv, min_max_range
+from gui.utils import v, uv, iuv, min_max_range, get_ressources_path
+from database.queries import wall_queries
 
 state = AppState()
 
@@ -54,64 +57,67 @@ class TrailPage(Page):
 		self.trail_detail_frame.grid_rowconfigure((RID_TITLE, RID_DIFFICULTY), weight=1)
 		self.trail_detail_frame.grid_rowconfigure(RID_DESCR, weight=3)
 
-		current_trail = self.__fletch_trail_detail()
-
-		self.trail_image = customtkinter.CTkImage(Image.open(self.__get_trail_image_path(current_trail["image"])),
-												  size=(uv(200), uv(200)))
-		self.trail_label = customtkinter.CTkLabel(self.trail_detail_frame, text="", image=self.trail_image)
-		self.trail_label.grid(row=RID_DESCR, rowspan=1, column=CID_RIGHT, sticky="we")
-
-		self.trail_selection_button = customtkinter.CTkButton(self.trail_detail_frame, text="Select",
-															  command=lambda: self.selection_trail())
-		self.trail_selection_button.grid(row=RID_DIFFICULTY, column=CID_RIGHT, sticky="n")
-
-		self.detail_title_name = customtkinter.CTkLabel(self.trail_detail_frame, text=current_trail["name"],
-														font=(FONT, iuv(32), "bold"), fg_color=SECONDARY_COLOR,
-														corner_radius=20, width=uv(350))
-		self.detail_title_name.grid(row=RID_TITLE, column=CID_LEFT, columnspan=2, sticky="", ipady=uv(10))
-
-		self.detail_description = customtkinter.CTkTextbox(self.trail_detail_frame, font=(FONT, iuv(16)), wrap=tk.WORD,
-														   fg_color="transparent")
-		self.detail_description.insert(tk.END, current_trail["description"])
-		self.detail_description.configure(state=tk.DISABLED)
-		self.detail_description.grid(row=RID_DESCR, column=CID_LEFT, sticky="nswe", pady=(uv(50), uv(0)))
-
-		self.detail_difficulty = customtkinter.CTkFrame(self.trail_detail_frame, fg_color="transparent")
-		self.detail_difficulty.grid_columnconfigure((1, 2, 3, 4, 5), weight=1)
-		self.detail_difficulty.grid_columnconfigure((0, 6), weight=2)
-		self.detail_difficulty.grid(row=RID_DIFFICULTY, column=CID_LEFT, sticky="nwe")
-
-		self.difficulty: list[customtkinter.CTkFrame] = []
-
-		for i in range(5):
-			self.difficulty.append(
-				customtkinter.CTkFrame(self.detail_difficulty, fg_color="green", corner_radius=uv(1000), width=uv(25),
-									   height=uv(25), border_color="white"))
-			self.difficulty[i].grid(row=0, column=i + 1)
-
-		self.__set_difficulty(current_trail["difficulty"])
-
-		# get all the trails in the db
-		test_list = self.__fetch_trail_list()
-
-		self.button_list: list[customtkinter.CTkButton] = []
-		for trail in test_list:
-			self.trail_button = self.create_button(trail, test_list.index(trail))
-			self.button_list.append(self.trail_button)
-
-
-		#if state.get_user().role == "admin":    
-		#self.add_wall_button = customtkinter.CTkButton(self.trail_detail_frame, text="Add wall", command=self.show_page(CreateWall))
-
+		
 	def set_active(self):
 		"""Set the page active."""
-		self.user = state.get_user()
-		if self.user.role == "admin":
-			self.add_wall_button = customtkinter.CTkButton(self.trail_list_frame, text="Add wall", command=lambda: self.app.show_page(CreateWall))
-			self.add_wall_button.grid(row=0, column=0)
+		self.all_walls = wall_queries.get_all_walls()
 
-		#deplacer dans myspace
-		
+		if len(self.all_walls) > 0:
+			self.current_trail = self.__fetch_trail_detail()
+			# Convert the image from bytes to numpy array
+			image: np.array = pickle.loads(self.current_trail["image"])
+			image_fromarray = Image.fromarray(image)
+
+			self.trail_image = customtkinter.CTkImage(image_fromarray, size=(uv(200), uv(200)))
+			self.trail_label = customtkinter.CTkLabel(self.trail_detail_frame, text="", image=self.trail_image)
+			self.trail_label.grid(row=RID_DESCR, rowspan=1, column=CID_RIGHT, sticky="we")
+
+			self.trail_selection_button = customtkinter.CTkButton(self.trail_detail_frame, text="Select",
+																command=lambda: self.selection_trail())
+			self.trail_selection_button.grid(row=RID_DIFFICULTY, column=CID_RIGHT, sticky="n")
+
+			self.detail_title_name = customtkinter.CTkLabel(self.trail_detail_frame, text=self.current_trail["name"],
+															font=(FONT, iuv(32), "bold"), fg_color=SECONDARY_COLOR,
+															corner_radius=20, width=uv(350))
+			self.detail_title_name.grid(row=RID_TITLE, column=CID_LEFT, columnspan=2, sticky="", ipady=uv(10))
+
+			self.detail_description = customtkinter.CTkTextbox(self.trail_detail_frame, font=(FONT, iuv(16)), wrap=tk.WORD,
+															fg_color="transparent")
+			self.detail_description.insert(tk.END, self.current_trail["description"])
+			self.detail_description.configure(state=tk.DISABLED)
+			self.detail_description.grid(row=RID_DESCR, column=CID_LEFT, sticky="nswe", pady=(uv(50), uv(0)))
+
+			self.detail_difficulty = customtkinter.CTkFrame(self.trail_detail_frame, fg_color="transparent")
+			self.detail_difficulty.grid_columnconfigure((1, 2, 3, 4, 5), weight=1)
+			self.detail_difficulty.grid_columnconfigure((0, 6), weight=2)
+			self.detail_difficulty.grid(row=RID_DIFFICULTY, column=CID_LEFT, sticky="nwe")
+
+			self.difficulty: list[customtkinter.CTkFrame] = []
+
+			for i in range(5):
+				self.difficulty.append(
+					customtkinter.CTkFrame(self.detail_difficulty, fg_color="green", corner_radius=uv(1000), width=uv(25),
+										height=uv(25), border_color="white"))
+				self.difficulty[i].grid(row=0, column=i + 1)
+
+			self.__set_difficulty(self.current_trail["difficulty"])
+
+			# get all the trails in the db
+		name_list = self.all_walls
+
+		self.button_list: list[customtkinter.CTkButton] = []
+		for trail in name_list:
+			self.trail_button = self.create_button(trail.name, name_list.index(trail))
+			self.button_list.append(self.trail_button)
+
+		self.user = state.get_user()
+		#TODO: faire un reload des pistes
+		if self.user.role == "admin":
+			get_image_button = customtkinter.CTkImage(Image.open(os.path.join(get_ressources_path(), "images", "add_button.png")), size=(uv(40), uv(40)))
+			self.add_wall_button = customtkinter.CTkButton(self.trail_list_frame, image = get_image_button, text="", command=lambda: self.app.show_page(CreateWall), corner_radius=uv(10000000), width=uv(40), height=uv(40), fg_color="transparent")
+			self.add_wall_button.grid(row=0, column=0, pady=uv(10))
+
+
 	def __set_description(self, description: str):
 		"""Set the description of the trail."""
 		self.detail_description.configure(state=tk.NORMAL)
@@ -135,18 +141,12 @@ class TrailPage(Page):
 		"""Set the title of the page."""
 		self.detail_title_name.configure(text=title)
 
-	def __fetch_trail_list(self):
-		"""Fetch the trail list from the database."""
-		return [f"Path {i}" for i in range(1, 13)]
-		# return [f"Piste {run}" for run in route_queries.get_all_routes()]
-
-	def __fletch_trail_detail(self):
+	def __fetch_trail_detail(self):
 		"""Fetch the trail detail from the database."""
-		return {"title": f"Piste {self.choose_index + 1}",
-				"name": f"Piste {self.choose_index + 1}",
-				"difficulty": self.choose_index % 5,  # in [0..4]
-				"image": f"trail_{self.choose_index + 1}.jpg",
-				"description": f"{self.choose_index}Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget ultricies ultrices, nunc nisl ultricies nunc, nec aliquam nisl nunc eget nisl. Nulla facilisi. Nu"
+		return {"name": self.all_walls[self.choose_index].name,
+				"difficulty": self.all_walls[self.choose_index].difficulty,  # TODO: ajouter quand l'api sera modifiée
+				"image": self.all_walls[self.choose_index].image,
+				"description": self.all_walls[self.choose_index].description
 				}
 
 	def create_button(self, display_text, index):
@@ -179,7 +179,7 @@ class TrailPage(Page):
 			state.set_trail(None)
 		self.app.update_menu()
 
-		# faire le back-end pour enregistrer le choix de l'utilisateur
+		# TODO: faire le back-end pour enregistrer le choix de l'utilisateur
 
 	def show_trail_detail(self, trail_chosen):
 		"""Shows the trail detail page."""
@@ -199,49 +199,46 @@ class TrailPage(Page):
 		self.button_list[trail_chosen].configure(fg_color=SECONDARY_COLOR, hover_color=SECONDARY_HOVER_COLOR)
 		self.trail_label.grid_forget()
 
-		self.__image_loader("trail_" + str(trail_chosen + 1))
+		self.__image_loader()
 		self.trail_label.grid(row=RID_DESCR, column=CID_RIGHT)
+	
+		self.current_trail = self.__fetch_trail_detail()
+		self.__set_title(self.current_trail["name"])
+		self.__set_difficulty(self.current_trail["difficulty"])
+		self.__set_description(self.current_trail["description"])
 
-		current_trail = self.__fletch_trail_detail()
-		self.__set_title(current_trail["name"])
-		self.__set_difficulty(current_trail["difficulty"])
-		self.__set_description(current_trail["description"])
-
-	def __image_loader(self, image_name: str):
+	def __image_loader(self):
 		"""Loads an image from the given path."""
 		image_size = self.trail_image.cget("size")
-		self.trail_image = customtkinter.CTkImage(Image.open(self.__get_trail_image_path(image_name + ".jpg")),
+		image: np.array = pickle.loads(self.current_trail["image"])
+		image_fromarray = Image.fromarray(image)
+
+		self.trail_image = customtkinter.CTkImage(image_fromarray,
 												  size=image_size)
 		self.trail_label.configure(image=self.trail_image)
 
-	def __get_trail_image_path(self, trail_image_name: str):
-		"""Return the path of the icon passed in parameter."""
-		parent_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-		path = os.path.join(parent_path, 'resources', 'images', trail_image_name)
-		if os.path.exists(path):
-			return path
-		return os.path.join(parent_path, 'resources', 'images', "trail_1.jpg")
 	
 	def on_size_change(self, width, height):
 		super().on_size_change(width, height)
 
-		image_size = min_max_range(uv(75), uv(1000), v(22, width))
-		self.trail_image.configure(size=(image_size, image_size))
-		self.trail_label.configure(height=iuv(image_size), width=iuv(image_size))
+		if len(self.all_walls) > 0:
+			image_size = min_max_range(uv(75), uv(1000), v(22, width))
+			self.trail_image.configure(size=(image_size, image_size))
+			self.trail_label.configure(height=iuv(image_size), width=iuv(image_size))
 
-		font_style_default = (FONT, min_max_range(iuv(8), iuv(28), int(v(1.9, width))))
-		font_style_title = (FONT, min_max_range(iuv(12), iuv(32), int(v(2.5, width))), "bold")
+			font_style_default = (FONT, min_max_range(iuv(8), iuv(28), int(v(1.9, width))))
+			font_style_title = (FONT, min_max_range(iuv(12), iuv(32), int(v(2.5, width))), "bold")
 
-		self.trail_selection_button.configure(height=v(5, height), width=image_size, font=font_style_default)
-		self.detail_description.configure(font=font_style_default)
+			self.trail_selection_button.configure(height=v(5, height), width=image_size, font=font_style_default)
+			self.detail_description.configure(font=font_style_default)
 
-		for button in self.button_list:
-			button.configure(height=v(5, height), width=image_size, font=font_style_default)
-		self.trail_list_title.configure(font=font_style_title)
+			for button in self.button_list:
+				button.configure(height=v(5, height), width=image_size, font=font_style_default)
+			self.trail_list_title.configure(font=font_style_title)
 
-		size_difficulty = min_max_range(uv(15), uv(100), v(2.5, width))
-		for i in range(5):
-			self.difficulty[i].configure(width=size_difficulty, height=size_difficulty)
+			size_difficulty = min_max_range(uv(15), uv(100), v(2.5, width))
+			for i in range(5):
+				self.difficulty[i].configure(width=size_difficulty, height=size_difficulty)
 
 	def get_name(self):
 		return "Trail selection"
