@@ -1,4 +1,5 @@
 from .box import Box
+from .position import Position
 
 
 class Hold:
@@ -21,7 +22,7 @@ class Hold:
 		"""
 		return str(self.box)
 
-	def get_center(self) -> tuple:
+	def get_center(self) -> Position:
 		"""
 		:return: A tuple representing the center of the hold.
 		"""

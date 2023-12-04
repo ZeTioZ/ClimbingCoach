@@ -1,4 +1,4 @@
-import cv2  # TODO change this to use tkinter
+import cv2
 
 from enums.event_type import EventType
 from enums.flux_reader_event_type import FluxReaderEventType

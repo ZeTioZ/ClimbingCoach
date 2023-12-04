@@ -31,7 +31,7 @@ class Itinerary:
 		try:
 			self.itinerary[millisecond] = skeleton
 			return True, "The skeleton has been added to the itinerary"
-		except:
+		except AttributeError:
 			return False, "An error occurred while adding the skeleton to the itinerary"
 
 	def get_skeleton(self, millisecond: int) -> Skeleton | None:

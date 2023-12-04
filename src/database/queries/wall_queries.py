@@ -1,4 +1,4 @@
-from numpy import ndarray
+from sqlalchemy.exc import SQLAlchemyError
 
 from .. import database_handler
 from ..models.wall import Wall
@@ -13,7 +13,7 @@ def create_wall(name: str, difficulty: int, description: str = None, image: byte
 		try:
 			session.add(wall)
 			session.commit()
-		except:
+		except SQLAlchemyError:
 			session.rollback()
 			raise
 
@@ -35,6 +35,6 @@ def delete_wall_by_name(name: str):
 		try:
 			wall.delete()
 			session.commit()
-		except:
+		except SQLAlchemyError:
 			session.rollback()
 			raise

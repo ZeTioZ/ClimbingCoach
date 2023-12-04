@@ -1,3 +1,5 @@
+from sqlalchemy.exc import SQLAlchemyError
+
 from database import user_queries
 from objects.skeletons_record import SkeletonsRecord
 from utils.serializer_utils import serialize_skeletons_record
@@ -8,7 +10,9 @@ DATABASE_HANDLER = database_handler.get_instance_database()
 
 
 def create_run(skeletons_record: SkeletonsRecord, runtime: int, username: str, route_name: str):
-	user = user_queries.get_user_by_username(username)
+	user = user_queries.get_user_by_name(username)
+	if user is None:
+		raise ValueError(f"User {username} does not exist.")
 	skeletons_record_serialized = serialize_skeletons_record(skeletons_record)
 	run = Run(skeletons=skeletons_record_serialized, runtime=runtime, username=username, route_name=route_name)
 	with DATABASE_HANDLER.get_session() as session:
@@ -16,7 +20,7 @@ def create_run(skeletons_record: SkeletonsRecord, runtime: int, username: str, r
 		try:
 			session.add(run)
 			session.commit()
-		except:
+		except SQLAlchemyError:
 			session.rollback()
 			raise
 

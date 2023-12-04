@@ -1,4 +1,5 @@
 import bcrypt
+from sqlalchemy.exc import SQLAlchemyError
 
 from .. import database_handler
 from ..models.user import User
@@ -25,7 +26,7 @@ def create_user(username: str, password: str, role: str = "user"):
 		try:
 			session.add(user)
 			session.commit()
-		except:
+		except SQLAlchemyError:
 			session.rollback()
 			raise
 
@@ -63,7 +64,7 @@ def delete_user_by_name(username: str):
 		try:
 			user.delete()
 			session.commit()
-		except:
+		except SQLAlchemyError:
 			session.rollback()
 			raise
 
