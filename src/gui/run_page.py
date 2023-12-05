@@ -9,6 +9,7 @@ import numpy as np
 import time
 from PIL import Image
 
+from threads.camera_thread import Camera
 from utils.draw_utils import skeleton_visualizer
 from listeners.skeleton_listener import SkeletonRecordSaverListener
 from enums.flux_reader_event_type import FluxReaderEventType
@@ -179,6 +180,10 @@ class RunPage(Page):
 
 	def set_active(self):
 		super().set_active()
+		flux = self.app.camera.flux_reader_event.flux
+		if not isinstance(flux, int):
+			self.app.camera = Camera(flux)
+			self.app.camera.start()
 		self.app.camera.flux_reader_event.register(self.video_widget)
 		self.__init_cap()
 

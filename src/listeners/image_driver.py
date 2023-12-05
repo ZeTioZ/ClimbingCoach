@@ -144,7 +144,8 @@ class ImageDriver(Listener):
 		self.display_holds(holds=holds)
 
 	# UTILS
-	def change_image(self, holds: list[Box] = None, image: np.ndarray = None):
+
+	def display_holds(self, holds: list[Box] = None):
 		"""Change the image."""
 		if holds is None:
 			holds = self.holds

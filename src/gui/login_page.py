@@ -104,7 +104,7 @@ class LoginPage(Page):
 			print(state.get_user())
 
 	def __get_usernames(self, username: str):
-		self.user = user_queries.get_user_by_name(username)
+		self.user = user_queries.get_user_by_username(username)
 		return self.user
 
 	def __get_all_usernames(self):

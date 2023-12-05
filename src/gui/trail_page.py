@@ -114,7 +114,7 @@ class TrailPage(Page):
 		#TODO: faire un reload des pistes
 		if self.user.role == "admin":
 			get_image_button = customtkinter.CTkImage(Image.open(os.path.join(get_ressources_path(), "images", "add_button.png")), size=(uv(40), uv(40)))
-			self.add_wall_button = customtkinter.CTkButton(self.trail_list_frame, image = get_image_button, text="", command=lambda: self.app.show_page(CreateWall), corner_radius=uv(10000000), width=uv(40), height=uv(40), fg_color="transparent")
+			self.add_wall_button = customtkinter.CTkButton(self.trail_list_frame, image=get_image_button, text="", command=lambda: self.app.show_page(CreateWall), corner_radius=uv(10000000), width=uv(40), height=uv(40), fg_color="transparent")
 			self.add_wall_button.grid(row=0, column=0, pady=uv(10))
 
 

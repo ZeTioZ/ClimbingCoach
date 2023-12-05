@@ -16,7 +16,7 @@ def create_user(username: str, password: str, role: str = "user"):
 	:param role: The role of the user.
 	"""
 	with DATABASE_HANDLER.get_session() as session:
-		if get_user_by_name(username) is not None:
+		if get_user_by_username(username) is not None:
 			raise ValueError("A user with the same name already exists.")
 
 		salt = bcrypt.gensalt()
@@ -31,7 +31,7 @@ def create_user(username: str, password: str, role: str = "user"):
 			raise
 
 
-def get_user_by_name(username: str) -> User:
+def get_user_by_username(username: str) -> User:
 	"""
 	Gets a user from the database by its username.
 
@@ -58,7 +58,7 @@ def delete_user_by_name(username: str):
 
 	:param username: The name of the user.
 	"""
-	user = get_user_by_name(username)
+	user = get_user_by_username(username)
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()
 		try:

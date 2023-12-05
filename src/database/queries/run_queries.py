@@ -10,7 +10,7 @@ DATABASE_HANDLER = database_handler.get_instance_database()
 
 
 def create_run(skeletons_record: SkeletonsRecord, runtime: int, username: str, route_name: str):
-	user = user_queries.get_user_by_name(username)
+	user = user_queries.get_user_by_username(username)
 	if user is None:
 		raise ValueError(f"User {username} does not exist.")
 	skeletons_record_serialized = serialize_skeletons_record(skeletons_record)

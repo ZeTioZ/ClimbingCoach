@@ -17,8 +17,7 @@ class CreateWall(Page):
 	__reading = False
 	__thread_actif = False
 	__isCameraLoaded = False
-	__imageSize = (1,1)
-
+	__imageSize = (1, 1)
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
 		"""Constructor. Singleton then init executed only once."""
@@ -42,16 +41,15 @@ class CreateWall(Page):
 		self.image_label.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
 		self.screen = customtkinter.CTkButton(self, text="Screenshot", command=self.__screener,
-		                                              font=(FONT, 22))
+		                                      font=(FONT, 22))
 		self.screen.grid(row=1, column=0, pady=uv(10), columnspan=2)
 
 		self.video_widget = VideoWidget([FluxReaderEventType.GET_FRAME_EVENT])
 
-
 	def set_active(self):
 		self.thread_video = Thread(target=self.__start_video)
 		self.thread_video.start()
-	
+
 	def set_inactive(self):
 		self.__stop_video()
 
@@ -60,12 +58,12 @@ class CreateWall(Page):
 		frame = self.video_widget.last_image
 		return frame
 
-	def __read_video(self):	
+	def __read_video(self):
 		if self.is_recording:
 			frame = self.__get_frame()
 			if frame is not None:
 				self.__display_image(frame)
-			self.after(10,self.__read_video)
+			self.after(10, self.__read_video)
 		else:
 			return
 
@@ -80,11 +78,11 @@ class CreateWall(Page):
 
 	def get_name(self):
 		return "AddWall"
-	
+
 	def __display_image(self, image: Image):
 		"""Display the image passed in parameter."""
 		image_array = Image.fromarray(image)
-		image_to_show = customtkinter.CTkImage(image_array,size=self.__imageSize)
+		image_to_show = customtkinter.CTkImage(image_array, size=self.__imageSize)
 		self.image_label.configure(image=image_to_show)
 
 	def __scale(self, scale_percent: int = 100):
@@ -105,8 +103,8 @@ class CreateWall(Page):
 	def __save(self, image, name, difficulty, text_box):
 		print(name, difficulty, text_box)
 		wall_queries.create_wall(name=name, difficulty=difficulty, description=text_box, image=pickle.dumps(image))
-		#TODO: ajouter difficulty dans l'appel quand se sera set up
 
+	# TODO: ajouter difficulty dans l'appel quand se sera set up
 
 	def __screener(self):
 		# add logical
@@ -123,35 +121,38 @@ class CreateWall(Page):
 		scrollable_frame.grid_columnconfigure((0, 1), weight=1)
 
 		image = Image.fromarray(self.__get_frame())
-		image_to_show = customtkinter.CTkImage(image,size=self.__imageSize)
+		image_to_show = customtkinter.CTkImage(image, size=self.__imageSize)
 		video_pop_up_label = customtkinter.CTkLabel(scrollable_frame, text="", font=(FONT, 32), image=image_to_show)
 		video_pop_up_label.grid(row=0, column=0, columnspan=2, sticky="nsew")
 
-		#set name with entry
+		# set name with entry
 		name_label = customtkinter.CTkLabel(scrollable_frame, text="Name of the wall :", font=(FONT, 32))
 		name_label.grid(row=1, column=0, pady=uv(10), padx=uv(10), sticky="e")
 
-		name = customtkinter.CTkEntry(scrollable_frame, width= uv(150))
+		name = customtkinter.CTkEntry(scrollable_frame, width=uv(150))
 		name.grid(row=1, column=1, pady=uv(10), sticky="w")
 
-		#set difficulty with combobox
+		# set difficulty with combobox
 		difficulty_label = customtkinter.CTkLabel(scrollable_frame, text="Difficulty :", font=(FONT, 32))
 		difficulty_label.grid(row=2, column=0, pady=uv(10), padx=uv(10), sticky="e")
 
-		difficulty = customtkinter.CTkComboBox(scrollable_frame, values=["1", "2", "3", "4"], state = "readonly", width= uv(150))
+		difficulty = customtkinter.CTkComboBox(scrollable_frame, values=["1", "2", "3", "4", "5"], state="readonly",
+		                                       width=uv(150))
 		difficulty.grid(row=2, column=1, pady=uv(10), sticky="w")
 
-		#set description with textbox
+		# set description with textbox
 		description_label = customtkinter.CTkLabel(scrollable_frame, text="Description", font=(FONT, 32))
-		description_label.grid(row=3, column=0, columnspan = 2, pady=uv(10))
+		description_label.grid(row=3, column=0, columnspan=2, pady=uv(10))
 
-		text_box = customtkinter.CTkTextbox(scrollable_frame, width= uv(400))
-		text_box.grid(row=4, column=0, pady=uv(10), columnspan = 2)
+		text_box = customtkinter.CTkTextbox(scrollable_frame, width=uv(400))
+		text_box.grid(row=4, column=0, pady=uv(10), columnspan=2)
 
-		#set button to save
-		print(text_box.get("0.0","end"))
+		# set button to save
+		print(text_box.get("0.0", "end"))
 		save_button = customtkinter.CTkButton(scrollable_frame, text="Save",
-										command=lambda : [self.__save(self.__get_frame(), name.get(), difficulty.get(), text_box.get("0.0","end")), video_pop_up.destroy()], #circular import si on show_page(TrailPage)
-										font=(FONT, 22))
+		                                      command=lambda: [
+			                                      self.__save(self.__get_frame(), name.get(), int(difficulty.get()) - 1,
+			                                                  text_box.get("0.0", "end")), video_pop_up.destroy()],
+		                                      # circular import si on show_page(TrailPage)
+		                                      font=(FONT, 22))
 		save_button.grid(row=5, column=0, columnspan=2, pady=uv(10))
-
