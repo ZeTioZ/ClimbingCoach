@@ -10,5 +10,5 @@ class Listener(ABC):
 		self.listened_event_types: EventType = event_types
 
 	@abstractmethod
-	def update(self, event: Event, update_event_types: [EventType] = [], *args, **kwargs):
+	def update(self, event: Event, update_event_types: [EventType], *args, **kwargs):
 		pass

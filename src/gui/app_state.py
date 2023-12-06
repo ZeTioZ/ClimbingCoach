@@ -6,6 +6,7 @@ import pickle
 
 from gui.abstract.singleton import Singleton
 from gui.utils import get_ressources_path
+from database.models.user import User
 
 
 class AppState(metaclass=Singleton):
@@ -65,6 +66,7 @@ class AppState(metaclass=Singleton):
 
 	def set_trail(self, trail: int | None):
 		"""Set the trail. (Id of the current selected trail)"""
+		#create_wall()
 		if trail is not None and trail < 0:
 			print("set_trail error: trail < 0\nNormalize to None")
 			trail = None
@@ -94,20 +96,19 @@ class AppState(metaclass=Singleton):
 		"""Return true if a run is selected."""
 		return self.__run is not None
 
-	# Login
-	def set_username(self, user: str):
+	# Login	
+	def set_user(self, user: User):
 
 		assert user is not None, "app_state: user is set to None"
 		assert user != "", "app_state: user is set to empty string"
-
 		self.__user = user
 
-	def get_username(self) -> str:
+	def get_user(self) -> User:
 		"""Return the user."""
 		if self.__user is None:
-			return ""
+			return None
 		return self.__user
-
+    
 	def get_camera_name(self) -> str:
 		"""Return the camera name."""
 		return self.__camera_name

@@ -59,9 +59,6 @@ class LoginPage(Page):
 			Image.open(os.path.join(app_path, "resources", "images", "incroyable_logo_climbing_coach.png")),
 			size=(100, 100))
 		self.title = customtkinter.CTkLabel(self, text="", font=TF, image=self.app_image)
-		self.title.bind("<Enter>", lambda e: self.title.configure(text="Logo", image=customtkinter.CTkImage(
-			Image.frombytes("RGBA", (1, 1), b"\x00\x00\x00\x00"))))
-		self.title.bind("<Leave>", lambda e: self.title.configure(text="", image=self.app_image))
 		self.title.grid(row=self.RI_TITLE, column=self.CI_LEFT, columnspan=2)
 
 		# Username
@@ -85,28 +82,37 @@ class LoginPage(Page):
 		self.login_button.grid(row=self.RI_LOGIN, column=self.CI_LEFT, columnspan=2)
 
 		self.guest_button = customtkinter.CTkButton(self, text="Guest", font=DF, fg_color="#027148",
-		                                            hover_color="#013220")
+		                                            hover_color="#013220", command=self.guest)
 		self.guest_button.grid(row=self.RI_LOGIN, column=self.CI_LEFT, columnspan=2)
 
 		self.register_button = customtkinter.CTkButton(self, text="Register",
-		                                               command=lambda: self.app.show_page(RegisterPage), font=DF)
+		                                               command=self.guest, font=DF)
 		self.register_button.grid(row=self.RI_LOGIN, column=self.CI_RIGHT, columnspan=2)
+
+	def guest(self):
+		success, user = user_queries.user_can_connect("guest", "")
+		if success:
+			state.set_user(user)
+			self.app.show_page(TrailPage)
+			print(f"You're now logged in as {user.username}")
+			print(state.get_user())
 
 	def login(self):
 		username = self.username_combobox.get()
 		password = self.password_entry.get()
 		self.__get_usernames(username)
 		success, user = user_queries.user_can_connect(username, password)
+        
 		print(user_queries.user_can_connect(username, password))
 		if success:
 			# self.toggle_menu()
+			state.set_user(user)
 			self.app.show_page(TrailPage)
-			state.set_username(user)
 			print(f"You're now logged in as {user.username}")
-			print(state.get_username())
+			print(state.get_user())
 
 	def __get_usernames(self, username: str):
-		self.user = user_queries.get_user_by_name(username)
+		self.user = user_queries.get_user_by_username(username)
 		return self.user
 
 	def __get_all_usernames(self):

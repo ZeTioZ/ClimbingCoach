@@ -4,8 +4,6 @@ from .position import Position
 class Skeleton:
 	"""
 	A class that represents keypoint of a person in an image.
-
-	Note: Droite Gauche, comment faire différence si de dos ou de face ?
 	"""
 
 	def __init__(self,

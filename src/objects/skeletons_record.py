@@ -1,6 +1,6 @@
 class SkeletonsRecord:
 	"""
-	This class is used to represent a skeletons record.
+	This class is used to represent a list of skeleton record.
 	"""
 
 	def __init__(self, frame_rate: float = 30.0):
@@ -11,7 +11,7 @@ class SkeletonsRecord:
 		"""
 		Records the given skeletons for each person into the list of skeletons.
 
-		:param skeletons: The skeletons for each person seen to record.
+		:param skeletons: The skeletons of each person seen during the record.
 		"""
 		self.skeletons.append(skeletons)
 

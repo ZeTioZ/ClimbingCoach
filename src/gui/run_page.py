@@ -6,8 +6,12 @@ from typing import Callable
 import customtkinter
 import cv2
 import numpy as np
+import time
 from PIL import Image
 
+from threads.camera_thread import Camera
+from utils.draw_utils import skeleton_visualizer
+from listeners.skeleton_listener import SkeletonRecordSaverListener
 from enums.flux_reader_event_type import FluxReaderEventType
 from gui.abstract.page import Page
 from gui.run_viewer_page import RunViewerPage
@@ -39,11 +43,7 @@ class RunPage(Page):
 		self.grid_rowconfigure(1, weight=1)
 
 		self.video_widget = VideoWidget([FluxReaderEventType.FRAME_PROCESSED_EVENT])
-
-		# Image with slider over there
-		# TODO: Take the current trail image with app_state
-		# self.slider = customtkinter.CTkSlider(app, from_=0, to=100, command=self.slider_event)
-		# get_runs_by_user_and_route
+		self.skeleton_record_saver_listener: SkeletonRecordSaverListener = SkeletonRecordSaverListener()
 
 		self.test_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 32))
 		self.test_label.grid(row=0, column=0, columnspan=2, sticky="nsew")
@@ -180,6 +180,10 @@ class RunPage(Page):
 
 	def set_active(self):
 		super().set_active()
+		flux = self.app.camera.flux_reader_event.flux
+		if not isinstance(flux, int):
+			self.app.camera = Camera(flux)
+			self.app.camera.start()
 		self.app.camera.flux_reader_event.register(self.video_widget)
 		self.__init_cap()
 
@@ -192,7 +196,9 @@ class RunPage(Page):
 			widget.grid_forget()
 
 	def __start_recording(self):
-		# add logical
+		self.skeleton_record_saver_listener.start_timer()
+		self.app.camera.flux_reader_event.register(self.skeleton_record_saver_listener)
+		
 		if self.visibility_button.cget("image") == self.hide_cam:
 			self.start_recording.grid_forget()
 			self.load_recording.grid_forget()
@@ -201,6 +207,31 @@ class RunPage(Page):
 
 	def __stop_recording(self):
 		# add logical
+		self.app.camera.flux_reader_event.unregister(self.skeleton_record_saver_listener)
+		skeleton_record = self.skeleton_record_saver_listener.save_skeletons_record()
+		image = self.video_widget.last_image
+
+		print("Recording took", int(skeleton_record[1]), "seconds")
+
+		video_pop_up = customtkinter.CTkToplevel(self)
+		video_pop_up_lable = customtkinter.CTkLabel(video_pop_up, text="", font=("Helvetica", 32), image=EMPTY_IMAGE)
+		video_pop_up_lable.grid(row=0, column=0, columnspan=2, sticky="nsew")
+
+
+		def run_playback():
+			skeleton_index = 0
+			while skeleton_index < len(skeleton_record[0].skeletons):
+				skeletonned_image = image.copy()
+				for skeleton in skeleton_record[0].skeletons[skeleton_index]:
+					skeletonned_image = skeleton_visualizer(skeletonned_image, skeleton)
+				image_array = Image.fromarray(skeletonned_image)
+				image_to_show = customtkinter.CTkImage(image_array, size=self.__imageSize)
+				video_pop_up_lable.configure(image=image_to_show)
+				skeleton_index += 1
+				time.sleep(1/skeleton_record[0].frame_rate)
+
+		Thread(target=run_playback).start()
+
 		self.stop_recording.grid_forget()
 		self.start_recording.grid(row=1, column=0, pady=uv(10))
 		self.load_recording.grid(row=1, column=1, pady=uv(10))

@@ -67,3 +67,6 @@ def generate_gradient_colors(n: int) -> list[color]:
         gradient_colors.append((r, g, b))
     
     return gradient_colors
+
+def rgb_to_hex(rgb):
+    return '#{:02x}{:02x}{:02x}'.format(*rgb)
