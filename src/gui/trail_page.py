@@ -28,6 +28,7 @@ CID_RIGHT = 2
 class TrailPage(Page):
 	"""Class of the trail page."""
 	choose_index = 0  # Current page we're in
+	
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
 		super().__init__(parent, app)
@@ -39,6 +40,8 @@ class TrailPage(Page):
 		self.grid_columnconfigure(1, weight=7)
 		self.grid_rowconfigure(0, weight=0, minsize=uv(80))
 		self.grid_rowconfigure(1, weight=1)
+
+		self.image_max_size = (uv(200), uv(200)) # (width, height)
 
 		self.trail_list_frame = customtkinter.CTkScrollableFrame(self, width=uv(150))
 		self.trail_list_frame.grid(row=1, column=0, sticky="nswe")
@@ -56,25 +59,33 @@ class TrailPage(Page):
 		self.trail_detail_frame.grid_rowconfigure((0, 4), weight=0)
 		self.trail_detail_frame.grid_rowconfigure((RID_TITLE, RID_DIFFICULTY), weight=1)
 		self.trail_detail_frame.grid_rowconfigure(RID_DESCR, weight=3)
-
+		
 		
 	def set_active(self):
 		"""Set the page active."""
 		self.all_walls = wall_queries.get_all_walls()
 
 		if len(self.all_walls) > 0:
+			for widget in self.trail_detail_frame.winfo_children():
+				widget.grid_forget()
+			for widget in self.trail_list_frame.winfo_children():
+				widget.grid_forget()
+			
 			self.current_trail = self.__fetch_trail_detail()
 			# Convert the image from bytes to numpy array
-			image: np.array = pickle.loads(self.current_trail["image"])
-			image_fromarray = Image.fromarray(image)
+			# image: np.array = pickle.loads(self.current_trail["image"])
+			# image_fromarray = Image.fromarray(image)
 
-			self.trail_image = customtkinter.CTkImage(image_fromarray, size=(uv(200), uv(200)))
-			self.trail_label = customtkinter.CTkLabel(self.trail_detail_frame, text="", image=self.trail_image)
-			self.trail_label.grid(row=RID_DESCR, rowspan=1, column=CID_RIGHT, sticky="we")
+			# self.trail_image = customtkinter.CTkImage(image_fromarray, size=(uv(200), uv(200)))
+			# self.trail_label = customtkinter.CTkLabel(self.trail_detail_frame, text="", image=self.trail_image)
+			self.trail_label = customtkinter.CTkLabel(self.trail_detail_frame, text="")
+			self.trail_label.grid(row=RID_DESCR, rowspan=1, column=CID_RIGHT, padx=(uv(0), uv(50)))
+			self.__image_loader()
+
 
 			self.trail_selection_button = customtkinter.CTkButton(self.trail_detail_frame, text="Select",
 																command=lambda: self.selection_trail())
-			self.trail_selection_button.grid(row=RID_DIFFICULTY, column=CID_RIGHT, sticky="n")
+			self.trail_selection_button.grid(row=RID_DIFFICULTY, column=CID_RIGHT, sticky="n", padx=(uv(0), uv(50)))
 
 			self.detail_title_name = customtkinter.CTkLabel(self.trail_detail_frame, text=self.current_trail["name"],
 															font=(FONT, iuv(32), "bold"), fg_color=SECONDARY_COLOR,
@@ -128,11 +139,11 @@ class TrailPage(Page):
 	def __set_difficulty(self, difficulty: int):
 		"""Set the difficulty of the trail."""
 
-		if difficulty < 0 or difficulty > 4:
-			raise ValueError("difficulty must be in [0..4]")
+		if difficulty < 1 or difficulty > 5:
+			raise ValueError("difficulty must be in [1..5]")
 
 		for i in range(5):
-			if i <= difficulty:
+			if i <= difficulty-1:
 				self.difficulty[i].configure(fg_color=COLOR_DIFFICULTY[i], border_width=0)
 			else:
 				self.difficulty[i].configure(fg_color="transparent", border_width=uv(2))
@@ -157,7 +168,7 @@ class TrailPage(Page):
 		self.button = customtkinter.CTkButton(
 			self.trail_list_frame,
 			text=display_text,
-			fg_color=SECONDARY_COLOR if is_first else "transparent",
+			fg_color=SECONDARY_COLOR if self.choose_index == index else "transparent",
 			hover_color=SECONDARY_COLOR,
 			border_spacing=uv(17),
 			command=lambda: self.show_trail_detail(index),
@@ -209,31 +220,59 @@ class TrailPage(Page):
 
 	def __image_loader(self):
 		"""Loads an image from the given path."""
-		image_size = self.trail_image.cget("size")
+		
 		image: np.array = pickle.loads(self.current_trail["image"])
 		image_fromarray = Image.fromarray(image)
+
+		image_size = self.__get_image_ration_safe(image_fromarray)
 
 		self.trail_image = customtkinter.CTkImage(image_fromarray,
 												  size=image_size)
 		self.trail_label.configure(image=self.trail_image)
 
 	
+
+	def __get_image_ration_safe(self, image: Image.Image):
+		raw_size = image.size
+		return self.__get_image_ration_safe_by_size(raw_size)
+	
+
+	def __get_image_ration_safe_by_size(self, size: tuple[int, int]):
+		if size[0] > size[1]:
+			rate = self.image_max_size[0] / size[0]
+			image_size = (size[0] * rate, size[1] * rate)
+		else:
+			rate = self.image_max_size[1] / size[1]
+			image_size = (size[0] * rate, size[1] * rate)
+
+		return image_size
+		
+
+
 	def on_size_change(self, width, height):
 		super().on_size_change(width, height)
 
 		if len(self.all_walls) > 0:
-			image_size = min_max_range(uv(75), uv(1000), v(22, width))
-			self.trail_image.configure(size=(image_size, image_size))
-			self.trail_label.configure(height=iuv(image_size), width=iuv(image_size))
+			
+			max_dim_size = min_max_range(uv(75), uv(1000), v(22, width))
+			self.image_max_size = (max_dim_size, max_dim_size)
+
+			if hasattr(self, "trail_image"):
+				image_size = self.__get_image_ration_safe_by_size(self.trail_image.cget("size"))
+				self.trail_image.configure(size=image_size)
+				self.trail_label.configure(height=iuv(image_size[1]), width=iuv(image_size[0]))
+
+			# self.trail_image.configure(size=(image_size, image_size))
+			# self.trail_label.configure(height=iuv(image_size), width=iuv(image_size))
 
 			font_style_default = (FONT, min_max_range(iuv(8), iuv(28), int(v(1.9, width))))
 			font_style_title = (FONT, min_max_range(iuv(12), iuv(32), int(v(2.5, width))), "bold")
 
-			self.trail_selection_button.configure(height=v(5, height), width=image_size, font=font_style_default)
+			self.trail_selection_button.configure(height=v(5, height), width=max_dim_size, font=font_style_default)
 			self.detail_description.configure(font=font_style_default)
 
 			for button in self.button_list:
-				button.configure(height=v(5, height), width=image_size, font=font_style_default)
+				button.configure(height=v(5, height), width=max_dim_size, font=font_style_default)
 			self.trail_list_title.configure(font=font_style_title)
 
 			size_difficulty = min_max_range(uv(15), uv(100), v(2.5, width))

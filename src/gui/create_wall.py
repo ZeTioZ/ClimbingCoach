@@ -151,7 +151,7 @@ class CreateWall(Page):
 		print(text_box.get("0.0", "end"))
 		save_button = customtkinter.CTkButton(scrollable_frame, text="Save",
 		                                      command=lambda: [
-			                                      self.__save(self.__get_frame(), name.get(), int(difficulty.get()) - 1,
+			                                      self.__save(self.__get_frame(), name.get(), int(difficulty.get()),
 			                                                  text_box.get("0.0", "end")), video_pop_up.destroy()],
 		                                      # circular import si on show_page(TrailPage)
 		                                      font=(FONT, 22))

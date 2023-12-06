@@ -42,6 +42,8 @@ class Application(customtkinter.CTk):
 
 		if user_queries.get_user_by_username("admin") is None:
 			user_queries.create_user("admin", "admin", "admin")
+		if user_queries.get_user_by_username("guest") is None:
+			user_queries.create_user("guest", "")
 
 
 		self.minsize(uv(700), uv(600))
