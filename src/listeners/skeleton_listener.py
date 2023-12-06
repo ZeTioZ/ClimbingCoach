@@ -2,13 +2,11 @@ import cv2
 import time
 
 from gui.app_state import AppState
-from database.queries import run_queries
 from enums.flux_reader_event_type import FluxReaderEventType
 from events.flux_reader_event import FluxReaderEvent
 from interfaces.listener import Listener
 from objects.skeleton import Skeleton
 from objects.skeletons_record import SkeletonsRecord
-from utils.serializer_utils import serialize_skeletons_record
 
 
 class SkeletonRecordSaverListener(Listener):
@@ -36,12 +34,10 @@ class SkeletonRecordSaverListener(Listener):
 					return
 			self.skeleton_record.append(skeletons)
 
-
 	def start_timer(self):
 		self.start_time = time.time()
-
 
 	def save_skeletons_record(self):
 		state = AppState()
 		#run_queries.create_run(self.skeleton_record, time.time() - self.start_time, state.get_username(), state.get_route_name())
-		return self.skeleton_record, time.time() - self.start_time, state.get_username()
+		return self.skeleton_record, time.time() - self.start_time, state.get_user()

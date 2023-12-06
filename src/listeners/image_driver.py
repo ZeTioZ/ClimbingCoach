@@ -1,7 +1,6 @@
 from tkinter import Event
 from typing import Callable
 
-import cv2
 import numpy as np
 from PIL import Image
 
@@ -34,13 +33,11 @@ class ImageDriver(Listener):
 
 		print(f"Image driver created: said {id(self)}")
 
-
 	def get_interactive_image(self):
 		"""Return the interactive image."""
 		return self.i_image
 
-
-	def draw_holds_and_path(self, image: np.ndarray|None = None, holds: list[Box]|None = None) -> Image:
+	def draw_holds_and_path(self, image: np.ndarray | None = None, holds: list[Box] | None = None) -> Image:
 		"""Draw the holds on the image."""
 		if image is None:
 			image = self.image
@@ -58,15 +55,14 @@ class ImageDriver(Listener):
 		print(f"Add box to route {box}: said {id(self)}")
 		self.route.add_step(box)
 
-	
 	def route_remove_box(self, box: Box):
 		"""Remove a box from the path."""
+		self.route.remove_step(box)
 		if self.route.is_hold_in_route(box):
 			self.route.remove_step(box)
 		else:
 			print(f"The box is not in the route: {box}: said {id(self)}")
 
-	
 	def route_remove_box_by_index(self, index: int):
 		"""Remove a box from the path."""
 		if index < len(self.route.get_route()):
@@ -74,18 +70,15 @@ class ImageDriver(Listener):
 		else:
 			print(f"The index is out of range: {index} > {len(self.route.get_route())}: said {id(self)}")
 			print(f"Route: {self.route.get_route()}")
-	
 
 	def route_clear(self):
 		"""Clear the path."""
 		self.route.clear()
 		self.display_holds()
 
-
 	def route_set_name(self, name: str):
 		"""Set the name of the path."""
 		self.route.set_name(name)
-
 	
 	def load_route(self, name: str):
 		"""Load the path."""
@@ -93,13 +86,12 @@ class ImageDriver(Listener):
 		self.route = deserialize_route(route_db.holds)
 		self.display_holds()
 
-	
 	def save_route(self):
 		"""Save the path."""
 		if self.route.is_name_set():
 			create_route(self.route, "", 2)
 		else:
-			raise Exception("The name of the route is not set.")
+			raise AttributeError("The name of the route is not set.")
 
 	def click_right(self, event):
 		"""Called when the image is clicked."""
@@ -110,7 +102,6 @@ class ImageDriver(Listener):
 			if self.__click_callback is not None:
 				self.__click_callback()
 
-
 	def click_left(self, event):
 		"""Called when the image is clicked."""
 		selected_box = self.__click(event)
@@ -120,8 +111,7 @@ class ImageDriver(Listener):
 			if self.__click_callback is not None:
 				self.__click_callback()
 
-
-	def __click(self, event) -> Box:
+	def __click(self, event) -> Box | None:
 		"""Called when the image is clicked."""
 		if self.image is None:
 			return
@@ -135,7 +125,6 @@ class ImageDriver(Listener):
 		self.__click_callback = callback
 
 	# LISTENER
-
 	def update(self, event: Event, event_types: [EventType], *args, **kwargs):
 		"""Called when the event notify the observer."""
 		if not isinstance(event, FluxReaderEvent):
@@ -145,6 +134,8 @@ class ImageDriver(Listener):
 			self.image = args[1]
 			self.__on_hold_received(args[0], args[1])
 
+		if FluxReaderEventType.GET_FRAME_EVENT in event_types:
+			self.image = args[0]
 
 	def __on_hold_received(self, holds: list[Box], frame: np.ndarray):
 		"""Called when the holds are received."""
