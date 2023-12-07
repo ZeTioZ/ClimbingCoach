@@ -28,7 +28,7 @@ class RunPage(Page):
 	"""test page."""
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
-		"""Constructor. Singleton then init executed only once."""
+		"""Constructor."""
 		super().__init__(parent, app)
 
 		if app is not None:

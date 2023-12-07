@@ -1,7 +1,8 @@
+import numpy as np
+import pickle
+
 from tkinter import Event
 from typing import Callable
-
-import numpy as np
 from PIL import Image
 
 from enums.event_type import EventType
@@ -84,10 +85,10 @@ class ImageDriver(Listener):
 		self.route = deserialize_route(route_db.holds)
 		self.display_holds()
 
-	def save_route(self):
+	def save_route(self,difficulty: int = None ,description: str = ""):
 		"""Save the path."""
 		if self.route.is_name_set():
-			create_route(self.route, "", 2)
+			create_route(self.route, description, difficulty, pickle.dumps(np.array(self.draw_holds_and_path(self.image,[]))))
 		else:
 			raise AttributeError("The name of the route is not set.")
 		
