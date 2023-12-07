@@ -38,7 +38,7 @@ class LoginPage(Page):
 	__sizeState = None
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
-		"""Constructor. Singleton then init executed only once."""
+		"""Constructor."""
 		super().__init__(parent, app)  # Call the __init__ method of the parent class
 		app_path = get_parent_path(__file__, 3)
 

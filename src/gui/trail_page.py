@@ -155,7 +155,7 @@ class TrailPage(Page):
 	def __fetch_trail_detail(self):
 		"""Fetch the trail detail from the database."""
 		return {"name": self.all_walls[self.choose_index].name,
-				"difficulty": self.all_walls[self.choose_index].difficulty,  # TODO: ajouter quand l'api sera modifiée
+				"difficulty": self.all_walls[self.choose_index].difficulty,
 				"image": self.all_walls[self.choose_index].image,
 				"description": self.all_walls[self.choose_index].description
 				}
@@ -208,12 +208,13 @@ class TrailPage(Page):
 												  hover_color=PRIMARY_HOVER_COLOR)
 
 		self.button_list[trail_chosen].configure(fg_color=SECONDARY_COLOR, hover_color=SECONDARY_HOVER_COLOR)
+		
+		self.current_trail = self.__fetch_trail_detail()
+		
 		self.trail_label.grid_forget()
-
 		self.__image_loader()
 		self.trail_label.grid(row=RID_DESCR, column=CID_RIGHT)
 	
-		self.current_trail = self.__fetch_trail_detail()
 		self.__set_title(self.current_trail["name"])
 		self.__set_difficulty(self.current_trail["difficulty"])
 		self.__set_description(self.current_trail["description"])

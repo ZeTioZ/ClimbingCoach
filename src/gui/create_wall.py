@@ -20,7 +20,7 @@ class CreateWall(Page):
 	__imageSize = (1, 1)
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
-		"""Constructor. Singleton then init executed only once."""
+		"""Constructor."""
 		super().__init__(parent, app)
 
 		self.cap = self.app.camera.flux_reader_event.video
