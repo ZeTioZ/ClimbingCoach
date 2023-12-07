@@ -8,7 +8,7 @@ from PIL import Image
 from threads.camera_thread import Camera
 from gui.abstract.page import Page
 from gui.component.interactive_image import InteractiveImage
-from gui.utils import uv, iuv, FONT, get_ressources_path
+from gui.utils import uv, v, iuv, FONT, get_ressources_path
 
 from utils.color_holds import rgb_to_hex, generate_gradient_colors
 
@@ -194,7 +194,7 @@ class AddPathPage(Page):
 
 		self.calibrate_button.grid(row=3, column=1, pady=iuv(10))
 		self.create_path_button.grid(row=3, column=2, pady=iuv(10))
-    self.i_image.grid(row=0, column=1, columnspan=2)
+		self.i_image.grid(row=0, column=1, columnspan=2)
 
 
 	def save_function(self, name: str, difficulty: int = None, description: str = "", image: Image = None, holds: list = None):

@@ -88,7 +88,7 @@ class ImageDriver(Listener):
 	def save_route(self,difficulty: int = None ,description: str = ""):
 		"""Save the path."""
 		if self.route.is_name_set():
-			create_route(self.route, description, difficulty, pickle.dumps(np.array(self.draw_holds_and_path(self.image,[]))))
+			create_route(self.route, description, difficulty, pickle.dumps(np.array(self.draw_element(self.image,[]))))
 		else:
 			raise AttributeError("The name of the route is not set.")
 		

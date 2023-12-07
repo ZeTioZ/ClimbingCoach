@@ -118,13 +118,15 @@ class RunViewerPage(Page):
 		self.other_runs_label.grid(row=0, column=1, pady=uv(5))
 
 		# get all the run in the db
-		run_list = self.__fetch_run_list()
+		run_list = run_queries.get_runs_by_user(state.get_user().username)
+
+		#TODO: faire appel aux stats des autres ici 
 		user_record_list = self.__get_user_record()
 		all_time_record_list = self.__get_all_time_record()
 
 		self.button_list: list[customtkinter.CTkButton] = []
 		for run in run_list:
-			self.run_button = self.create_button(run, run_list.index(run))
+			self.run_button = self.create_button(run.id, run_list.index(run))
 			self.button_list.append(self.run_button)
 
 		self.user_record_button_list: list[customtkinter.CTkButton] = []

@@ -15,9 +15,12 @@ from listeners.skeleton_listener import SkeletonRecordSaverListener
 from enums.flux_reader_event_type import FluxReaderEventType
 from gui.abstract.page import Page
 from gui.run_viewer_page import RunViewerPage
+from gui.app_state import AppState
+from database.queries import run_queries
 from gui.utils import EMPTY_IMAGE, FONT, SECONDARY_COLOR, uv
 from listeners.video_widget import VideoWidget
 
+state = AppState()
 
 class RunPage(Page):
 	__reading = False
@@ -212,6 +215,7 @@ class RunPage(Page):
 		image = self.video_widget.last_image
 
 		print("Recording took", int(skeleton_record[1]), "seconds")
+		run_queries.create_run(skeleton_record[0], skeleton_record[1], state.get_user().username, image)
 
 		video_pop_up = customtkinter.CTkToplevel(self)
 		video_pop_up_lable = customtkinter.CTkLabel(video_pop_up, text="", font=("Helvetica", 32), image=EMPTY_IMAGE)
