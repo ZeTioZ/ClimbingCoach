@@ -26,11 +26,14 @@ class AddPathPage(Page):
 		self.__create_widgets()
 
 		self.calibrate_button = customtkinter.CTkButton(self, text="Refresh", command=self.__refresh_image)
-		self.calibrate_button.grid(row=4, column=1, pady=iuv(10))
+		self.calibrate_button.grid(row=3, column=1, pady=iuv(10))
 		self.create_path_button = customtkinter.CTkButton(self, text="Validate", command=lambda : self.create_path())
-		self.create_path_button.grid(row=4, column=2, pady=iuv(10))
+		self.create_path_button.grid(row=3, column=2, pady=iuv(10))
 
 		self.hold_frame = customtkinter.CTkScrollableFrame(self, width=uv(175))
+
+		self.hold_label_size = [uv(6), uv(3), uv(1.5)]
+		self.trash_label_size = [uv(1), uv(3), uv(1.5)]
 
 		self.label_list = []
 
@@ -45,14 +48,22 @@ class AddPathPage(Page):
 			text=f"hold {index+1}",
 			fg_color= rgb_to_hex(color),
 			anchor="center",
-			corner_radius=uv(1000000000000),
-			width=uv(50),
-			height=uv(30),
-			font=(FONT, 15)
+			corner_radius=uv(100),
+			width=self.hold_label_size[0],
+			height=self.hold_label_size[1],
+			font=(FONT, self.hold_label_size[2])
 		)
 		
 		bin_img = customtkinter.CTkImage(Image.open(os.path.join(get_ressources_path(), "images", "bin.png")))
-		hold_trash_button = customtkinter.CTkLabel(self.hold_frame, text="",image=bin_img, width=uv(15), height=uv(30), fg_color=rgb_to_hex(color), corner_radius=uv(1000000000000))
+		hold_trash_button = customtkinter.CTkLabel(
+			self.hold_frame, 
+			text="",
+			image=bin_img, 
+			width=self.trash_label_size[0], 
+			height=self.trash_label_size[1], 
+			fg_color=rgb_to_hex(color), 
+			corner_radius=uv(100)
+		)
 		
 
 		hold_label.bind("<Enter>", lambda event: self.image_driver.set_hold_to_highlight(self.image_driver.get_hold_by_index(index)))
@@ -76,6 +87,7 @@ class AddPathPage(Page):
 	def get_path(self):
 		"""Return the path of the holds."""
 		return self.image_driver.route.get_route()
+
 
 	def create_path(self):
 		"""Create the path."""
@@ -108,6 +120,7 @@ class AddPathPage(Page):
 
 		#Check if the path is correctly showed in the run page
 
+
 	def __refresh_hold_menu(self):
 		self.__empty_label_list()
 		hold_list = self.get_path()
@@ -121,12 +134,14 @@ class AddPathPage(Page):
 		else:
 			self.__hide_hold_menu()
 
+
 	def __empty_label_list(self):
 		if len(self.label_list) > 0:
 			for label_tuple in self.label_list:
 				label_tuple[0].destroy()
 				label_tuple[1].destroy()
 			self.label_list = []
+
 
 	def __show_hold_menu(self):
 		"""Save the path."""
@@ -137,8 +152,10 @@ class AddPathPage(Page):
 
 		self.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
 
-		self.calibrate_button.grid(row=4, column=2, pady=iuv(10))
-		self.create_path_button.grid(row=4, column=3, pady=iuv(10))
+		self.calibrate_button.grid(row=3, column=2, pady=iuv(10))
+		self.create_path_button.grid(row=3, column=3, pady=iuv(10))
+
+		self.i_image.grid(row=0, column=2, columnspan=2)
 
 	
 	def __hide_hold_menu(self):
@@ -148,10 +165,12 @@ class AddPathPage(Page):
 		self.calibrate_button.grid_forget()
 		self.create_path_button.grid_forget()
 
-		self.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
+		self.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
-		self.calibrate_button.grid(row=4, column=1, pady=iuv(10))
-		self.create_path_button.grid(row=4, column=2, pady=iuv(10))
+		self.calibrate_button.grid(row=3, column=1, pady=iuv(10))
+		self.create_path_button.grid(row=3, column=2, pady=iuv(10))
+
+		self.i_image.grid(row=0, column=1, columnspan=2)
 
 		
 	def save_function(self, name : str):
@@ -159,10 +178,12 @@ class AddPathPage(Page):
 		self.image_driver.route_set_name(name)
 		self.image_driver.save_route()
 
+
 	def __config_grid(self):
 		self.grid_columnconfigure((0, 1, 2, 3), weight=1)
 		self.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
   
+
 	def __config_pop_up(self):
 		"""Configure the pop up."""
 		pop_up = customtkinter.CTkToplevel(self)
@@ -177,6 +198,7 @@ class AddPathPage(Page):
 		pop_up_message.grid(row=0, column=0)
 		pop_up_button = customtkinter.CTkButton(pop_up, text="OK", command=lambda : [pop_up.destroy(), self.__take_a_picture()])
 		pop_up_button.grid(row=1, column=0)
+
 
 	def __take_a_picture(self):
 		"""Take a picture."""
@@ -195,17 +217,33 @@ class AddPathPage(Page):
 		"""Creates the widgets for the add path page."""
 
 		self.i_image = InteractiveImage(self, width=iuv(500), height=iuv(500))
-		self.i_image.grid(row=0, column=1, columnspan=5) # Don't use sticky here, it will break the image
+		self.i_image.grid(row=0, column=1, columnspan=2) # Don't use sticky here, it will break the image
 
 		self.image_driver = ImageDriver(self.i_image)
 		# self.app.camera.flux_reader_event.register(self.image_driver)
 		self.image_driver.bind_click(self.__refresh_hold_menu)
+
+
+	def __resize_hold_label(self, width: int, height: int):
+		"""Resize the hold label."""
+
+		self.hold_label_size = [v(6, width), v(3, height), v(1.5, height)]
+		self.trash_label_size = [v(1, width), v(3, height), v(1.5, height)]
+
+		for hold_label in self.label_list:
+			hold_label[0].configure(width=v(6, width), height=v(3, height), font=(FONT, v(1.5, height)))
+			hold_label[1].configure(width=v(1, width), height=v(3, height), font=(FONT, v(1.5, height)))
 
 	# Page methods
 
 	def on_size_change(self, width, height):
 		"""Called when the size of the window change."""
 		self.i_image.change_size(v(50, height), v(50, height))
+
+		self.__resize_hold_label(width, height)
+
+		self.calibrate_button.configure(width=v(7, width), height=v(5, height), font=(FONT, v(2.5, height)))
+		self.create_path_button.configure(width=v(7, width), height=v(5, height), font=(FONT, v(2.5, height)))
 
 	
 	def set_active(self):

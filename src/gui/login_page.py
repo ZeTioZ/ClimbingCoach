@@ -59,9 +59,9 @@ class LoginPage(Page):
 			Image.open(os.path.join(app_path, "resources", "images", "incroyable_logo_climbing_coach.png")),
 			size=(100, 100))
 		self.title = customtkinter.CTkLabel(self, text="", font=TF, image=self.app_image)
-		self.title.bind("<Enter>", lambda e: self.title.configure(text="Logo", image=customtkinter.CTkImage(
-			Image.frombytes("RGBA", (1, 1), b"\x00\x00\x00\x00"))))
-		self.title.bind("<Leave>", lambda e: self.title.configure(text="", image=self.app_image))
+		# self.title.bind("<Enter>", lambda e: self.title.configure(text="Logo", image=customtkinter.CTkImage(
+		# 	Image.frombytes("RGBA", (1, 1), b"\x00\x00\x00\x00"))))
+		# self.title.bind("<Leave>", lambda e: self.title.configure(text="", image=self.app_image))
 		self.title.grid(row=self.RI_TITLE, column=self.CI_LEFT, columnspan=2)
 
 		# Username

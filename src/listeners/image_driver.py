@@ -34,11 +34,6 @@ class ImageDriver(Listener):
 		self.hold_to_highlight: Box | None = None
 
 
-	def get_interactive_image(self):
-		"""Return the interactive image."""
-		return self.i_image
-
-
 	def draw_element(self, image: np.ndarray|None = None, holds: list[Box]|None = None) -> Image:
 		"""Draw the holds on the image."""
 		if image is None:
@@ -102,7 +97,6 @@ class ImageDriver(Listener):
 	def set_hold_to_highlight(self, hold: Box):
 		"""Set the hold to highlight."""
 		self.hold_to_highlight = hold
-		print("hold to highlight : ", hold)
 		self.display_holds()
 	
 
