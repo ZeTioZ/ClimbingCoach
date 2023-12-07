@@ -7,7 +7,7 @@ import customtkinter
 
 from database.database_handler import DatabaseHandler
 from database.queries import user_queries
-from gui import LoginPage, RunPage, Page, MenuPage, TrailPage, PathPage, AccountPage, RegisterPage, AddPathPage
+from gui import LoginPage, RunPage, Page, MenuPage, WallPage, RoutePage, AccountPage, RegisterPage
 from gui import set_height_utils, uv
 from threads.camera_thread import Camera
 from gui import utils
@@ -75,7 +75,7 @@ class Application(customtkinter.CTk):
 		elif self.is_macos():
 			self.__os_macos_init()
 		else:
-			raise Exception("Your os is not supported")
+			raise AttributeError("Your os is not supported")
 
 	def is_windows(self) -> bool:
 		"""True if the os is Windows"""
@@ -152,8 +152,8 @@ class Application(customtkinter.CTk):
 			return
 		self.menu_frame = MenuPage(self.menu_container_frame, self)
 		self.menu_frame.grid(row=0, column=0, sticky="nsew")
-		self.menu_frame.set_command_piste(lambda: self.show_page(TrailPage))
-		self.menu_frame.set_command_chemin(lambda: self.show_page(PathPage))
+		self.menu_frame.set_command_piste(lambda: self.show_page(WallPage))
+		self.menu_frame.set_command_chemin(lambda: self.show_page(RoutePage))
 		self.menu_frame.set_command_run(lambda: self.show_page(RunPage))
 		self.menu_frame.set_command_compte(lambda: self.show_page(AccountPage))
 		self.menu_frame.update()

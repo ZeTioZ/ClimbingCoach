@@ -68,7 +68,7 @@ class AppState(metaclass=Singleton):
 	def set_wall(self, wall: Wall | None):
 		"""Set the wall."""
 		if wall is not None:
-			print("set_trail error: trail < 0\nNormalize to None")
+			print("set_wall error: wall < 0\nNormalize to None")
 			wall = None
 		else:
 			self.set_route(None)
@@ -78,12 +78,12 @@ class AppState(metaclass=Singleton):
 		"""Return true if a wall is selected."""
 		return self.__wall is not None
 
-	# TODO: Change the injection of this function into path_page.py
+	# TODO: Change the injection of this function into route_page.py
 	def get_route(self) -> Route | None:
 		"""Return the route."""
 		return self.__route
 
-	# TODO: Change the injection of this function into path_page.py
+	# TODO: Change the injection of this function into route_page.py
 	def set_route(self, route: Route | None):
 		"""Set the route."""
 		if route is not None:

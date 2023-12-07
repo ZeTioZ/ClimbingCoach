@@ -12,10 +12,10 @@ from utils.color_holds import rgb_to_hex, generate_gradient_colors
 
 
 class AddRoutePage(Page):
-	"""Class of the add path page."""
+	"""Class of the add route page."""
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
-		"""Constructor for the add path page."""
+		"""Constructor for the add route page."""
 
 		super().__init__(parent, app)
 		self.__config_grid()
