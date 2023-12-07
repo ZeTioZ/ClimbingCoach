@@ -30,7 +30,6 @@ class Application(customtkinter.CTk):
 		"""Constructor."""
 		super().__init__()
 		self.camera = Camera(os.path.join(utils.get_ressources_path(), "videos", "Escalade_Fixe.mp4"))
-		#self.camera = Camera()
 		self.camera.start()
 		set_height_utils(self.winfo_screenheight())
 
@@ -196,7 +195,6 @@ class Application(customtkinter.CTk):
 		self.container_frame = customtkinter.CTkFrame(self)
 		self.container_frame.grid(row=0, column=1, sticky="nswe")
 
-	# self.main_frame.grid()
 
 	def __collapse_menu(self):
 		"""Collapse the menu."""
