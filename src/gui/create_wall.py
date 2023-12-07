@@ -8,15 +8,12 @@ from threading import Thread
 
 from enums.flux_reader_event_type import FluxReaderEventType
 from gui.abstract.page import Page
-from gui.utils import FONT, uv
+from gui.utils import FONT, uv, v
 from listeners.video_widget import VideoWidget
 from database.queries import wall_queries
 
 
 class CreateWall(Page):
-	__reading = False
-	__thread_actif = False
-	__isCameraLoaded = False
 	__imageSize = (1, 1)
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
@@ -85,23 +82,30 @@ class CreateWall(Page):
 		image_to_show = customtkinter.CTkImage(image_array, size=self.__imageSize)
 		self.image_label.configure(image=image_to_show)
 
-	def __scale(self, scale_percent: int = 100):
-		if self.cap is None:
-			return
-		rate = scale_percent / 100
-		self.__imageSize = (self.baseW * rate, self.baseH * rate)
+	def __change_image_size(self, size: (int, int)):
+		"""Change the size of the image."""
+		self.__imageSize = size
+
+	def __resize_image(self, width: int, height: int):
+		"""Resize the image."""
+		actual_ratio = self.baseW/self.baseH
+
+		target_height = v(50,height)
+		target_width = target_height * actual_ratio
+
+		if target_width > width:
+			target_width = width
+			target_height = target_width / actual_ratio
+
+		self.__change_image_size((target_width, target_height))
 
 	def on_size_change(self, width, height):
 		"""Called when the windows size change."""
 		super().on_size_change(width, height)
 
-		hrate = (height * 0.5) / 480
-		wrate = (width * 0.5) / 640
-		rate = min(hrate, wrate)
-		self.__scale(rate * 100)
+		self.__resize_image(width, height)
 
 	def __save(self, image, name, difficulty, text_box):
-		print(name, difficulty, text_box)
 		wall_queries.create_wall(name=name, difficulty=difficulty, description=text_box, image=pickle.dumps(image))
 
 	# TODO: ajouter difficulty dans l'appel quand se sera set up
@@ -148,7 +152,6 @@ class CreateWall(Page):
 		text_box.grid(row=4, column=0, pady=uv(10), columnspan=2)
 
 		# set button to save
-		print(text_box.get("0.0", "end"))
 		save_button = customtkinter.CTkButton(scrollable_frame, text="Save",
 		                                      command=lambda: [
 			                                      self.__save(self.__get_frame(), name.get(), int(difficulty.get()),
