@@ -69,8 +69,7 @@ class FluxReaderEvent(Event):
 				FluxReaderEventType.FRAME_PROCESSED_EVENT)):
 				skeleton_prediction = skeleton_detector.predict(frame, img_size=512)
 				skeletons = convert_image_skeleton_outputs(skeleton_prediction)
-				self.notify(FluxReaderEventType.SKELETONS_PROCESSED_EVENT, self.nbr_frame_to_skip, frame_skipper,
-				            skeletons)
+				self.notify(FluxReaderEventType.SKELETONS_PROCESSED_EVENT, self.nbr_frame_to_skip, skeletons, holds_boxes, frame)
 
 			if super().has_listener(FluxReaderEventType.FRAME_PROCESSED_EVENT):
 				self.notify(FluxReaderEventType.FRAME_PROCESSED_EVENT, frame, holds_boxes, floor_boxes, skeletons,

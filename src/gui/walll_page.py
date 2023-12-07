@@ -180,11 +180,11 @@ class TrailPage(Page):
 		button_text = self.trail_selection_button.cget("text")
 		if button_text == "Select":
 			self.trail_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
-			state.set_trail(self.choose_index)
+			state.set_wall(self.choose_index)
 		else:
 			self.trail_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR,
 												  hover_color=PRIMARY_HOVER_COLOR)
-			state.set_trail(None)
+			state.set_wall(None)
 		self.app.update_menu()
 
 		# TODO: faire le back-end pour enregistrer le choix de l'utilisateur
@@ -198,7 +198,7 @@ class TrailPage(Page):
 			button.configure(fg_color="transparent")
 
 		self.choose_index = trail_chosen
-		if trail_chosen == state.get_trail():
+		if trail_chosen == state.get_wall():
 			self.trail_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
 		else:
 			self.trail_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR,

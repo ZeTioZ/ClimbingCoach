@@ -176,10 +176,10 @@ class PathPage(Page):
 		button_text = self.path_selection_button.cget("text")
 		if button_text == "Select":
 			self.path_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
-			state.set_run(self.choose_index)
+			state.set_route(self.choose_index)
 		else:
 			self.path_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR)
-			state.set_run(None)
+			state.set_route(None)
 		self.app.update_menu()
 
 
@@ -192,7 +192,7 @@ class PathPage(Page):
 			button.configure(fg_color="transparent")
 
 		self.choose_index = path_chosen
-		if path_chosen == state.get_trail():
+		if path_chosen == state.get_wall():
 			self.__set_select_btn_active()
 		self.__change_select_btn()
 
@@ -237,7 +237,7 @@ class PathPage(Page):
 
 	def __is_already_selected(self) -> bool:
 		"""Return true if the page is already selected."""
-		return self.choose_index == state.get_run()
+		return self.choose_index == state.get_route()
 
 
 	def __image_loader(self):

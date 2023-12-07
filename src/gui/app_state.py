@@ -4,9 +4,11 @@ Database gui instance class.
 import os
 import pickle
 
+from database.models.wall import Wall
 from gui.abstract.singleton import Singleton
 from gui.utils import get_ressources_path
 from database.models.user import User
+from objects.route import Route
 
 
 class AppState(metaclass=Singleton):
@@ -18,6 +20,8 @@ class AppState(metaclass=Singleton):
 		self.__user = None
 		self.__camera_name = ""
 		self.__load_configurations()
+		self.__route: int | None = None
+		self.__wall: int | None = None
 
 	# Configuration
 	def __load_configurations(self):
@@ -57,58 +61,52 @@ class AppState(metaclass=Singleton):
 		"""Return the configuration file path."""
 		return os.path.join(get_ressources_path(), self.CONFIG_FILE_NAME)
 
-	# Trail
-	__trail: int | None = None
+	def get_wall(self) -> Wall | None:
+		"""Return the wall."""
+		return self.__wall
 
-	def get_trail(self) -> int | None:
-		"""Return the trail. (Id of the current selected trail)"""
-		return self.__trail
-
-	def set_trail(self, trail: int | None):
-		"""Set the trail. (Id of the current selected trail)"""
-		#create_wall()
-		if trail is not None and trail < 0:
+	def set_wall(self, wall: Wall | None):
+		"""Set the wall."""
+		if wall is not None:
 			print("set_trail error: trail < 0\nNormalize to None")
-			trail = None
-		if trail is None:
-			self.set_run(None)
-		self.__trail = trail
+			wall = None
+		else:
+			self.set_route(None)
+		self.__wall = wall
 
-	def is_trail_selected(self) -> bool:
-		"""Return true if a trail is selected."""
-		return self.__trail is not None
+	def is_wall_selected(self) -> bool:
+		"""Return true if a wall is selected."""
+		return self.__wall is not None
 
-	# Run
-	__run: int | None = None
+	# TODO: Change the injection of this function into path_page.py
+	def get_route(self) -> Route | None:
+		"""Return the route."""
+		return self.__route
 
-	def get_run(self) -> int | None:
-		"""Return the run. (Id of the current selected run)"""
-		return self.__run
-
-	def set_run(self, run: int | None):
-		"""Set the run. (Id of the current selected run)"""
-		if run is not None and run < 0:
+	# TODO: Change the injection of this function into path_page.py
+	def set_route(self, route: Route | None):
+		"""Set the route."""
+		if route is not None:
 			print("set_run error: run < 0\nNormalize to None")
-			run = None
-		self.__run = run
+			route = None
+		self.__route = route
 
-	def is_run_selected(self) -> bool:
-		"""Return true if a run is selected."""
-		return self.__run is not None
+	def is_route_selected(self) -> bool:
+		"""Return true if a route is selected."""
+		return self.__route is not None
 
 	# Login	
 	def set_user(self, user: User):
-
 		assert user is not None, "app_state: user is set to None"
 		assert user != "", "app_state: user is set to empty string"
 		self.__user = user
 
-	def get_user(self) -> User:
+	def get_user(self) -> User | None:
 		"""Return the user."""
 		if self.__user is None:
 			return None
 		return self.__user
-    
+
 	def get_camera_name(self) -> str:
 		"""Return the camera name."""
 		return self.__camera_name
@@ -119,11 +117,11 @@ class AppState(metaclass=Singleton):
 		# if self.__camera_name in cameras:
 		#     return str(cameras.index(self.__camera_name))
 		# else:
+		# Wasn't working on macOS that's why it's commented
 		return 1
 
 	def set_camera_name(self, camera_name: str):
 		"""Set the camera name."""
-
 		assert camera_name is not None, "app_state: Camera_name is set to None"
 		assert camera_name != "", "app_state: Camera_name is set to empty string"
 		assert isinstance(camera_name, str), "app_state: Camera_name is not a string"

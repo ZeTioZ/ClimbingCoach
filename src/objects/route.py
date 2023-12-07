@@ -1,5 +1,4 @@
 from objects.box import Box
-from database.models.route import Route as RouteDB
 
 
 class Route:

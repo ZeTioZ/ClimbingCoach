@@ -132,13 +132,13 @@ class MenuPage(Page):
 		self.__update_run()
 
 	def __update_chemin(self):
-		if state.is_trail_selected():
+		if state.is_wall_selected():
 			self.show_chemin()
 		else:
 			self.hide_chemin()
 
 	def __update_run(self):
-		if state.is_run_selected():
+		if state.is_route_selected():
 			self.show_run()
 		else:
 			self.hide_run()
