@@ -6,10 +6,11 @@ from tkinter import PhotoImage
 import customtkinter
 
 from database.database_handler import DatabaseHandler
+from database.queries import user_queries
 from gui import LoginPage, RunPage, Page, MenuPage, TrailPage, PathPage, AccountPage, RegisterPage, AddPathPage
 from gui import set_height_utils, uv
 from threads.camera_thread import Camera
-
+from gui import utils
 
 class Application(customtkinter.CTk):
 	"""
@@ -28,8 +29,7 @@ class Application(customtkinter.CTk):
 	def __init__(self):
 		"""Constructor."""
 		super().__init__()
-		self.camera = Camera("resources/videos/Escalade_Fixe.mp4")
-		# self.camera = Camera()
+		self.camera = Camera(os.path.join(utils.get_ressources_path(), "videos", "Escalade_Fixe.mp4"))
 		self.camera.start()
 		set_height_utils(self.winfo_screenheight())
 
@@ -38,6 +38,13 @@ class Application(customtkinter.CTk):
 
 		self.database = DatabaseHandler()
 		self.database.create_tables()
+
+		if user_queries.get_user_by_username("admin") is None:
+			user_queries.create_user("admin", "admin", "admin")
+		if user_queries.get_user_by_username("guest") is None:
+			user_queries.create_user("guest", "")
+
+
 		self.minsize(uv(700), uv(600))
 
 		self.current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -188,7 +195,6 @@ class Application(customtkinter.CTk):
 		self.container_frame = customtkinter.CTkFrame(self)
 		self.container_frame.grid(row=0, column=1, sticky="nswe")
 
-	# self.main_frame.grid()
 
 	def __collapse_menu(self):
 		"""Collapse the menu."""

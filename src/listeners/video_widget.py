@@ -1,4 +1,4 @@
-import cv2  # TODO change this to use tkinter
+import cv2
 
 from enums.event_type import EventType
 from enums.flux_reader_event_type import FluxReaderEventType
@@ -41,3 +41,7 @@ class VideoWidget(Listener):
 									members_to_check.remove(member)
 									break
 			self.last_image = frame_with_all
+			
+		if FluxReaderEventType.GET_FRAME_EVENT in event_types:
+			frame = args[0]
+			self.last_image = frame

@@ -1,12 +1,11 @@
 import customtkinter
-import time
 import os
 
-from gui.component.interactive_image import InteractiveImage
 from listeners.image_driver import ImageDriver
 
 from PIL import Image
 
+from threads.camera_thread import Camera
 from gui.abstract.page import Page
 from gui.component.interactive_image import InteractiveImage
 from gui.utils import v, uv, iuv, FONT, get_ressources_path
@@ -22,13 +21,15 @@ class AddPathPage(Page):
 
 		super().__init__(parent, app)
 		self.__config_grid()
-		#self.__config_pop_up()
+		# self.__config_pop_up()
 		self.__create_widgets()
 
+    
 		self.calibrate_button = customtkinter.CTkButton(self, text="Refresh", command=self.__refresh_image)
 		self.calibrate_button.grid(row=3, column=1, pady=iuv(10))
 		self.create_path_button = customtkinter.CTkButton(self, text="Validate", command=lambda : self.create_path())
 		self.create_path_button.grid(row=3, column=2, pady=iuv(10))
+
 
 		self.hold_frame = customtkinter.CTkScrollableFrame(self, width=uv(175))
 
@@ -37,23 +38,23 @@ class AddPathPage(Page):
 
 		self.label_list = []
 
-		if self.label_list != []:
+		if self.label_list:
 			self.modify_frame()
 
-	def create_hold_label(self, hold, index: int, color: tuple[int,int,int]):
+	def create_hold_label(self, hold, index: int, color: tuple[int, int, int]):
 		"""Creates a button with the given text."""
 
 		hold_label = customtkinter.CTkLabel(
 			self.hold_frame,
-			text=f"hold {index+1}",
-			fg_color= rgb_to_hex(color),
+			text=f"hold {index + 1}",
+			fg_color=rgb_to_hex(color),
 			anchor="center",
 			corner_radius=uv(100),
 			width=self.hold_label_size[0],
 			height=self.hold_label_size[1],
 			font=(FONT, self.hold_label_size[2])
 		)
-		
+
 		bin_img = customtkinter.CTkImage(Image.open(os.path.join(get_ressources_path(), "images", "bin.png")))
 		hold_trash_button = customtkinter.CTkLabel(
 			self.hold_frame, 
@@ -70,6 +71,7 @@ class AddPathPage(Page):
 		hold_label.bind("<Leave>", lambda event: self.image_driver.remove_hold_to_highlight())
 
 
+
 		def remove_hold():
 			"""Remove the hold."""
 			self.image_driver.route_remove_box_by_index(index)
@@ -83,15 +85,14 @@ class AddPathPage(Page):
 		hold_label.grid(row=index, column=0, padx=uv(10), sticky="ew", pady=uv(10))
 		return hold_label, hold_trash_button
 
-
 	def get_path(self):
 		"""Return the path of the holds."""
 		return self.image_driver.route.get_route()
-
+  
 
 	def create_path(self):
 		"""Create the path."""
-		#self.image_driver.save_root
+		# self.image_driver.save_root
 		route_name_pop_up = customtkinter.CTkToplevel(self)
 		self.after(200, route_name_pop_up.lift)
 		route_name_pop_up.title("Route name")
@@ -102,15 +103,17 @@ class AddPathPage(Page):
 
 		route_name_pop_up_label = customtkinter.CTkLabel(route_name_pop_up, text="Name your route !", font=(FONT, 15))
 		route_name_pop_up_label.grid(row=0, column=0)
-		
+
 		entry_route_name = customtkinter.CTkEntry(route_name_pop_up)
 		entry_route_name.grid(row=1, column=0)
 
-		route_name_pop_up_button = customtkinter.CTkButton(route_name_pop_up, text="Save", command=lambda : [self.save_function(entry_route_name.get()), route_name_pop_up.destroy()])
+		route_name_pop_up_button = customtkinter.CTkButton(route_name_pop_up, text="Save",
+		                                                   command=lambda: [self.save_function(entry_route_name.get()),
+		                                                                    route_name_pop_up.destroy()])
 		route_name_pop_up_button.grid(row=2, column=0, pady=iuv(10))
-		
-		#get all the holds
-		self.label_list : list[customtkinter.CTkLabel] = []
+
+		# get all the holds
+		self.label_list: list[customtkinter.CTkLabel] = []
 		hold_list = self.get_path()
 		colors = generate_gradient_colors(len(hold_list))
 
@@ -118,14 +121,14 @@ class AddPathPage(Page):
 			hold_label, trash_label = self.create_hold_label(hold_list[hold_num], hold_num, colors[hold_num])
 			self.label_list.append((hold_label, trash_label))
 
-		#Check if the path is correctly showed in the run page
+	# Check if the path is correctly showed in the run page
 
 
 	def __refresh_hold_menu(self):
 		self.__empty_label_list()
 		hold_list = self.get_path()
 		colors = generate_gradient_colors(len(hold_list))
-		for hold_num in range (len(hold_list)):
+		for hold_num in range(len(hold_list)):
 			hold_label, trash_label = self.create_hold_label(hold_list[hold_num], hold_num, colors[hold_num])
 			self.label_list.append((hold_label, trash_label))
 
@@ -145,7 +148,7 @@ class AddPathPage(Page):
 
 	def __show_hold_menu(self):
 		"""Save the path."""
-		#grid the frame with the holds
+		# grid the frame with the holds
 		self.hold_frame.grid(row=0, column=0, rowspan=5, sticky="nswe")
 		self.calibrate_button.grid_forget()
 		self.create_path_button.grid_forget()
@@ -174,7 +177,6 @@ class AddPathPage(Page):
 
 		
 	def save_function(self, name : str):
-		print(name)
 		self.image_driver.route_set_name(name)
 		self.image_driver.save_route()
 
@@ -182,7 +184,7 @@ class AddPathPage(Page):
 	def __config_grid(self):
 		self.grid_columnconfigure((0, 1, 2, 3), weight=1)
 		self.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
-  
+
 
 	def __config_pop_up(self):
 		"""Configure the pop up."""
@@ -194,15 +196,18 @@ class AddPathPage(Page):
 		pop_up.grid_columnconfigure(0, weight=1)
 		pop_up.grid_rowconfigure((0, 1), weight=1)
 
-		pop_up_message = customtkinter.CTkLabel(pop_up, text="An image will be taken in 3 seconds\n after clicking on OK", font=(FONT, 15))
+		pop_up_message = customtkinter.CTkLabel(pop_up,
+		                                        text="An image will be taken in 3 seconds\n after clicking on OK",
+		                                        font=(FONT, 15))
 		pop_up_message.grid(row=0, column=0)
-		pop_up_button = customtkinter.CTkButton(pop_up, text="OK", command=lambda : [pop_up.destroy(), self.__take_a_picture()])
+		pop_up_button = customtkinter.CTkButton(pop_up, text="OK",
+		                                        command=lambda: [pop_up.destroy(), self.__take_a_picture()])
 		pop_up_button.grid(row=1, column=0)
 
 
 	def __take_a_picture(self):
 		"""Take a picture."""
-		#self.after(3000, self.image_driver.refresh())
+		# self.after(3000, self.image_driver.refresh())
 		pass
 
 
@@ -220,7 +225,11 @@ class AddPathPage(Page):
 		self.i_image.grid(row=0, column=1, columnspan=2) # Don't use sticky here, it will break the image
 
 		self.image_driver = ImageDriver(self.i_image)
-		# self.app.camera.flux_reader_event.register(self.image_driver)
+		flux = self.app.camera.flux_reader_event.flux
+		if not isinstance(flux, int):
+			self.app.camera = Camera(flux)
+			self.app.camera.start()
+		self.app.camera.flux_reader_event.register(self.image_driver)
 		self.image_driver.bind_click(self.__refresh_hold_menu)
 
 

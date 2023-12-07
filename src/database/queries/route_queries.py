@@ -1,4 +1,5 @@
 from numpy import ndarray
+from sqlalchemy.exc import SQLAlchemyError
 
 from objects.route import Route as RouteObject
 from utils.serializer_utils import serialize_route
@@ -17,7 +18,7 @@ def create_route(route: RouteObject, description: str = None, difficulty: int = 
 		try:
 			session.add(route)
 			session.commit()
-		except:
+		except SQLAlchemyError:
 			session.rollback()
 			raise
 
@@ -39,6 +40,6 @@ def delete_route_by_name(name: str):
 		try:
 			route.delete()
 			session.commit()
-		except:
+		except SQLAlchemyError:
 			session.rollback()
 			raise
