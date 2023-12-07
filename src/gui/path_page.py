@@ -249,7 +249,7 @@ class PathPage(Page):
 
 		self.path_image = customtkinter.CTkImage(image_fromarray,
 												  size=image_size)
-		self.path_label.configure(image=self.path_image, fg_color="white")
+		self.path_label.configure(image=self.path_image)
 
 
 	def __get_image_ration_safe(self, image: Image.Image):
