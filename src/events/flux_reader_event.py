@@ -11,16 +11,22 @@ from enums.flux_reader_event_type import FluxReaderEventType
 
 
 class FluxReaderEvent(Event):
-	def __init__(self, flux: int | str = 0, nbr_frame_to_skip: int = 2):
+	def __init__(self, flux: int | str = 0, nbr_frame_to_skip: int = 2, looping: bool = True):
 		super().__init__()
 		self.flux = flux
 		self.video = cv2.VideoCapture(self.flux)
 		self.cancelled = False
 
+		self.refreshed = False
+		self.looping = looping
+
 		self.nbr_frame_to_skip = nbr_frame_to_skip
 
 	def set_cancelled(self, cancelled: bool):
 		self.cancelled = cancelled
+
+	def refresh_holds(self):
+		self.refreshed = False
 
 	def process(self):
 		parent_path = utils.get_parent_path(__file__, 3)
@@ -29,22 +35,28 @@ class FluxReaderEvent(Event):
 		skeleton_detector = ModelLoader(os.path.join(models_path, "yolov8l-pose.pt"))
 
 		refresh_holds = False
-		refreshed = False
+		self.refreshed = False
 		frame_skipper = 0
 		while self.video.isOpened() and not self.cancelled:
 			time.sleep(1 / self.video.get(cv2.CAP_PROP_FPS))
 			success, frame = self.video.read()
 			if not success:
-				break
+				if self.looping:
+					self.video.set(cv2.CAP_PROP_POS_FRAMES, 0)
+					continue
+				else:
+					break
 
 			frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
 			self.notify(FluxReaderEventType.GET_FRAME_EVENT, frame)
 
-			if (refresh_holds or not refreshed) and (
+			if (refresh_holds or not self.refreshed) and (
 					super().has_listener(FluxReaderEventType.HOLDS_PROCESSED_EVENT) or super().has_listener(
 				FluxReaderEventType.FRAME_PROCESSED_EVENT)):
-				refreshed = True
+
+				self.refreshed = True
+
 				holds_predictions = holds_detector.predict(frame, classes=[0])
 				floor_predictions = holds_detector.predict(frame, classes=[1])
 				holds_boxes = convert_image_box_outputs(holds_predictions)

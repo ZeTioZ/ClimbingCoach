@@ -59,8 +59,7 @@ class TrailPage(Page):
 		self.trail_detail_frame.grid_rowconfigure((0, 4), weight=0)
 		self.trail_detail_frame.grid_rowconfigure((RID_TITLE, RID_DIFFICULTY), weight=1)
 		self.trail_detail_frame.grid_rowconfigure(RID_DESCR, weight=3)
-		
-		
+	
 	def set_active(self):
 		"""Set the page active."""
 		self.all_walls = wall_queries.get_all_walls()
@@ -128,7 +127,6 @@ class TrailPage(Page):
 			self.add_wall_button = customtkinter.CTkButton(self.trail_list_frame, image=get_image_button, text="", command=lambda: self.app.show_page(CreateWall), corner_radius=uv(10000000), width=uv(40), height=uv(40), fg_color="transparent")
 			self.add_wall_button.grid(row=0, column=0, pady=uv(10))
 
-
 	def __set_description(self, description: str):
 		"""Set the description of the trail."""
 		self.detail_description.configure(state=tk.NORMAL)
@@ -150,7 +148,8 @@ class TrailPage(Page):
 
 	def __set_title(self, title: str):
 		"""Set the title of the page."""
-		self.detail_title_name.configure(text=title)
+		title_normalized = self.__normalize_title(title)
+		self.detail_title_name.configure(text=title_normalized)
 
 	def __fetch_trail_detail(self):
 		"""Fetch the trail detail from the database."""
@@ -163,11 +162,9 @@ class TrailPage(Page):
 	def create_button(self, display_text, index):
 		"""Creates a button with the given text."""
 
-		is_first = index == 0
-
 		self.button = customtkinter.CTkButton(
 			self.trail_list_frame,
-			text=display_text,
+			text=self.__normalize_title(display_text),
 			fg_color=SECONDARY_COLOR if self.choose_index == index else "transparent",
 			hover_color=SECONDARY_COLOR,
 			border_spacing=uv(17),
@@ -231,13 +228,10 @@ class TrailPage(Page):
 												  size=image_size)
 		self.trail_label.configure(image=self.trail_image)
 
-	
-
 	def __get_image_ration_safe(self, image: Image.Image):
 		raw_size = image.size
 		return self.__get_image_ration_safe_by_size(raw_size)
 	
-
 	def __get_image_ration_safe_by_size(self, size: tuple[int, int]):
 		if size[0] > size[1]:
 			rate = self.image_max_size[0] / size[0]
@@ -248,8 +242,6 @@ class TrailPage(Page):
 
 		return image_size
 		
-
-
 	def on_size_change(self, width, height):
 		super().on_size_change(width, height)
 
@@ -279,6 +271,18 @@ class TrailPage(Page):
 			size_difficulty = min_max_range(uv(15), uv(100), v(2.5, width))
 			for i in range(5):
 				self.difficulty[i].configure(width=size_difficulty, height=size_difficulty)
+			
+			self.trail_list_frame.configure(width=max(uv(250),v(10, width)))
 
 	def get_name(self):
 		return "Trail selection"
+
+	# Utils
+
+	def __normalize_title(self, title: str):
+		"""Normalize the title of the trail."""
+		if len(title) > 15:
+			title_normalized = title[:13] + "..."
+		else:
+			title_normalized = title
+		return title_normalized

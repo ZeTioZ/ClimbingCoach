@@ -40,9 +40,14 @@ def set_height_utils(height):
 	actual_height = height
 
 
-def v(x: float | int, view: float | int) -> float:
-	"""Return the value of x in the view. Allow relative sizing."""
-	return x * (view / 100)
+def v(p: float | int, view: float | int) -> float:
+	"""
+	Return the value as percentage of the view. (v for view)
+	:param p: The pourcent of the view
+	:param view: The view (usually the height of the window)
+	:return: The value as percentage of the view
+	"""
+	return p * (view / 100)
 
 
 def min_max_range(min: float | int | None, max: float | int | None, value: float | int) -> float:
