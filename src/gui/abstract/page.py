@@ -1,13 +1,10 @@
 from customtkinter import CTkFrame, CTk
 
-from gui.abstract.singleton import Singleton
-
-
-class Page(CTkFrame, metaclass=Singleton):
+class Page(CTkFrame):
 	app = None
 
 	def __init__(self, parent: CTkFrame, app: CTk, *args, **kwargs):
-		"""Constructor. Singleton then init executed only once."""
+		"""Constructor."""
 		super().__init__(parent)
 		self.app = app
 
