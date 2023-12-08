@@ -63,7 +63,7 @@ class RunViewerPage(Page):
 		# STREAM
 		self.load_img = pickle.loads(state.get_route().image)
 		self.ratio_img = self.load_img.shape[1] / self.load_img.shape[0]
-		print(self.ratio_img)
+
 		self.video_player_img = customtkinter.CTkImage(Image.fromarray(self.load_img), size=(iuv(500), iuv(500/self.ratio_img)))
 		self.video_player = customtkinter.CTkLabel(self.run_detail_frame, image=self.video_player_img,
 		                                           bg_color="transparent", text="")	
@@ -123,7 +123,7 @@ class RunViewerPage(Page):
 		self.other_runs_label.grid(row=0, column=1, pady=uv(5))
 
 		# get all the run in the db
-		self.run_list = run_queries.get_runs_by_user(state.get_user().username)
+		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
 
 		if len(self.run_list) > 0:
 			#TODO: faire appel aux stats des autres ici 
@@ -151,7 +151,7 @@ class RunViewerPage(Page):
 	def set_active(self):
 		"""Called when the page is set as active page."""
 		# get all the run in the db
-		self.run_list = run_queries.get_runs_by_user(state.get_user().username)
+		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
 		if len(self.run_list) > 0:
 			#TODO: faire appel aux stats des autres ici 
 			user_record_list = self.__get_user_record()
@@ -235,11 +235,6 @@ class RunViewerPage(Page):
 		"""Set the title of the page."""
 		self.run_detail_title.configure(text=title)
 
-	def __fetch_run_list(self):
-		"""Fetch the run list from the database."""
-		return [f"Run {i}" for i in range(1, 13)]
-		# return [f"Run {run}" for run in route_queries.get_all_routes()]
-
 	def __fetch_run_detail(self):
 		"""Fetch the run detail from the database."""
 		return {"title": f"Run {self.choose_index + 1}"}
@@ -261,9 +256,12 @@ class RunViewerPage(Page):
 			button.configure(fg_color="transparent")
 
 		self.video_progressbar.set(0)
-		
+
 		self.choose_index = run_chosen
 		self.button_list[run_chosen].configure(fg_color=SECONDARY_COLOR, hover_color=SECONDARY_HOVER_COLOR)
+		#change the play/pause button into play button
+		if self.video_play_button.cget("image") == self.video_pause_button_img:
+			self.__change_video_state()
 
 		current_run = self.__fetch_run_detail()
 		self.__set_title(current_run["title"])
