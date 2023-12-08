@@ -1,20 +1,23 @@
 from sqlalchemy.exc import SQLAlchemyError
 
 from database import user_queries
+from objects.hold import Hold
 from objects.skeletons_record import SkeletonsRecord
-from utils.serializer_utils import serialize_skeletons_record
+from utils.serializer_utils import serialize_skeletons_record, serialize_holds
 from .. import database_handler
 from ..models.run import Run
 
 DATABASE_HANDLER = database_handler.get_instance_database()
 
 
-def create_run(skeletons_record: SkeletonsRecord, runtime: int, username: str, route_name: str):
+def create_run(skeletons_record: SkeletonsRecord, holds: [Hold], runtime: float, username: str, route_name: str):
 	user = user_queries.get_user_by_username(username)
 	if user is None:
 		raise ValueError(f"User {username} does not exist.")
 	skeletons_record_serialized = serialize_skeletons_record(skeletons_record)
-	run = Run(skeletons=skeletons_record_serialized, runtime=runtime, username=username, route_name=route_name)
+	holds_serialized = serialize_holds(holds)
+	run = Run(skeletons=skeletons_record_serialized, holds=holds_serialized, runtime=runtime, username=username,
+	          route_name=route_name)
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()
 		try:
@@ -52,6 +55,6 @@ def delete_run_by_id(run_id: int):
 		try:
 			run.delete()
 			session.commit()
-		except:
+		except SQLAlchemyError:
 			session.rollback()
 			raise

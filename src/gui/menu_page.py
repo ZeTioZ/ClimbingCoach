@@ -39,7 +39,7 @@ class MenuPage(Page):
 		self.piste_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 20, "bold"), image=self.piste,
 		                                          height=100, width=100, fg_color=COLOR, corner_radius=DEFAULT_RADIUS)
 		self.piste_label.grid(row=1, column=0, pady=(10, 10), padx=(10, 10))
-		self.__set_hover_effect(self.piste_label, self.piste, "Trail")
+		self.__set_hover_effect(self.piste_label, self.piste, "Wall")
 
 		self.chemin = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("chemin_light.png")),
 		                                     size=(80, 80))
@@ -132,13 +132,13 @@ class MenuPage(Page):
 		self.__update_run()
 
 	def __update_chemin(self):
-		if state.is_trail_selected():
+		if state.is_wall_selected():
 			self.show_chemin()
 		else:
 			self.hide_chemin()
 
 	def __update_run(self):
-		if state.is_run_selected():
+		if state.is_route_selected():
 			self.show_run()
 		else:
 			self.hide_run()

@@ -8,9 +8,8 @@ from PIL import Image
 from database import user_queries
 from gui.abstract.page import Page
 from gui.app_state import AppState
-from gui.trail_page import TrailPage
+from gui.wall_page import WallPage
 from gui.utils import v, uv, iuv, get_parent_path, FONT
-from gui.register_page import RegisterPage
 
 state = AppState()
 DEFAULT_FONT = (FONT, iuv(16))
@@ -93,7 +92,7 @@ class LoginPage(Page):
 		success, user = user_queries.user_can_connect("guest", "")
 		if success:
 			state.set_user(user)
-			self.app.show_page(TrailPage)
+			self.app.show_page(WallPage)
 			print(f"You're now logged in as {user.username}")
 			print(state.get_user())
 
@@ -107,7 +106,7 @@ class LoginPage(Page):
 		if success:
 			# self.toggle_menu()
 			state.set_user(user)
-			self.app.show_page(TrailPage)
+			self.app.show_page(WallPage)
 			print(f"You're now logged in as {user.username}")
 			print(state.get_user())
 

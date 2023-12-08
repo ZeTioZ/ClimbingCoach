@@ -156,6 +156,5 @@ class CreateWall(Page):
 		                                      command=lambda: [
 			                                      self.__save(self.__get_frame(), name.get(), int(difficulty.get()),
 			                                                  text_box.get("0.0", "end")), video_pop_up.destroy()],
-		                                      # circular import si on show_page(TrailPage)
 		                                      font=(FONT, 22))
 		save_button.grid(row=5, column=0, columnspan=2, pady=uv(10))

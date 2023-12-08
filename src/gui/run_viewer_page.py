@@ -147,7 +147,7 @@ class RunViewerPage(Page):
 				self.video_play_button.configure(image=self.video_play_button_img)
 				self.video_progressbar.configure(state='disabled')
 				# play the video
-				runs = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_trail())
+				runs = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_wall())
 				for run in runs:
 					playback_thread.Playback(run.skeletons_record.frame_rate, run.skeletons_record.skeletons,
 					                         self.background_label, self.video_progressbar, run.runtime).start()
