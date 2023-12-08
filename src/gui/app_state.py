@@ -20,8 +20,8 @@ class AppState(metaclass=Singleton):
 		self.__user = None
 		self.__camera_name = ""
 		self.__load_configurations()
-		self.__route: int | None = None
-		self.__wall: int | None = None
+		self.__route: Route | None = None
+		self.__wall: Wall | None = None
 
 	# Configuration
 	def __load_configurations(self):
@@ -67,11 +67,7 @@ class AppState(metaclass=Singleton):
 
 	def set_wall(self, wall: Wall | None):
 		"""Set the wall."""
-		if wall is not None:
-			print("set_wall error: wall < 0\nNormalize to None")
-			wall = None
-		else:
-			self.set_route(None)
+		self.set_route(None)
 		self.__wall = wall
 
 	def is_wall_selected(self) -> bool:
@@ -86,9 +82,6 @@ class AppState(metaclass=Singleton):
 	# TODO: Change the injection of this function into route_page.py
 	def set_route(self, route: Route | None):
 		"""Set the route."""
-		if route is not None:
-			print("set_run error: run < 0\nNormalize to None")
-			route = None
 		self.__route = route
 
 	def is_route_selected(self) -> bool:
