@@ -1,5 +1,6 @@
 """Module for tkinter interface of run page."""
 import os.path
+import pickle
 
 import customtkinter
 from PIL import Image
@@ -11,6 +12,7 @@ from gui.utils import FONT, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from gui.utils import get_parent_path
 from gui.utils import v, uv, iuv, min_max_range
 from threads import playback_thread
+from utils.serializer_utils import deserialize_skeletons_record
 
 state = AppState()
 
@@ -59,11 +61,14 @@ class RunViewerPage(Page):
 		self.run_detail_frame.grid_rowconfigure((1, 2, 3, 4), weight=1)
 
 		# STREAM
-		self.video_player_img = customtkinter.CTkImage(Image.open(self.__get_image_path("video_player.png")),
-		                                               size=(200, 200))
+		self.load_img = pickle.loads(state.get_route().image)
+		self.ratio_img = self.load_img.shape[1] / self.load_img.shape[0]
+		print(self.ratio_img)
+		self.video_player_img = customtkinter.CTkImage(Image.fromarray(self.load_img), size=(iuv(500), iuv(500/self.ratio_img)))
 		self.video_player = customtkinter.CTkLabel(self.run_detail_frame, image=self.video_player_img,
-		                                           bg_color="transparent", text="")
-		self.video_player.grid(row=2, column=0, columnspan=4)
+		                                           bg_color="transparent", text="")	
+		self.video_player.grid(row=0, column=0, columnspan=4)
+
 
 		# VIDEO COMMANDS
 		self.video_commands_frame = customtkinter.CTkFrame(self.run_detail_frame, bg_color="transparent")
@@ -118,46 +123,76 @@ class RunViewerPage(Page):
 		self.other_runs_label.grid(row=0, column=1, pady=uv(5))
 
 		# get all the run in the db
-		run_list = run_queries.get_runs_by_user(state.get_user().username)
+		self.run_list = run_queries.get_runs_by_user(state.get_user().username)
 
-		#TODO: faire appel aux stats des autres ici 
-		user_record_list = self.__get_user_record()
-		all_time_record_list = self.__get_all_time_record()
+		if len(self.run_list) > 0:
+			#TODO: faire appel aux stats des autres ici 
+			user_record_list = self.__get_user_record()
+			all_time_record_list = self.__get_all_time_record()
 
-		self.button_list: list[customtkinter.CTkButton] = []
-		for run in run_list:
-			self.run_button = self.create_button(run.id, run_list.index(run))
-			self.button_list.append(self.run_button)
+			self.button_list: list[customtkinter.CTkButton] = []
+			for run in self.run_list:
+				self.run_button = self.create_button(run.id, self.run_list.index(run))
+				self.button_list.append(self.run_button)
 
-		self.user_record_button_list: list[customtkinter.CTkButton] = []
-		for user_record in user_record_list:
-			self.record_button = self.create_label(user_record, (user_record_list.index(user_record)) + 1, 0)
-			self.user_record_button_list.append(self.record_button)
+			self.user_record_button_list: list[customtkinter.CTkButton] = []
+			for user_record in user_record_list:
+				self.record_button = self.create_label(user_record, (user_record_list.index(user_record)) + 1, 0)
+				self.user_record_button_list.append(self.record_button)
 
-		self.all_time_record_button_list: list[customtkinter.CTkButton] = []
-		for all_time_record in all_time_record_list:
-			self.all_time_record_button = self.create_label(all_time_record,
-			                                                (all_time_record_list.index(all_time_record)) + 1, 1)
-			self.all_time_record_button_list.append(self.all_time_record_button)
+			self.all_time_record_button_list: list[customtkinter.CTkButton] = []
+			for all_time_record in all_time_record_list:
+				self.all_time_record_button = self.create_label(all_time_record,
+																(all_time_record_list.index(all_time_record)) + 1, 1)
+				self.all_time_record_button_list.append(self.all_time_record_button)
+
+		self.playback_thread = None
+
+	def set_active(self):
+		"""Called when the page is set as active page."""
+		# get all the run in the db
+		self.run_list = run_queries.get_runs_by_user(state.get_user().username)
+		if len(self.run_list) > 0:
+			#TODO: faire appel aux stats des autres ici 
+			user_record_list = self.__get_user_record()
+			all_time_record_list = self.__get_all_time_record()
+
+			self.button_list: list[customtkinter.CTkButton] = []
+			for run in self.run_list:
+				self.run_button = self.create_button(run.id, self.run_list.index(run))
+				self.button_list.append(self.run_button)
+
+			self.user_record_button_list: list[customtkinter.CTkButton] = []
+			for user_record in user_record_list:
+				self.record_button = self.create_label(user_record, (user_record_list.index(user_record)) + 1, 0)
+				self.user_record_button_list.append(self.record_button)
+
+			self.all_time_record_button_list: list[customtkinter.CTkButton] = []
+			for all_time_record in all_time_record_list:
+				self.all_time_record_button = self.create_label(all_time_record,
+																(all_time_record_list.index(all_time_record)) + 1, 1)
+				self.all_time_record_button_list.append(self.all_time_record_button)
+
 
 	def __change_video_state(self):
 		"""Change the state of the video."""
-		if self.video_play_button.cget("image") == self.video_pause_button_img:
+		if self.video_play_button.cget("image") == self.video_play_button_img:
 			if not (self.popup is not None and self.popup.winfo_exists()):
-				self.video_play_button.configure(image=self.video_play_button_img)
+				self.video_play_button.configure(image=self.video_pause_button_img)
 				self.video_progressbar.configure(state='disabled')
-				# play the video
-				runs = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_wall())
-				for run in runs:
-					playback_thread.Playback(run.skeletons_record.frame_rate, run.skeletons_record.skeletons,
-					                         self.background_label, self.video_progressbar, run.runtime).start()
-				# faire une copie de l'image
+				
+				choosen_run = self.run_list[self.choose_index]
+				deserialized_skeletons_record = deserialize_skeletons_record(choosen_run.skeletons_record)
+				if self.playback_thread is None or \
+					(self.playback_thread.skeletons_list != deserialized_skeletons_record.skeletons):
+					self.playback_thread = playback_thread.Playback(pickle.loads(state.get_route().image), deserialized_skeletons_record.frame_rate, deserialized_skeletons_record.skeletons, self, choosen_run.runtime)
+					self.playback_thread.start()
+				self.playback_thread.play()
 		else:
-			# stop the thread
-			# playback_thread.Playback().stop()
-			self.video_play_button.configure(image=self.video_pause_button_img)
+			self.video_play_button.configure(image=self.video_play_button_img)
 			self.video_progressbar.configure(state='normal')
-			# pause the video
+			if self.playback_thread is not None:
+				self.playback_thread.pause()
 
 	def __show_run_page(self):
 		"""Show the page passed in parameter."""
@@ -166,7 +201,6 @@ class RunViewerPage(Page):
 		if self.app is not None:
 			self.app.show_page(RunPage)
 
-	# a
 
 	def create_label(self, display_text, index, column):
 		"""Creates a label with the given text."""
@@ -226,6 +260,8 @@ class RunViewerPage(Page):
 		for button in self.button_list:
 			button.configure(fg_color="transparent")
 
+		self.video_progressbar.set(0)
+		
 		self.choose_index = run_chosen
 		self.button_list[run_chosen].configure(fg_color=SECONDARY_COLOR, hover_color=SECONDARY_HOVER_COLOR)
 
@@ -255,16 +291,17 @@ class RunViewerPage(Page):
 		                               font=(FONT, min_max_range(iuv(8), iuv(28), int(v(1.9, width)))))
 
 		image_size = min_max_range(uv(75), uv(1000), v(22, width))
-		self.video_player_img.configure(size=(image_size, image_size))
+		self.video_player_img.configure(size=(image_size, image_size/self.ratio_img))
 		self.video_player.configure(height=iuv(image_size), width=iuv(image_size))
 		self.video_commands_frame.configure(width=iuv(image_size))
-		self.video_progressbar.configure(width=iuv(image_size - uv(100)))
+		self.video_progressbar.configure(width=iuv(image_size))
 
 		font_style_default = (FONT, min_max_range(iuv(8), iuv(28), int(v(1.9, width))))
 		font_style_title = (FONT, min_max_range(iuv(12), iuv(32), int(v(2.5, width))), "bold")
 
-		for button in self.button_list:
-			button.configure(height=v(5, height), width=image_size, font=font_style_default)
+		if len(self.run_list) > 0:
+			for button in self.button_list:
+				button.configure(height=v(5, height), width=image_size, font=font_style_default)
 		self.run_list_title.configure(font=font_style_title)
 		self.run_detail_title.configure(font=font_style_title)
 		self.run_detail_description.configure(font=font_style_title)
@@ -324,8 +361,8 @@ class PopUp(Page):
 		self.popup_frame.grid(row=0, column=0, sticky="nswe")
 
 		# Stream
-		self.video_player_img = customtkinter.CTkImage(
-			Image.open(os.path.join("resources", "images", "video_player.png")), size=(uv(680), uv(680)))
+		self.load_img = pickle.loads(state.get_route().image)
+		self.video_player_img = customtkinter.CTkImage(Image.fromarray(self.load_img), size=(iuv(680), iuv(680)))
 		self.video_player = customtkinter.CTkLabel(self.popup_frame, image=self.video_player_img,
 		                                           bg_color="transparent", text="")
 		self.video_player.grid(row=0, column=0, columnspan=4)

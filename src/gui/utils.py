@@ -72,3 +72,12 @@ def uv(value, resolution=1080):
 def iuv(value, resolution=1080):
 	"""Integer Universal value. Allow using absolute value for the height of the window."""
 	return int(uv(value, resolution))
+
+
+def normalize_title(title: str):
+	"""Normalize the title of the wall."""
+	if len(title) > 15:
+		title_normalized = title[:13] + "..."
+	else:
+		title_normalized = title
+	return title_normalized

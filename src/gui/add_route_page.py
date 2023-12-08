@@ -69,7 +69,7 @@ class AddRoutePage(Page):
 			"""Remove the hold."""
 			self.image_driver.route_remove_box_by_index(index)
 			self.__refresh_hold_menu()
-			self.image_driver.display_holds(self.image_driver.holds)
+			self.image_driver.display_holds(self.image_driver.detected_holds)
 
 		hold_trash_button.bind("<Button-1>", lambda event: remove_hold())
 		hold_trash_button.grid(row=index, column=1, sticky="e")
@@ -79,7 +79,7 @@ class AddRoutePage(Page):
 
 	def get_path(self):
 		"""Return the path of the holds."""
-		return self.image_driver.route.get_route()
+		return self.image_driver.route.get_holds()
 
 	def create_path(self):
 		"""Create the path."""
@@ -185,8 +185,7 @@ class AddRoutePage(Page):
 		self.create_path_button.grid(row=3, column=2, pady=iuv(10))
 		self.i_image.grid(row=0, column=1, columnspan=2)
 
-	def save_function(self, name: str, difficulty: int = None, description: str = "", image: Image = None,
-	                  holds: list = None):
+	def save_function(self, name: str, difficulty: int = None, description: str = ""):
 		self.image_driver.route_set_name(name)
 		self.image_driver.save_route(difficulty, description)
 

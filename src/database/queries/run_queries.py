@@ -16,7 +16,7 @@ def create_run(skeletons_record: SkeletonsRecord, holds: [Hold], runtime: float,
 		raise ValueError(f"User {username} does not exist.")
 	skeletons_record_serialized = serialize_skeletons_record(skeletons_record)
 	holds_serialized = serialize_holds(holds)
-	run = Run(skeletons=skeletons_record_serialized, holds=holds_serialized, runtime=runtime, username=username,
+	run = Run(skeletons_record=skeletons_record_serialized, holds=holds_serialized, runtime=runtime, username=username,
 	          route_name=route_name)
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()

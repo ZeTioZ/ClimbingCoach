@@ -12,7 +12,7 @@ from gui.abstract.page import Page
 from gui.app_state import AppState
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, \
 	SECONDARY_HOVER_COLOR, COLOR_DIFFICULTY
-from gui.utils import v, uv, iuv, min_max_range, get_ressources_path
+from gui.utils import v, uv, iuv, min_max_range, get_ressources_path, normalize_title
 from database.queries import wall_queries
 
 state = AppState()
@@ -27,10 +27,11 @@ CID_RIGHT = 2
 
 class WallPage(Page):
 	"""Class of the wall page."""
-	choose_index = 0  # Current page we're in
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
 		super().__init__(parent, app)
+
+		self.choose_index = 0
 
 		parent.grid_rowconfigure(0, weight=1)
 		parent.grid_columnconfigure(0, weight=1)
@@ -84,7 +85,7 @@ class WallPage(Page):
 			                                                     command=lambda: self.selection_wall())
 			self.wall_selection_button.grid(row=RID_DIFFICULTY, column=CID_RIGHT, sticky="n", padx=(uv(0), uv(50)))
 
-			self.detail_title_name = customtkinter.CTkLabel(self.wall_detail_frame, text=self.current_wall["name"],
+			self.detail_title_name = customtkinter.CTkLabel(self.wall_detail_frame, text=normalize_title(self.current_wall["name"]),
 			                                                font=(FONT, iuv(32), "bold"), fg_color=SECONDARY_COLOR,
 			                                                corner_radius=20, width=uv(350))
 			self.detail_title_name.grid(row=RID_TITLE, column=CID_LEFT, columnspan=2, sticky="", ipady=uv(10))
@@ -94,7 +95,7 @@ class WallPage(Page):
 			                                                   fg_color="transparent")
 			self.detail_description.insert(tk.END, self.current_wall["description"])
 			self.detail_description.configure(state=tk.DISABLED)
-			self.detail_description.grid(row=RID_DESCR, column=CID_LEFT, sticky="nswe", pady=(uv(50), uv(0)))
+			self.detail_description.grid(row=RID_DESCR, column=CID_LEFT, sticky="nswe", pady=(uv(50), uv(0)), padx=(uv(50), uv(0)))
 
 			self.detail_difficulty = customtkinter.CTkFrame(self.wall_detail_frame, fg_color="transparent")
 			self.detail_difficulty.grid_columnconfigure((1, 2, 3, 4, 5), weight=1)
@@ -111,11 +112,10 @@ class WallPage(Page):
 				self.difficulty[i].grid(row=0, column=i + 1)
 
 			self.__set_difficulty(self.current_wall["difficulty"])
-		all_walls = self.all_walls
 
 		self.button_list: list[customtkinter.CTkButton] = []
-		for wall in all_walls:
-			self.wall_button = self.create_button(wall.name, all_walls.index(wall))
+		for wall in self.all_walls:
+			self.wall_button = self.create_button(wall.name, self.all_walls.index(wall))
 			self.button_list.append(self.wall_button)
 
 		self.user = state.get_user()
@@ -128,6 +128,9 @@ class WallPage(Page):
 			                                               corner_radius=uv(10000000), width=uv(40), height=uv(40),
 			                                               fg_color="transparent")
 			self.add_wall_button.grid(row=0, column=0, pady=uv(10))
+
+		if state.get_wall() is not None:
+			self.selection_wall()
 
 	def __set_description(self, description: str):
 		"""Set the description of the wall."""
@@ -150,7 +153,7 @@ class WallPage(Page):
 
 	def __set_title(self, title: str):
 		"""Set the title of the page."""
-		title_normalized = self.__normalize_title(title)
+		title_normalized = normalize_title(title)
 		self.detail_title_name.configure(text=title_normalized)
 
 	def __fetch_wall_detail(self):
@@ -166,7 +169,7 @@ class WallPage(Page):
 
 		self.button = customtkinter.CTkButton(
 			self.wall_list_frame,
-			text=self.__normalize_title(display_text),
+			text=normalize_title(display_text),
 			fg_color=SECONDARY_COLOR if self.choose_index == index else "transparent",
 			hover_color=SECONDARY_COLOR,
 			border_spacing=uv(17),
@@ -182,7 +185,7 @@ class WallPage(Page):
 		button_text = self.wall_selection_button.cget("text")
 		if button_text == "Select":
 			self.wall_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
-			state.set_wall(self.choose_index)
+			state.set_wall(wall_queries.get_wall_by_name(self.all_walls[self.choose_index].name))
 		else:
 			self.wall_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR,
 			                                     hover_color=PRIMARY_HOVER_COLOR)
@@ -278,13 +281,3 @@ class WallPage(Page):
 
 	def get_name(self):
 		return "Wall selection"
-
-	# Utils
-
-	def __normalize_title(self, title: str):
-		"""Normalize the title of the wall."""
-		if len(title) > 15:
-			title_normalized = title[:13] + "..."
-		else:
-			title_normalized = title
-		return title_normalized
