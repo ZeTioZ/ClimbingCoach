@@ -72,3 +72,17 @@ def uv(value, resolution=1080):
 def iuv(value, resolution=1080):
 	"""Integer Universal value. Allow using absolute value for the height of the window."""
 	return int(uv(value, resolution))
+
+def get_font_style_default(width: int, height: int):
+	return (FONT, min_max_range(iuv(8), iuv(28), int(v(1.9, width))))
+	
+def get_font_style_title(width: int, height: int):
+	return (FONT, min_max_range(iuv(12), iuv(32), int(v(2.5, width))), "bold")
+
+def normalize_title(title: str):
+	"""Normalize the title of the wall."""
+	if len(title) > 15:
+		title_normalized = title[:13] + "..."
+	else:
+		title_normalized = title
+	return title_normalized

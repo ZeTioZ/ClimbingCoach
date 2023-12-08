@@ -48,14 +48,12 @@ class RegisterPage(Page):
 		"""Register the user."""
 		pseudo = self.pseudo_entry.get()
 		password = self.password_entry.get()
-		print(password)
 
 		if pseudo not in self.__get_all_usernames():
 			user_queries.create_user(pseudo, password)
 		else:
 			# TODO: afficher un message disant que l'user existe déjà
 			print("User already exists")
-		print(f"User {pseudo} registered !")
 		self.app.show_login_page()
 
 	def cancel(self):
