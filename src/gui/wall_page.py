@@ -23,20 +23,14 @@ from gui.component.scrollable_button_component import ScrollableButtonComponent
 
 state = AppState()
 
-RID_TITLE = 1
-RID_DESCR = 2
-RID_DIFFICULTY = 3
-
-CID_LEFT = 1
-CID_RIGHT = 2
-
 
 class WallPage(Page):
 	"""Class of the wall page."""
-	active_id = 0  # Current page we're in
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
 		super().__init__(parent, app)
+
+		self.active_id = 0
 
 		parent.grid_rowconfigure(0, weight=1)
 		parent.grid_columnconfigure(0, weight=1)
