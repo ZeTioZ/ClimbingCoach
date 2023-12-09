@@ -26,6 +26,8 @@ class ImageDriver(Listener):
 			FluxReaderEventType.HOLDS_PROCESSED_EVENT
 		])
 
+		self.__click_callback = None
+
 		self.i_image = i_image
 		self.i_image.bind_right_click(self.click_right)
 		self.i_image.bind_left_click(self.click_left)
@@ -44,7 +46,6 @@ class ImageDriver(Listener):
 			image = self.image
 		if detected_holds is None:
 			detected_holds = self.detected_holds
-
 
 		drawn_image = box_visualizer(image, detected_holds)
 		drawn_image = draw_path(drawn_image, self.route.get_holds())
@@ -78,7 +79,7 @@ class ImageDriver(Listener):
 	def route_set_name(self, name: str):
 		"""Set the name of the path."""
 		self.route.set_name(name)
-	
+
 	def load_route(self, name: str):
 		"""Load the path."""
 		route_db = get_route_by_name(name)
@@ -86,18 +87,18 @@ class ImageDriver(Listener):
 		self.route = Route(route_db.name, route_holds)
 		self.display_holds()
 
-	def save_route(self,difficulty: int = None ,description: str = ""):
+	def save_route(self, difficulty: int = None, description: str = ""):
 		"""Save the path."""
 		if self.route.is_name_set():
-			create_route(self.route, description, difficulty, pickle.dumps(np.array(self.draw_element(self.image,[]))))
+			create_route(self.route, description, difficulty, pickle.dumps(np.array(self.draw_element(self.image, []))))
 		else:
 			raise AttributeError("The name of the route is not set.")
-		
+
 	def set_hold_to_highlight(self, hold: Box):
 		"""Set the hold to highlight."""
 		self.hold_to_highlight = hold
 		self.display_holds()
-	
+
 	def remove_hold_to_highlight(self):
 		"""Remove the hold to highlight."""
 		self.hold_to_highlight = None
@@ -133,19 +134,16 @@ class ImageDriver(Listener):
 		default_y = int(self.i_image.default_size_height * event.y / self.i_image.winfo_height())
 		return find_selected_hold(self.detected_holds, default_x, default_y)
 
-	__click_callback = None
-
 	def bind_click(self, callback: Callable[[None], None]):
 		self.__click_callback = callback
 
-
-	def underlight_hold(self, hold: Box):
-		"""Underlight the hold."""
+	def highlight_hold(self, hold: Box):
+		"""Highlight the hold."""
 		self.i_image.change_image(self.draw_element())
 
 	# LISTENER
 	def update(self, event: Event, event_types: [EventType], *args, **kwargs):
-		"""Called when the event notify the observer."""
+		"""Called when the event notifies the observer."""
 		if not isinstance(event, FluxReaderEvent):
 			return
 

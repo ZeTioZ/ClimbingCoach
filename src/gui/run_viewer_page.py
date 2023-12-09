@@ -9,9 +9,10 @@ from database.queries import run_queries
 from gui.abstract.page import Page
 from gui.app_state import AppState
 from gui.utils import FONT, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
-from gui.utils import get_parent_path, get_ressources_path
+from gui.utils import get_ressources_path
 from gui.utils import v, uv, iuv, min_max_range
 from threads import playback_thread
+from utils import stats_utils
 from utils.serializer_utils import deserialize_skeletons_record
 
 state = AppState()
@@ -19,13 +20,13 @@ state = AppState()
 
 class RunViewerPage(Page):
 	"""Class of the run viewer page."""
-	choose_index = 0  # Index of the page we are on
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk = None):
 		super().__init__(parent, app)
 
 		self.app = app
 		self.popup = None
+		self.choose_index = 0
 
 		parent.grid_rowconfigure(0, weight=1)
 		parent.grid_columnconfigure(0, weight=1)
@@ -64,11 +65,11 @@ class RunViewerPage(Page):
 		self.load_img = pickle.loads(state.get_route().image)
 		self.ratio_img = self.load_img.shape[1] / self.load_img.shape[0]
 
-		self.video_player_img = customtkinter.CTkImage(Image.fromarray(self.load_img), size=(iuv(500), iuv(500/self.ratio_img)))
+		self.video_player_img = customtkinter.CTkImage(Image.fromarray(self.load_img),
+		                                               size=(iuv(500), iuv(500 / self.ratio_img)))
 		self.video_player = customtkinter.CTkLabel(self.run_detail_frame, image=self.video_player_img,
-		                                           bg_color="transparent", text="")	
+		                                           bg_color="transparent", text="")
 		self.video_player.grid(row=0, column=0, columnspan=4)
-
 
 		# VIDEO COMMANDS
 		self.video_commands_frame = customtkinter.CTkFrame(self.run_detail_frame, bg_color="transparent")
@@ -126,9 +127,13 @@ class RunViewerPage(Page):
 		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
 
 		if len(self.run_list) > 0:
-			#TODO: faire appel aux stats des autres ici 
-			user_record_list = self.__get_user_record()
-			all_time_record_list = self.__get_all_time_record()
+			derivation_stat = stats_utils.get_derivation_stat(state, self.run_list[self.choose_index])
+			user_record_list = stats_utils.get_user_route_records(state)
+			all_time_record_list = stats_utils.get_all_users_route_records(state)
+
+			print("DERIVATION STAT: ", derivation_stat, "%")
+
+			# TODO: Afficher la stats de dérivation
 
 			self.button_list: list[customtkinter.CTkButton] = []
 			for run in self.run_list:
@@ -136,15 +141,17 @@ class RunViewerPage(Page):
 				self.button_list.append(self.run_button)
 
 			self.user_record_button_list: list[customtkinter.CTkButton] = []
-			for user_record in user_record_list:
-				self.record_button = self.create_label(user_record, (user_record_list.index(user_record)) + 1, 0)
-				self.user_record_button_list.append(self.record_button)
+			if user_record_list is not None:
+				for user_record in user_record_list:
+					self.record_button = self.create_label(user_record, (user_record_list.index(user_record)) + 1, 0)
+					self.user_record_button_list.append(self.record_button)
 
 			self.all_time_record_button_list: list[customtkinter.CTkButton] = []
-			for all_time_record in all_time_record_list:
-				self.all_time_record_button = self.create_label(all_time_record,
-																(all_time_record_list.index(all_time_record)) + 1, 1)
-				self.all_time_record_button_list.append(self.all_time_record_button)
+			if all_time_record_list is not None:
+				for all_time_record in all_time_record_list:
+					self.all_time_record_button = self.create_label(all_time_record,
+					                                                (all_time_record_list.index(all_time_record)) + 1, 1)
+					self.all_time_record_button_list.append(self.all_time_record_button)
 
 		self.playback_thread = None
 
@@ -153,9 +160,13 @@ class RunViewerPage(Page):
 		# get all the run in the db
 		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
 		if len(self.run_list) > 0:
-			#TODO: faire appel aux stats des autres ici 
-			user_record_list = self.__get_user_record()
-			all_time_record_list = self.__get_all_time_record()
+			derivation_stat = stats_utils.get_derivation_stat(state, self.run_list[self.choose_index])
+			user_record_list = stats_utils.get_user_route_records(state)
+			all_time_record_list = stats_utils.get_all_users_route_records(state)
+
+			print("DERIVATION STAT: ", derivation_stat, "%")
+
+			# TODO: Afficher la stats de dérivation
 
 			self.button_list: list[customtkinter.CTkButton] = []
 			for run in self.run_list:
@@ -163,15 +174,17 @@ class RunViewerPage(Page):
 				self.button_list.append(self.run_button)
 
 			self.user_record_button_list: list[customtkinter.CTkButton] = []
-			for user_record in user_record_list:
-				self.record_button = self.create_label(user_record, (user_record_list.index(user_record)) + 1, 0)
-				self.user_record_button_list.append(self.record_button)
+			if user_record_list is not None:
+				for user_record in user_record_list:
+					self.record_button = self.create_label(user_record, (user_record_list.index(user_record)) + 1, 0)
+					self.user_record_button_list.append(self.record_button)
 
 			self.all_time_record_button_list: list[customtkinter.CTkButton] = []
-			for all_time_record in all_time_record_list:
-				self.all_time_record_button = self.create_label(all_time_record,
-																(all_time_record_list.index(all_time_record)) + 1, 1)
-				self.all_time_record_button_list.append(self.all_time_record_button)
+			if all_time_record_list is not None:
+				for all_time_record in all_time_record_list:
+					self.all_time_record_button = self.create_label(all_time_record,
+					                                                (all_time_record_list.index(all_time_record)) + 1, 1)
+					self.all_time_record_button_list.append(self.all_time_record_button)
 
 	def __change_video_state(self):
 		"""Change the state of the video."""
@@ -179,12 +192,15 @@ class RunViewerPage(Page):
 			if not (self.popup is not None and self.popup.winfo_exists()):
 				self.video_play_button.configure(image=self.video_pause_button_img)
 				self.video_progressbar.configure(state='disabled')
-				
-				choosen_run = self.run_list[self.choose_index]
-				deserialized_skeletons_record = deserialize_skeletons_record(choosen_run.skeletons_record)
+
+				chosen_run = self.run_list[self.choose_index]
+				deserialized_skeletons_record = deserialize_skeletons_record(chosen_run.skeletons_record)
 				if self.playback_thread is None or \
-					(self.playback_thread.skeletons_list != deserialized_skeletons_record.skeletons):
-					self.playback_thread = playback_thread.Playback(pickle.loads(state.get_route().image), deserialized_skeletons_record.frame_rate, deserialized_skeletons_record.skeletons, self, choosen_run.runtime)
+						(self.playback_thread.skeletons_list != deserialized_skeletons_record.skeletons):
+					self.playback_thread = playback_thread.Playback(pickle.loads(state.get_route().image),
+					                                                deserialized_skeletons_record.frame_rate,
+					                                                deserialized_skeletons_record.skeletons, self,
+					                                                chosen_run.runtime)
 					self.playback_thread.start()
 				self.playback_thread.play()
 		else:
@@ -237,14 +253,6 @@ class RunViewerPage(Page):
 		"""Fetch the run detail from the database."""
 		return {"title": f"Run {self.choose_index + 1}"}
 
-	def __get_user_record(self):
-		"""Return the user record of the run."""
-		return [f"User record {i}" for i in range(1, 3)]
-
-	def __get_all_time_record(self):
-		"""Return the all-time record of the run."""
-		return [f"All time record {i}" for i in range(1, 3)]
-
 	def show_run_detail(self, run_chosen):
 		"""Shows the run detail page."""
 		if not self.button_list or run_chosen == self.choose_index:
@@ -257,7 +265,7 @@ class RunViewerPage(Page):
 
 		self.choose_index = run_chosen
 		self.button_list[run_chosen].configure(fg_color=SECONDARY_COLOR, hover_color=SECONDARY_HOVER_COLOR)
-		#change the play/pause button into play button
+		# change the play/pause button into play button
 		if self.video_play_button.cget("image") == self.video_pause_button_img:
 			self.__change_video_state()
 
@@ -286,7 +294,7 @@ class RunViewerPage(Page):
 		                               font=(FONT, min_max_range(iuv(8), iuv(28), int(v(1.9, width)))))
 
 		image_size = min_max_range(uv(75), uv(1000), v(22, width))
-		self.video_player_img.configure(size=(image_size, image_size/self.ratio_img))
+		self.video_player_img.configure(size=(image_size, image_size / self.ratio_img))
 		self.video_player.configure(height=iuv(image_size), width=iuv(image_size))
 		self.video_commands_frame.configure(width=iuv(image_size))
 		self.video_progressbar.configure(width=iuv(image_size))
@@ -359,7 +367,8 @@ class PopUp(Page):
 		self.load_img = pickle.loads(state.get_route().image)
 		self.ratio_img = self.load_img.shape[1] / self.load_img.shape[0]
 
-		self.video_player_img = customtkinter.CTkImage(Image.fromarray(self.load_img), size=(iuv(500), iuv(500/self.ratio_img)))
+		self.video_player_img = customtkinter.CTkImage(Image.fromarray(self.load_img),
+		                                               size=(iuv(500), iuv(500 / self.ratio_img)))
 		self.video_player = customtkinter.CTkLabel(self.popup_frame, image=self.video_player_img,
 		                                           bg_color="transparent", text="")
 		self.video_player.grid(row=0, column=0, columnspan=4)
