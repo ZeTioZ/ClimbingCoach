@@ -40,7 +40,7 @@ class ImageDriver(Listener):
 		"""Return the interactive image."""
 		return self.i_image
 
-	def draw_element(self, image: np.ndarray | None = None, holds: list[Box] | None = None, draw_line: bool = True) -> Image:
+	def draw_element(self, image: np.ndarray | None = None, detected_holds: list[Box] | None = None, draw_line: bool = True) -> Image:
 		"""Draw the holds on the image."""
 		if image is None:
 			image = self.image
@@ -48,9 +48,9 @@ class ImageDriver(Listener):
 			detected_holds = self.detected_holds
 
 
-		drawn_image = box_visualizer(image, holds)
-		if draw_line: drawn_image = draw_path(drawn_image, self.route.get_route())
-		drawn_image = path_box_visualizer(drawn_image, self.route.get_route())
+		drawn_image = box_visualizer(image, detected_holds)
+		if draw_line: drawn_image = draw_path(drawn_image, self.route.get_holds())
+		drawn_image = path_box_visualizer(drawn_image, self.route.get_holds())
 
 		if self.hold_to_highlight is not None:
 			drawn_image = box_visualizer(drawn_image, [self.hold_to_highlight], color=(127, 187, 30))

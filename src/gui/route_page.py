@@ -233,7 +233,7 @@ class RoutePage(Page):
 
 	def refresh_description(self):
 		"""Set the page active"""
-		if self.active_route_id is not None:
+		if isinstance(self.active_route_id, int) and self.active_route_id < len(self.all_routes) and self.active_route_id >= 0:
 			self.__show_route_detail(self.active_route_id)
 	
 	def detail_component_resize(self, width: int, height: int):

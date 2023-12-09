@@ -25,7 +25,7 @@ class DifficultyComponent(ctk.CTkFrame):
 	def __create_difficulty_circle(self) -> ctk.CTkFrame:
 		difficulty_circle = ctk.CTkFrame(
 			self, corner_radius=uv(1000),
-			fg_color="green", border_color="white",
+			fg_color="transparent", border_color="white",
 			width=uv(25), height=uv(25), 
 		)
 		return difficulty_circle
