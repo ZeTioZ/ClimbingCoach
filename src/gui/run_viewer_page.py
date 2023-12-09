@@ -9,7 +9,7 @@ from database.queries import run_queries
 from gui.abstract.page import Page
 from gui.app_state import AppState
 from gui.utils import FONT, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
-from gui.utils import get_parent_path
+from gui.utils import get_parent_path, get_ressources_path
 from gui.utils import v, uv, iuv, min_max_range
 from threads import playback_thread
 from utils.serializer_utils import deserialize_skeletons_record
@@ -173,7 +173,6 @@ class RunViewerPage(Page):
 																(all_time_record_list.index(all_time_record)) + 1, 1)
 				self.all_time_record_button_list.append(self.all_time_record_button)
 
-
 	def __change_video_state(self):
 		"""Change the state of the video."""
 		if self.video_play_button.cget("image") == self.video_play_button_img:
@@ -200,7 +199,6 @@ class RunViewerPage(Page):
 
 		if self.app is not None:
 			self.app.show_page(RunPage)
-
 
 	def create_label(self, display_text, index, column):
 		"""Creates a label with the given text."""
@@ -275,8 +273,7 @@ class RunViewerPage(Page):
 
 	def __get_image_path(self, image_name: str):
 		"""Return the path of the icon passed in parameter."""
-		parent_path = get_parent_path(__file__, 3)
-		path = os.path.join(parent_path, 'resources', 'images', image_name)
+		path = os.path.join(get_ressources_path(), 'images', image_name)
 		if os.path.exists(path):
 			return path
 		else:
@@ -360,7 +357,9 @@ class PopUp(Page):
 
 		# Stream
 		self.load_img = pickle.loads(state.get_route().image)
-		self.video_player_img = customtkinter.CTkImage(Image.fromarray(self.load_img), size=(iuv(680), iuv(680)))
+		self.ratio_img = self.load_img.shape[1] / self.load_img.shape[0]
+
+		self.video_player_img = customtkinter.CTkImage(Image.fromarray(self.load_img), size=(iuv(500), iuv(500/self.ratio_img)))
 		self.video_player = customtkinter.CTkLabel(self.popup_frame, image=self.video_player_img,
 		                                           bg_color="transparent", text="")
 		self.video_player.grid(row=0, column=0, columnspan=4)
@@ -370,10 +369,10 @@ class PopUp(Page):
 		self.video_commands_frame.grid(row=1, column=0, sticky="nsew")
 		self.video_commands_frame.grid_columnconfigure((0, 1), weight=1)
 
-		self.video_play_button_img = customtkinter.CTkImage(
-			Image.open(os.path.join("resources", "images", "play_button.png")), size=(51, 51))
-		self.video_pause_button_img = customtkinter.CTkImage(
-			Image.open(os.path.join("resources", "images", "pause_button.png")), size=(50, 50))
+		self.video_play_button_img = customtkinter.CTkImage(Image.open(self.__get_image_path("play_button.png")),
+		                                                    size=(31, 31))
+		self.video_pause_button_img = customtkinter.CTkImage(Image.open(self.__get_image_path("pause_button.png")),
+		                                                     size=(30, 30))
 		self.video_play_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=uv(10),
 		                                                 image=self.video_play_button_img, fg_color="transparent",
 		                                                 command=self.__change_video_state)
@@ -389,3 +388,11 @@ class PopUp(Page):
 			self.video_play_button.configure(image=self.video_pause_button_img)
 		else:
 			self.video_play_button.configure(image=self.video_play_button_img)
+
+	def __get_image_path(self, image_name: str):
+		"""Return the path of the icon passed in parameter."""
+		path = os.path.join(get_ressources_path(), 'images', image_name)
+		if os.path.exists(path):
+			return path
+		else:
+			return None
