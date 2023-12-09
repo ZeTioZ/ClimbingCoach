@@ -67,6 +67,7 @@ class AppState(metaclass=Singleton):
 
 	def set_wall(self, wall: Wall | None):
 		"""Set the wall."""
+		assert isinstance(wall, Wall) or wall is None, f"app_state: wall is not a Wall or None but {type(wall)}"
 		self.set_route(None)
 		self.__wall = wall
 
