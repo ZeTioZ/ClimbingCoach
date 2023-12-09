@@ -46,23 +46,7 @@ class RoutePage(Page):
 		self.route_list_component = self.__create_scrollable_button_component(lambda: self.app.show_page(AddRoutePage))
 		self.route_list_component.grid(row=1, column=0, sticky="nswe")
 
-		self.route_detail_frame = customtkinter.CTkFrame(self)
-		self.route_detail_frame.grid(row=0, column=1, rowspan=2, sticky="nswe")
-		self.route_detail_frame.configure(fg_color="transparent")
-
-		self.route_detail_frame.grid_columnconfigure((0, 3), weight=3)
-		self.route_detail_frame.grid_columnconfigure((1, 2), weight=1)
-		self.route_detail_frame.grid_rowconfigure((0, 1, 2), weight=1)
-
-		self.__init_description_elements()
-
-	def __fetch_route_detail(self):
-		"""Fetch the routes detail from the database."""
-		return {"name": self.all_routes[self.active_route_id].name,
-		        "difficulty": self.all_routes[self.active_route_id].difficulty,
-		        "image": self.all_routes[self.active_route_id].image,
-		        "description": self.all_routes[self.active_route_id].description
-		        }
+		self.detail_frame = self.__create_description_elements()
 
 	def selection_route(self):
 		"""Select the route."""
@@ -75,10 +59,6 @@ class RoutePage(Page):
 			state.set_route(None)
 		self.app.update_menu()
 
-	def __is_already_in_tab(self, tab: int) -> bool:
-		"""Return true if the page is already in the tab."""
-		return tab == self.active_route_id
-
 	def __is_user_admin(self) -> bool:
 		"""Return true if the user is admin."""
 		return state.get_user().role == "admin"
@@ -89,9 +69,9 @@ class RoutePage(Page):
 		else:
 			self.route_list_component.hide_adding_button()
 
-	def __image_loader(self) -> np.ndarray:
+	def __image_loader(self, image_to_load) -> np.ndarray:
 		"""Loads an image from the given route."""
-		image: np.ndarray = pickle.loads(self.current_route["image"])
+		image: np.ndarray = pickle.loads(image_to_load)
 		return image
 
 	# Scrollable button component
@@ -104,12 +84,6 @@ class RoutePage(Page):
 	def __refresh_scrollable_button_component(self):
 		if self.all_routes is not None:
 			self.route_list_component.load_button_list([(route.name, lambda index: self.__show_route_detail(index)) for route in self.all_routes])
-
-	# Difficulty component
-
-	def __create_difficulty_component(self):
-		difficulty_component = DifficultyComponent(self.route_detail_frame)
-		return difficulty_component
 
 	# Page lifecycle
 
@@ -127,18 +101,10 @@ class RoutePage(Page):
 	def on_size_change(self, width, height):
 		super().on_size_change(width, height)
 		self.route_list_component.resize(width, height)
-		self.image_componant.resize(width, height)
-		self.difficulty_component.resize(width, height)
+		self.detail_component_resize(width, height)
 
-		if self.all_routes is not None and len(self.all_routes) > 0:
-			max_dim_size = min_max_range(uv(75), uv(1000), v(22, width))
-
-			font_style_default = get_font_style_default(width, height)
-			font_style_title = get_font_style_title(width, height)
-
-			self.route_list_title.configure(font=font_style_title)
-			self.route_selection_button.configure(height=v(5, height), width=max_dim_size, font=font_style_default)
-			self.route_description.configure(font=font_style_default)
+		font_style_title = get_font_style_title(width, height)
+		self.route_list_title.configure(font=font_style_title)
 
 	# DB
 
@@ -150,49 +116,67 @@ class RoutePage(Page):
 	# Description component
 	# =====================
 
-	def __init_description_elements(self):
+	def __create_description_elements(self) -> customtkinter.CTkFrame:
 
-		self.image_componant = ImageComponent(self.route_detail_frame)
+		detail_frame = customtkinter.CTkFrame(self)
+		detail_frame.grid(row=0, column=1, rowspan=2, sticky="nswe")
+		detail_frame.configure(fg_color="transparent")
+
+		detail_frame.grid_columnconfigure((0, 3), weight=3)
+		detail_frame.grid_columnconfigure((1, 2), weight=1)
+		
+		detail_frame.grid_rowconfigure((0, 1, 2), weight=1)
+
+		self.image_componant = ImageComponent(detail_frame)
 		self.image_componant.grid(row=1, column=1, rowspan=1, padx=(uv(0), uv(50)))
 
 		self.detail_title_name = customtkinter.CTkLabel(
-			self.route_detail_frame, text="",
+			detail_frame, text="",
 			font=(FONT, iuv(32), "bold"), fg_color=SECONDARY_COLOR,
 			corner_radius=20, width=uv(350)
 		)
 		self.detail_title_name.grid(row=0, column=0, columnspan=2, ipady=uv(10))
 
-		self.route_description = customtkinter.CTkTextbox(
-			self.route_detail_frame, font=(FONT, iuv(16)), wrap=tk.WORD,
+		self.description = customtkinter.CTkTextbox(
+			detail_frame, font=(FONT, iuv(16)), wrap=tk.WORD,
 			fg_color="transparent", state="disabled"
 		)
-		self.route_description.grid(
+		self.description.grid(
 			row=1, column=0, sticky="nswe", 
 			pady=(uv(50), uv(0)), padx=(uv(50), uv(0))
 		)
 
-		self.difficulty_component = self.__create_difficulty_component()
+		self.difficulty_component = DifficultyComponent(detail_frame)
 		self.difficulty_component.grid(row=2, column=0, sticky="we", pady=(uv(50), uv(50)))
 
 		self.route_selection_button = customtkinter.CTkButton(
-			self.route_detail_frame, text="Select",
+			detail_frame, text="Select",
 			command = lambda: self.selection_route()
 		)
 		self.route_selection_button.grid(row=2, column=1, padx=(uv(0), uv(50)))
 
+		return detail_frame
+
+	# Show detail
+
 	def __show_route_detail(self, active_route_id: int):
 		"""Shows the route detail page."""
-		if not self.__is_already_in_tab(active_route_id):
-			self.active_route_id = active_route_id
+		self.active_route_id = active_route_id
 
-			self.__change_select_btn()
-		
-			self.current_route = self.__fetch_route_detail()
+		self.__change_select_btn()
+	
+		self.current_route = self.__fetch_route_detail()
 
-			self.set_image(self.__image_loader())
-			self.set_name(self.current_route["name"])
-			self.set_difficulty(self.current_route["difficulty"])
-			self.set_description(self.current_route["description"])
+		self.set_image(self.__image_loader(self.current_route["image"]))
+		self.set_name(self.current_route["name"])
+		self.set_difficulty(self.current_route["difficulty"])
+		self.set_description(self.current_route["description"])
+
+	def __change_select_btn(self):
+		if self.__is_selected():
+			self.__set_select_btn_active()
+		else:
+			self.__set_select_btn_inactive()
 
 	def __is_selected(self) -> bool:
 		"""Return true if the page is already selected."""
@@ -202,30 +186,23 @@ class RoutePage(Page):
 				and current_route.name in list_name\
 				and self.active_route_id == list_name.index(current_route.name)
 
-	def __change_select_btn(self):
-		if self.__is_selected():
-			self.__set_select_btn_active()
-		else:
-			self.__set_select_btn_inactive()
-
 	def __set_select_btn_active(self):
 		self.route_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
 
 	def __set_select_btn_inactive(self):
 		self.route_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR)
 
-	def refresh_description(self):
-		"""Set the page active"""
+	# Fetch detail
 
-		if self.all_routes is not None and len(self.all_routes) > 0:
+	def __fetch_route_detail(self):
+		"""Fetch the routes detail from the database."""
+		return {"name": self.all_routes[self.active_route_id].name,
+		        "difficulty": self.all_routes[self.active_route_id].difficulty,
+		        "image": self.all_routes[self.active_route_id].image,
+		        "description": self.all_routes[self.active_route_id].description
+		        }
 
-			self.current_route = self.__fetch_route_detail()
-
-			self.set_image(self.__image_loader())
-
-			self.set_name(self.current_route["name"])
-			self.set_description(self.current_route["description"])
-			self.set_difficulty(self.current_route["difficulty"])
+	# Set detail
 
 	def set_route_detail(self, route: Route):
 		"""Set the route detail."""
@@ -238,12 +215,12 @@ class RoutePage(Page):
 		normalized_title = normalize_title(name)
 		self.detail_title_name.configure(text=normalized_title)
 
-	def set_description(self, description: str):
+	def set_description(self, content: str):
 		"""Set the description of the route."""
-		self.route_description.configure(state="normal")
-		self.route_description.delete("0.0", "end")
-		self.route_description.insert("0.0", description)
-		self.route_description.configure(state="disabled")
+		self.description.configure(state="normal")
+		self.description.delete("0.0", "end")
+		self.description.insert("0.0", content)
+		self.description.configure(state="disabled")
 
 	def set_difficulty(self, difficulty: int):
 		self.difficulty_component.set_difficulty(difficulty)
@@ -251,3 +228,17 @@ class RoutePage(Page):
 	def set_image(self, image: Image.Image | np.ndarray):
 		self.image_componant.set_image(image)
 
+	# Lifecycle
+
+	def refresh_description(self):
+		"""Set the page active"""
+		if self.active_route_id is not None:
+			self.__show_route_detail(self.active_route_id)
+	
+	def detail_component_resize(self, width: int, height: int):
+		self.image_componant.resize(width, height)
+		self.difficulty_component.resize(width, height)
+
+		font_style_default = get_font_style_default(width, height)
+		self.description.configure(font=font_style_default)
+		self.route_selection_button.configure(height=v(5, height), width=v(22, width), font=font_style_default)
