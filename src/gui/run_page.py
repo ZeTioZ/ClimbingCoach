@@ -102,9 +102,6 @@ class RunPage(Page):
 		self.button.grid(row=index, column=0, padx=uv(10), sticky="ew")
 		return self.button
 
-	def set_model(self, model: Callable[[np.ndarray], np.ndarray]):
-		self.__model = model
-
 	def __animation_camera_loading(self):
 		if not self.__thread_actif:
 			return
@@ -214,7 +211,6 @@ class RunPage(Page):
 		skeleton_record = self.skeleton_record_saver_listener.save_skeletons_record()
 		image = self.video_widget.last_image
 
-		print("Recording took", int(skeleton_record[1]), "seconds")
 		run_queries.create_run(skeleton_record[0], skeleton_record[1], state.get_user().username, image)
 
 		video_pop_up = customtkinter.CTkToplevel(self)
