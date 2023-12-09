@@ -2,7 +2,7 @@ from numpy import ndarray
 from sqlalchemy.exc import SQLAlchemyError
 
 from objects.route import Route as RouteObject
-from utils.serializer_utils import serialize_route
+from utils.serializer_utils import serialize_holds
 from .. import database_handler
 from ..models.route import Route
 
@@ -10,9 +10,9 @@ DATABASE_HANDLER = database_handler.get_instance_database()
 
 
 def create_route(route: RouteObject, description: str = None, difficulty: int = None, image: ndarray = None):
-	serialized_route = serialize_route(route)
+	serialized_holds = serialize_holds(route.get_holds())
 	route = Route(name=route.name, description=description, difficulty=difficulty, image=image,
-	              holds=serialized_route)
+	              holds=serialized_holds)
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()
 		try:

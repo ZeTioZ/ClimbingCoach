@@ -6,14 +6,14 @@ class Route:
 	Route class representing a climbing route using a list of holds
 	"""
 
-	def __init__(self, name: str | None = None, route: list[Box] = None):
+	def __init__(self, name: str | None = None, holds: list[Box] = None):
 		"""
-		Initializes the RouteConfigurator object with the given list of holds.
+		Initializes the Route object with the given name and list of holds.
 		:param name: The name of the route.
-		:param route: A list of Hold objects representing the available holds in the route.
+		:param holds: A list of Hold objects representing the available holds in the route.
 		"""
 		self.name = name
-		self.route = route if route is not None else []
+		self.holds = holds if holds is not None else []
 
 	def add_step(self, hold: Box) -> None:
 		"""
@@ -21,7 +21,7 @@ class Route:
 
 		:param hold: The hold of the new step.
 		"""
-		self.route.append(hold)
+		self.holds.append(hold)
 
 	def remove_step(self, hold: Box) -> None:
 		"""
@@ -29,13 +29,13 @@ class Route:
 
 		:param hold: The hold of the step to remove.
 		"""
-		self.route.remove(hold)
+		self.holds.remove(hold)
 
 	def clear(self) -> None:
 		"""
 		Clears the route.
 		"""
-		self.route.clear()
+		self.holds.clear()
 	
 	def set_name(self, name: str) -> None:
 		"""
@@ -61,11 +61,11 @@ class Route:
 		"""
 		return self.name
 
-	def get_route(self) -> list:
+	def get_holds(self) -> list:
 		"""
 		:return: A list of Hold objects representing the holds in the current route.
 		"""
-		return self.route
+		return self.holds
 
 	def is_hold_in_route(self, hold: Box) -> bool:
 		"""
@@ -74,4 +74,4 @@ class Route:
 		:param hold: The hold to check.
 		:return: True if the hold is in the route, False otherwise.
 		"""
-		return hold in self.route
+		return hold in self.holds

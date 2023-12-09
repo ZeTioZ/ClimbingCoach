@@ -25,10 +25,11 @@ state = AppState()
 
 class RoutePage(Page):
 	"""Class of the route page."""
-	active_route_id = 0  # page dans laquelle on est
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
 		super().__init__(parent, app)
+		
+		self.active_route_id = 0
 
 		parent.grid_rowconfigure(0, weight=1)
 		parent.grid_columnconfigure(0, weight=1)
