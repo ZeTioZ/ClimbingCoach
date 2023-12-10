@@ -238,7 +238,7 @@ class WallPage(Page):
 
 	def refresh_description(self):
 		"""Set the page active"""
-		if self.active_id is not None:
+		if isinstance(self.active_id, int) and self.active_id < len(self.all_walls) and self.active_id >= 0:
 			self.__show_detail(self.active_id)
 	
 	def detail_component_resize(self, width: int, height: int):

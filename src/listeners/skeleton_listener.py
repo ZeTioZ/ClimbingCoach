@@ -16,7 +16,7 @@ class SkeletonRecordSaverListener(Listener):
 		super().__init__([FluxReaderEventType.SKELETONS_PROCESSED_EVENT, FluxReaderEventType.END_OF_FILE_EVENT])
 		self.skeleton_record = SkeletonsRecord()
 		self.hit_holds = []
-		self.start_time = 0
+		self.start_time = 0                                                                                                                                
 
 	def update(self, event, event_types, *args, **kwargs):
 		if FluxReaderEventType.SKELETONS_PROCESSED_EVENT in event_types and isinstance(event, FluxReaderEvent):
@@ -49,5 +49,5 @@ class SkeletonRecordSaverListener(Listener):
 
 	def save_skeletons_record(self):
 		state = AppState()
-		run_queries.create_run(self.skeleton_record, int(time.time() - self.start_time * 100) / 100,
+		run_queries.create_run(self.skeleton_record, self.hit_holds, int((time.time() - self.start_time)*100)/100,
 		                       state.get_user().username, state.get_route().name)

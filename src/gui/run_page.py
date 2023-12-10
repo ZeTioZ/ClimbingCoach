@@ -28,8 +28,6 @@ class RunPage(Page):
 	__isCameraLoaded = False
 	__imageSize = None
 
-	"""test page."""
-
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
 		"""Constructor."""
 		super().__init__(parent, app)
@@ -102,9 +100,6 @@ class RunPage(Page):
 		self.button.grid(row=index, column=0, padx=uv(10), sticky="ew")
 		return self.button
 
-	def set_model(self, model: Callable[[np.ndarray], np.ndarray]):
-		self.__model = model
-
 	def __animation_camera_loading(self):
 		if not self.__thread_actif:
 			return
@@ -164,15 +159,6 @@ class RunPage(Page):
 		image_to_show = customtkinter.CTkImage(image_array, size=self.__imageSize)
 		self.test_label.configure(image=image_to_show)
 
-	def on_size_change(self, width, height):
-		"""Called when the windows size change."""
-		super().on_size_change(width, height)
-
-		hrate = (height * 0.5) / 480
-		wrate = (width * 0.5) / 640
-		rate = min(hrate, wrate)
-		self.__scale(rate * 100)
-
 	def set_inactive(self):
 		super().set_inactive()
 		self.app.camera.flux_reader_event.unregister(self.video_widget)
@@ -211,30 +197,7 @@ class RunPage(Page):
 	def __stop_recording(self):
 		# add logical
 		self.app.camera.flux_reader_event.unregister(self.skeleton_record_saver_listener)
-		skeleton_record = self.skeleton_record_saver_listener.save_skeletons_record()
-		image = self.video_widget.last_image
-
-		print("Recording took", int(skeleton_record[1]), "seconds")
-		run_queries.create_run(skeleton_record[0], skeleton_record[1], state.get_user().username, image)
-
-		video_pop_up = customtkinter.CTkToplevel(self)
-		video_pop_up_lable = customtkinter.CTkLabel(video_pop_up, text="", font=("Helvetica", 32), image=EMPTY_IMAGE)
-		video_pop_up_lable.grid(row=0, column=0, columnspan=2, sticky="nsew")
-
-
-		def run_playback():
-			skeleton_index = 0
-			while skeleton_index < len(skeleton_record[0].skeletons):
-				skeletonned_image = image.copy()
-				for skeleton in skeleton_record[0].skeletons[skeleton_index]:
-					skeletonned_image = skeleton_visualizer(skeletonned_image, skeleton)
-				image_array = Image.fromarray(skeletonned_image)
-				image_to_show = customtkinter.CTkImage(image_array, size=self.__imageSize)
-				video_pop_up_lable.configure(image=image_to_show)
-				skeleton_index += 1
-				time.sleep(1/skeleton_record[0].frame_rate)
-
-		Thread(target=run_playback).start()
+		self.skeleton_record_saver_listener.save_skeletons_record()
 
 		self.stop_recording.grid_forget()
 		self.start_recording.grid(row=1, column=0, pady=uv(10))
@@ -247,3 +210,12 @@ class RunPage(Page):
 
 	def __slider_event(self, event):
 		print("slider event")
+
+	def on_size_change(self, width, height):
+		"""Called when the windows size change."""
+		super().on_size_change(width, height)
+
+		hrate = (height * 0.5) / 480
+		wrate = (width * 0.5) / 640
+		rate = min(hrate, wrate)
+		self.__scale(rate * 100)

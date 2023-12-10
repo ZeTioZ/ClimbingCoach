@@ -10,7 +10,7 @@ class Run(BaseTable):
 	__tablename__ = 'run'
 
 	id: Mapped[Integer] = mapped_column(Integer, primary_key=True, autoincrement=True)
-	skeletons: Mapped[LargeBinary] = mapped_column(LargeBinary, nullable=False)
+	skeletons_record: Mapped[LargeBinary] = mapped_column(LargeBinary, nullable=False)
 	holds: Mapped[LargeBinary] = mapped_column(LargeBinary, nullable=False)
 	runtime: Mapped[Float] = mapped_column(Float, nullable=False)
 	username: Mapped[User] = mapped_column(String, ForeignKey('user.username', ondelete='CASCADE'), nullable=False)

@@ -1,6 +1,7 @@
 import os
-
 import customtkinter
+import cv2
+
 from PIL import Image
 
 from gui.abstract.page import Page
@@ -18,6 +19,9 @@ class AddRoutePage(Page):
 		"""Constructor for the add route page."""
 
 		super().__init__(parent, app)
+		camera: Camera = self.app.camera
+		self.default_size_width = camera.flux_reader_event.video.get(cv2.CAP_PROP_FRAME_WIDTH)
+		self.default_size_height = camera.flux_reader_event.video.get(cv2.CAP_PROP_FRAME_HEIGHT)
 		self.__config_grid()
 		self.__create_widgets()
 
@@ -27,15 +31,14 @@ class AddRoutePage(Page):
 		self.create_path_button.grid(row=3, column=2, pady=iuv(10))
 
 		self.hold_frame = customtkinter.CTkScrollableFrame(self, width=uv(175))
+		self.hold_frame.grid_columnconfigure(0, weight=5)
+		self.hold_frame.grid_columnconfigure(1, weight=1)
 
 		self.hold_label_size = [uv(6), uv(3), uv(1.5)]
 		self.trash_label_size = [uv(1), uv(3), uv(1.5)]
 
 		self.label_list = []
-
-		if self.label_list:
-			self.modify_frame()
-
+		
 	def create_hold_label(self, hold, index: int, color: tuple[int, int, int]):
 		"""Creates a button with the given text."""
 
@@ -69,17 +72,17 @@ class AddRoutePage(Page):
 			"""Remove the hold."""
 			self.image_driver.route_remove_box_by_index(index)
 			self.__refresh_hold_menu()
-			self.image_driver.display_holds(self.image_driver.holds)
+			self.image_driver.display_holds(self.image_driver.detected_holds)
 
 		hold_trash_button.bind("<Button-1>", lambda event: remove_hold())
-		hold_trash_button.grid(row=index, column=1, sticky="e")
+		hold_trash_button.grid(row=index, column=1, sticky="ew")
 
 		hold_label.grid(row=index, column=0, padx=uv(10), sticky="ew", pady=uv(10))
 		return hold_label, hold_trash_button
 
 	def get_path(self):
 		"""Return the path of the holds."""
-		return self.image_driver.route.get_route()
+		return self.image_driver.route.get_holds()
 
 	def create_path(self):
 		"""Create the path."""
@@ -185,8 +188,7 @@ class AddRoutePage(Page):
 		self.create_path_button.grid(row=3, column=2, pady=iuv(10))
 		self.i_image.grid(row=0, column=1, columnspan=2)
 
-	def save_function(self, name: str, difficulty: int = None, description: str = "", image: Image = None,
-	                  holds: list = None):
+	def save_function(self, name: str, difficulty: int = None, description: str = ""):
 		self.image_driver.route_set_name(name)
 		self.image_driver.save_route(difficulty, description)
 
@@ -199,6 +201,7 @@ class AddRoutePage(Page):
 		self.image_driver.route_clear()
 		self.__refresh_hold_menu()
 		self.app.camera.flux_reader_event.refresh_holds()
+		self.__resize_iimage(self.app.winfo_width(), self.app.winfo_height())
 
 	def __create_widgets(self):
 		"""Creates the widgets for the add path page."""
@@ -223,12 +226,27 @@ class AddRoutePage(Page):
 			hold_label[0].configure(width=v(6, width), height=v(3, height), font=(FONT, v(1.5, height)))
 			hold_label[1].configure(width=v(1, width), height=v(3, height), font=(FONT, v(1.5, height)))
 
+
+	def __resize_iimage(self, width: int, height: int):
+		"""Resize the interactive image."""
+		if not(self.default_size_height <= 0 or self.default_size_width <= 0):
+			actual_ratio = self.default_size_width/self.default_size_height
+
+			target_height = v(50,height)
+			target_width = target_height * actual_ratio
+
+			if target_width > width:
+				target_width = width
+				target_height = target_width / actual_ratio
+
+			self.i_image.change_size(target_width, target_height)
+	
 	# Page methods
 
 	def on_size_change(self, width, height):
 		"""Called when the size of the window change."""
-		self.i_image.change_size(v(50, height), v(50, height))
 
+		self.__resize_iimage(width, height)
 		self.__resize_hold_label(width, height)
 
 		self.calibrate_button.configure(width=v(7, width), height=v(5, height), font=(FONT, v(2.5, height)))

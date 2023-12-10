@@ -16,7 +16,8 @@ class Event(ABC):
 			self.handlers[event_type].append(listener)
 
 	def unregister(self, listener):
-		self.listeners.remove(listener)
+		if listener in self.listeners:
+			self.listeners.remove(listener)
 		for event_type in listener.listened_event_types:
 			if event_type in self.handlers:
 				self.handlers[event_type].remove(listener)

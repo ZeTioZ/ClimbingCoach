@@ -1,7 +1,6 @@
 import pickle
 
 from objects.hold import Hold
-from objects.route import Route
 from objects.skeletons_record import SkeletonsRecord
 
 
@@ -31,17 +30,3 @@ def deserialize_holds(serialized_holds: bytes) -> list[Hold]:
 	Deserializes the given pickle bytes object into a list of Hold objects.
 	"""
 	return pickle.loads(serialized_holds)
-
-
-def serialize_route(route: Route) -> bytes:
-	"""
-	Serializes the given route into a pickle bytes object.
-	"""
-	return pickle.dumps(route)
-
-
-def deserialize_route(serialized_route: bytes) -> Route:
-	"""
-	Deserializes the given pickle bytes object into a Route object.
-	"""
-	return pickle.loads(serialized_route)
