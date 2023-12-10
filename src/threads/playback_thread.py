@@ -42,14 +42,14 @@ class Playback(Thread):
 				skeletons = self.skeletons_list[skeletons_index]
 				image_copy = self.image.copy()
 
-				image_with_hitted_hold = self.__draw_hit_holds(image_copy, skeletons_index)
+				image_with_hit_hold = self.__draw_hit_holds(image_copy, skeletons_index)
 
 				for skeleton in skeletons:
-					image_copy = draw_utils.skeleton_visualizer(image_with_hitted_hold, skeleton)
+					image_with_hit_hold_and_skeleton = draw_utils.skeleton_visualizer(image_with_hit_hold, skeleton)
 
 				
-				size = self.get_size_img(image_with_hitted_hold)
-				draw_image = customtkinter.CTkImage(Image.fromarray(image_with_hitted_hold), size=size)
+				size = self.get_size_img(image_with_hit_hold_and_skeleton)
+				draw_image = customtkinter.CTkImage(Image.fromarray(image_with_hit_hold_and_skeleton), size=size)
 				self.label_img.configure(image=draw_image, width=size[0], height=size[1])
 				self.video_progressbar.set((skeletons_index / (len(self.skeletons_list) - 1)) * 100)
 				skeletons_index += 1
