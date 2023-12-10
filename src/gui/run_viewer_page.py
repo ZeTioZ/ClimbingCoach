@@ -312,6 +312,8 @@ class RunViewerPage(Page):
 
 	def __popup_window(self):
 		"""Create the pop-up window."""
+		if self.playback_thread is not None:
+				self.playback_thread.pause()
 		self.video_play_button.configure(state='disabled', image=self.video_play_button_img)
 		self.video_progressbar.configure(state='disabled')
 		# pause video

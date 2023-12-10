@@ -27,6 +27,7 @@ class RunPage(Page):
 	__thread_actif = False
 	__isCameraLoaded = False
 	__imageSize = None
+	__pop_up = None
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
 		"""Constructor."""
@@ -209,7 +210,28 @@ class RunPage(Page):
 
 	def __load_recording(self):
 		print("load recording")
-		self.app.show_page(RunViewerPage)
+		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
+		if len(self.run_list) == 0:
+			if self.__pop_up is None:	
+				self.__pop_up = customtkinter.CTkToplevel(self)
+				self.__pop_up.title("Warning")
+				self.__pop_up.geometry("300x100")
+				self.__pop_up.resizable(False, False)
+				self.__pop_up.grid_columnconfigure(0, weight=1)
+				self.__pop_up.grid_rowconfigure((0,1), weight=1)
+				__pop_up_label = customtkinter.CTkLabel(self.__pop_up, text="You have no run for this route", font=(FONT, 18))
+				__pop_up_label.grid(row=0, column=0, sticky="nswe")
+				__pop_up_button = customtkinter.CTkButton(self.__pop_up,
+											  			text="Ok",
+														command=self.__close_pop_up,
+														font=(FONT, 16))
+				__pop_up_button.grid(row=1, column=0)
+		else:
+			self.app.show_page(RunViewerPage)
+
+	def __close_pop_up(self):
+		self.__pop_up.destroy()
+		self.__pop_up = None
 
 	def __slider_event(self, event):
 		print("slider event")
