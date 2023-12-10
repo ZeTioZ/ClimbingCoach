@@ -1,8 +1,8 @@
 """Module for tkinter interface of run page."""
 import os.path
 import pickle
-
 import customtkinter
+
 from PIL import Image
 
 from database.queries import run_queries
@@ -272,13 +272,6 @@ class RunViewerPage(Page):
 		current_run = self.__fetch_run_detail()
 		self.__set_title(current_run["title"])
 
-	def __skeleton_loader(self, image_name: str):
-		pass
-
-	def __get_run_path(self, run_image_name: str):
-		"""Return the path of the run passed in parameter."""
-		pass
-
 	def __get_image_path(self, image_name: str):
 		"""Return the path of the icon passed in parameter."""
 		path = os.path.join(get_ressources_path(), 'images', image_name)
@@ -325,7 +318,7 @@ class RunViewerPage(Page):
 		popup = PopUp(self, self.app)
 		popup.show_popup()
 		popup.mainloop()
-
+		
 
 class PopUp(Page):
 	"""Class of the pop-up page."""
@@ -335,6 +328,10 @@ class PopUp(Page):
 		self.app = app
 		self.popup = None
 		self.parent = parent
+
+		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
+
+		self.playback_thread = None
 
 	def show_popup(self):
 		"""Show a popup if there isn't one already."""
@@ -395,8 +392,25 @@ class PopUp(Page):
 		"""Change the state of the video."""
 		if self.video_play_button.cget("image") == self.video_play_button_img:
 			self.video_play_button.configure(image=self.video_pause_button_img)
+			self.video_progressbar.configure(state='disabled')
+
+			chosen_run = self.run_list[self.parent.choose_index]
+			deserialized_skeletons_record = deserialize_skeletons_record(chosen_run.skeletons_record)
+			size = (iuv(500), iuv(500 / self.ratio_img))
+			if self.playback_thread is None or \
+						(self.playback_thread.skeletons_list != deserialized_skeletons_record.skeletons):
+					self.playback_thread = playback_thread.Playback(pickle.loads(state.get_route().image),
+					                                                deserialized_skeletons_record.frame_rate,
+					                                                deserialized_skeletons_record.skeletons, self,
+					                                                chosen_run.runtime,
+																	size)
+					self.playback_thread.start()
+			self.playback_thread.play()
 		else:
 			self.video_play_button.configure(image=self.video_play_button_img)
+			self.video_progressbar.configure(state='normal')
+			if self.playback_thread is not None:
+				self.playback_thread.pause()
 
 	def __get_image_path(self, image_name: str):
 		"""Return the path of the icon passed in parameter."""

@@ -10,7 +10,7 @@ from utils import draw_utils
 
 
 class Playback(Thread):
-	def __init__(self, image: np.ndarray, frame_rate: float, skeletons_list: list, parent_page: Page, runtime: float = 0):
+	def __init__(self, image: np.ndarray, frame_rate: float, skeletons_list: list, parent_page: Page, runtime: float = 0, size: tuple = None):
 		super().__init__()
 		self.daemon = True
 		self.frame_rate = frame_rate
@@ -21,6 +21,7 @@ class Playback(Thread):
 		self.video_progressbar: customtkinter.CTkProgressBar = parent_page.video_progressbar
 		self.play_value = False
 		self.parent_page = parent_page
+		self.size = size
 
 	def get_current_progress(self):
 		index = int((self.video_progressbar.get() / 100) * (len(self.skeletons_list) - 1))
@@ -39,7 +40,10 @@ class Playback(Thread):
 				for skeleton in skeletons:
 					image_copy = draw_utils.skeleton_visualizer(image_copy, skeleton)
 
-				size = self.get_size_img(image_copy)
+				if self.size is None:
+					size = self.get_size_img(image_copy)
+				else:
+					size = self.size
 				draw_image = customtkinter.CTkImage(Image.fromarray(image_copy), size=size)
 				self.label_img.configure(image=draw_image, width=size[0], height=size[1])
 				self.video_progressbar.set((skeletons_index / (len(self.skeletons_list) - 1)) * 100)
