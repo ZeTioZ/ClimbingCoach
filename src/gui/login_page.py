@@ -6,9 +6,9 @@ import customtkinter
 from PIL import Image
 
 from database import user_queries
+from gui import RegisterPage, WallPage
 from gui.abstract.page import Page
 from gui.app_state import AppState
-from gui.wall_page import WallPage
 from gui.utils import v, uv, iuv, get_parent_path, FONT
 
 state = AppState()
@@ -102,7 +102,7 @@ class LoginPage(Page):
 
 		if success:
 			state.set_user(user)
-			self.app.show_page(WallPage)
+			self.app.show_page(RegisterPage)
 
 	def __get_usernames(self, username: str):
 		self.user = user_queries.get_user_by_username(username)
