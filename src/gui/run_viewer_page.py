@@ -409,9 +409,10 @@ class PopUp(Page):
 			size = (iuv(500), iuv(500 / self.ratio_img))
 			if self.playback_thread is None or \
 						(self.playback_thread.skeletons_list != deserialized_skeletons_record.skeletons):
-					self.playback_thread = playback_thread.Playback(pickle.loads(state.get_route().image),
+					self.playback_thread = playback_thread.Playback(chosen_run,
+													 				pickle.loads(state.get_route().image),
 					                                                deserialized_skeletons_record.frame_rate,
-					                                                deserialized_skeletons_record.skeletons, self,
+					                                                self,
 					                                                chosen_run.runtime,
 																	size)
 					self.playback_thread.start()
