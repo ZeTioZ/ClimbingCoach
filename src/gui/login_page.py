@@ -6,7 +6,8 @@ import customtkinter
 from PIL import Image
 
 from database import user_queries
-from gui import RegisterPage, WallPage
+from gui.register_page import RegisterPage
+from gui.wall_page import WallPage
 from gui.abstract.page import Page
 from gui.app_state import AppState
 from gui.utils import v, uv, iuv, get_parent_path, FONT
@@ -85,7 +86,7 @@ class LoginPage(Page):
 		self.guest_button.grid(row=self.RI_LOGIN, column=self.CI_LEFT, columnspan=2)
 
 		self.register_button = customtkinter.CTkButton(self, text="Register",
-		                                               command=self.guest, font=DF)
+		                                               command=lambda: self.app.show_page(RegisterPage), font=DF)
 		self.register_button.grid(row=self.RI_LOGIN, column=self.CI_RIGHT, columnspan=2)
 
 	def guest(self):
@@ -102,7 +103,7 @@ class LoginPage(Page):
 
 		if success:
 			state.set_user(user)
-			self.app.show_page(RegisterPage)
+			self.app.show_page(WallPage)
 
 	def __get_usernames(self, username: str):
 		self.user = user_queries.get_user_by_username(username)
