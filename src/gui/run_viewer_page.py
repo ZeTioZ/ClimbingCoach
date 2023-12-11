@@ -11,6 +11,7 @@ from gui.app_state import AppState
 from gui.utils import FONT, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from gui.utils import get_ressources_path
 from gui.utils import v, uv, iuv, min_max_range
+from database.models.run import Run
 from threads import playback_thread
 from utils import stats_utils
 from utils.serializer_utils import deserialize_skeletons_record
@@ -54,7 +55,7 @@ class RunViewerPage(Page):
 
 		# RIGHT FRAME
 		self.run_detail_frame = customtkinter.CTkScrollableFrame(self, width=uv(170), bg_color="transparent")
-		self.run_detail_frame.grid(row=1, column=1, rowspan=2, sticky="nswe")
+		self.run_detail_frame.grid(row=1, column=1, rowspan=1, sticky="nswe")
 		self.run_detail_frame.configure(fg_color="transparent")
 
 		self.run_detail_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
@@ -193,14 +194,16 @@ class RunViewerPage(Page):
 				self.video_play_button.configure(image=self.video_pause_button_img)
 				self.video_progressbar.configure(state='disabled')
 
-				chosen_run = self.run_list[self.choose_index]
+				chosen_run: Run = self.run_list[self.choose_index]
 				deserialized_skeletons_record = deserialize_skeletons_record(chosen_run.skeletons_record)
 				if self.playback_thread is None or \
 						(self.playback_thread.skeletons_list != deserialized_skeletons_record.skeletons):
-					self.playback_thread = playback_thread.Playback(pickle.loads(state.get_route().image),
-					                                                deserialized_skeletons_record.frame_rate,
-					                                                deserialized_skeletons_record.skeletons, self,
-					                                                chosen_run.runtime)
+					self.playback_thread = playback_thread.Playback(
+						chosen_run,
+						pickle.loads(state.get_route().image),
+						deserialized_skeletons_record.frame_rate,
+						self, chosen_run.runtime
+					)
 					self.playback_thread.start()
 				self.playback_thread.play()
 		else:
@@ -286,18 +289,14 @@ class RunViewerPage(Page):
 		self.run_back_button.configure(height=v(4, height), width=uv(100),
 		                               font=(FONT, min_max_range(iuv(8), iuv(28), int(v(1.9, width)))))
 
-		image_size = min_max_range(uv(75), uv(1000), v(22, width))
-		self.video_player_img.configure(size=(image_size, image_size / self.ratio_img))
-		self.video_player.configure(height=iuv(image_size), width=iuv(image_size))
-		self.video_commands_frame.configure(width=iuv(image_size))
-		self.video_progressbar.configure(width=iuv(image_size))
+		self.resize_image(width, height)
 
 		font_style_default = (FONT, min_max_range(iuv(8), iuv(28), int(v(1.9, width))))
 		font_style_title = (FONT, min_max_range(iuv(12), iuv(32), int(v(2.5, width))), "bold")
 
 		if len(self.run_list) > 0:
 			for button in self.button_list:
-				button.configure(height=v(5, height), width=image_size, font=font_style_default)
+				button.configure(height=v(5, height), width=v(22, width), font=font_style_default)
 		self.run_list_title.configure(font=font_style_title)
 		self.run_detail_title.configure(font=font_style_title)
 		self.run_detail_description.configure(font=font_style_title)
@@ -320,7 +319,16 @@ class RunViewerPage(Page):
 		popup = PopUp(self, self.app)
 		popup.show_popup()
 		popup.mainloop()
-		
+
+	def resize_image(self, width: int, height: int):
+		image_height = int(v(50, height))
+		image_width = int(image_height * self.ratio_img)
+		image_size = (image_width, image_height)
+		self.video_player_img.configure(size=image_size)
+		self.video_player.configure(height=image_height, width=image_width)
+		self.video_commands_frame.configure(width=image_width)
+		self.video_progressbar.configure(width=image_width)
+
 
 class PopUp(Page):
 	"""Class of the pop-up page."""

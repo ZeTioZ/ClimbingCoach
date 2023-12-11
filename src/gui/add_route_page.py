@@ -31,15 +31,14 @@ class AddRoutePage(Page):
 		self.create_path_button.grid(row=3, column=2, pady=iuv(10))
 
 		self.hold_frame = customtkinter.CTkScrollableFrame(self, width=uv(175))
+		self.hold_frame.grid_columnconfigure(0, weight=5)
+		self.hold_frame.grid_columnconfigure(1, weight=1)
 
 		self.hold_label_size = [uv(6), uv(3), uv(1.5)]
 		self.trash_label_size = [uv(1), uv(3), uv(1.5)]
 
 		self.label_list = []
-
-		if self.label_list:
-			self.modify_frame()
-
+		
 	def create_hold_label(self, hold, index: int, color: tuple[int, int, int]):
 		"""Creates a button with the given text."""
 
@@ -76,7 +75,7 @@ class AddRoutePage(Page):
 			self.image_driver.display_holds(self.image_driver.detected_holds)
 
 		hold_trash_button.bind("<Button-1>", lambda event: remove_hold())
-		hold_trash_button.grid(row=index, column=1, sticky="e")
+		hold_trash_button.grid(row=index, column=1, sticky="ew")
 
 		hold_label.grid(row=index, column=0, padx=uv(10), sticky="ew", pady=uv(10))
 		return hold_label, hold_trash_button

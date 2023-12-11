@@ -40,15 +40,16 @@ class ImageDriver(Listener):
 		"""Return the interactive image."""
 		return self.i_image
 
-	def draw_element(self, image: np.ndarray | None = None, detected_holds: list[Box] | None = None) -> Image:
+	def draw_element(self, image: np.ndarray | None = None, detected_holds: list[Box] | None = None, draw_line: bool = True) -> Image:
 		"""Draw the holds on the image."""
 		if image is None:
 			image = self.image
 		if detected_holds is None:
 			detected_holds = self.detected_holds
 
+
 		drawn_image = box_visualizer(image, detected_holds)
-		drawn_image = draw_path(drawn_image, self.route.get_holds())
+		if draw_line: drawn_image = draw_path(drawn_image, self.route.get_holds())
 		drawn_image = path_box_visualizer(drawn_image, self.route.get_holds())
 
 		if self.hold_to_highlight is not None:
@@ -90,7 +91,7 @@ class ImageDriver(Listener):
 	def save_route(self, difficulty: int = None, description: str = ""):
 		"""Save the path."""
 		if self.route.is_name_set():
-			create_route(self.route, description, difficulty, pickle.dumps(np.array(self.draw_element(self.image, []))))
+			create_route(self.route, description, difficulty, pickle.dumps(np.array(self.draw_element(self.image,[], False))))
 		else:
 			raise AttributeError("The name of the route is not set.")
 
