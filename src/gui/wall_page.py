@@ -1,25 +1,24 @@
 """Module for tkinter interface of wall page."""
-import os.path
 import pickle
-from typing import Callable
-import numpy as np
 import tkinter as tk
-import customtkinter
+from typing import Callable
 
+import customtkinter
+import numpy as np
 from PIL import Image
 
-from gui.create_wall import CreateWall
+from database.models.route import Route
+from database.models.wall import Wall
+from database.queries import wall_queries
 from gui.abstract.page import Page
 from gui.app_state import AppState
-from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, \
-	SECONDARY_HOVER_COLOR, COLOR_DIFFICULTY, get_font_style_default, get_font_style_title, normalize_title
-from gui.utils import v, uv, iuv, min_max_range, get_ressources_path
-from database.queries import wall_queries
-from database.models.wall import Wall
-from gui.component.image_component import ImageComponent
 from gui.component.difficulty_component import DifficultyComponent
-from database.models.route import Route
+from gui.component.image_component import ImageComponent
 from gui.component.scrollable_button_component import ScrollableButtonComponent
+from gui.create_wall import CreateWall
+from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, \
+	get_font_style_default, get_font_style_title, normalize_title
+from gui.utils import v, uv, iuv
 
 state = AppState()
 
@@ -65,7 +64,7 @@ class WallPage(Page):
 		button_text = self.selection_button.cget("text")
 		if button_text == "Select":
 			self.selection_button.configure(
-				text="Selected", fg_color=LIGHT_GREEN, 
+				text="Selected", fg_color=LIGHT_GREEN,
 				hover_color=DARK_GREEN
 			)
 			state.set_wall(self.all_walls[self.active_id])
@@ -91,13 +90,14 @@ class WallPage(Page):
 
 	def __refresh_scrollable_button_component(self):
 		if self.all_walls is not None:
-			self.element_list_component.load_button_list([(wall.name, lambda index: self.__show_detail(index)) for wall in self.all_walls])
+			self.element_list_component.load_button_list(
+				[(wall.name, lambda index: self.__show_detail(index)) for wall in self.all_walls])
 
 	# Life cycle
-	
+
 	def get_name(self):
 		return "Wall selection"
-	
+
 	def set_active(self):
 		"""Set the page active."""
 		self.all_walls = self.__load_wall()
@@ -132,7 +132,7 @@ class WallPage(Page):
 
 		detail_frame.grid_columnconfigure((0, 3), weight=3)
 		detail_frame.grid_columnconfigure((1, 2), weight=1)
-		
+
 		detail_frame.grid_rowconfigure((0, 1, 2), weight=1)
 
 		self.image_componant = ImageComponent(detail_frame)
@@ -150,7 +150,7 @@ class WallPage(Page):
 			fg_color="transparent", state="disabled"
 		)
 		self.description.grid(
-			row=1, column=0, sticky="nswe", 
+			row=1, column=0, sticky="nswe",
 			pady=(uv(50), uv(0)), padx=(uv(50), uv(0))
 		)
 
@@ -159,7 +159,7 @@ class WallPage(Page):
 
 		self.selection_button = customtkinter.CTkButton(
 			detail_frame, text="Select",
-			command = lambda: self.selection_wall()
+			command=lambda: self.selection_wall()
 		)
 		self.selection_button.grid(row=2, column=1, padx=(uv(0), uv(50)))
 
@@ -170,7 +170,7 @@ class WallPage(Page):
 		self.active_id = active_id
 
 		self.__change_select_btn()
-	
+
 		self.current_elem = self.__fetch_detail()
 
 		self.set_image(self.__image_loader(self.current_elem["image"]))
@@ -188,9 +188,9 @@ class WallPage(Page):
 		"""Return true if the page is already selected."""
 		current_elem = state.get_wall()
 		list_name = [wall.name for wall in self.all_walls]
-		return current_elem is not None\
-				and current_elem.name in list_name\
-				and self.active_id == list_name.index(current_elem.name)
+		return current_elem is not None \
+			and current_elem.name in list_name \
+			and self.active_id == list_name.index(current_elem.name)
 
 	def __set_select_btn_active(self):
 		self.selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
@@ -240,14 +240,12 @@ class WallPage(Page):
 		"""Set the page active"""
 		if isinstance(self.active_id, int) and self.active_id < len(self.all_walls) and self.active_id >= 0:
 			self.__show_detail(self.active_id)
-	
+
 	def detail_component_resize(self, width: int, height: int):
 
 		self.image_componant.resize(width, height)
 		self.difficulty_component.resize(width, height)
-		
+
 		font_style_default = get_font_style_default(width, height)
 		self.description.configure(font=font_style_default)
 		self.selection_button.configure(height=v(5, height), width=v(22, width), font=font_style_default)
-
-	
