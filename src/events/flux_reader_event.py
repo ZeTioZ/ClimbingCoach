@@ -2,6 +2,8 @@ import cv2
 import os
 import time
 
+from objects.skeleton import Skeleton
+
 from gui import utils
 from interfaces.event import Event
 from libs.model_loader import ModelLoader
@@ -33,6 +35,7 @@ class FluxReaderEvent(Event):
 		models_path = os.path.join(parent_path, "resources", "models")
 		holds_detector = ModelLoader(os.path.join(models_path, "holds_model_yolov8l.pt"))
 		skeleton_detector = ModelLoader(os.path.join(models_path, "yolov8l-pose.pt"))
+		skeletons: list[Skeleton] = []
 
 		refresh_holds = False
 		self.refreshed = False

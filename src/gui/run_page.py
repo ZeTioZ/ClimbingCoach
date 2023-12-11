@@ -24,7 +24,6 @@ state = AppState()
 
 class RunPage(Page):
 	__reading = False
-	__thread_actif = False
 	__isCameraLoaded = False
 	__imageSize = None
 	__pop_up = None
@@ -79,31 +78,7 @@ class RunPage(Page):
 		return os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'resources',
 		                    'images', icon_name)
 
-	def __fetch_run_list(self):
-		"""Fetch the run list from the database."""
-		return [f"Run {i}" for i in range(1, 7)]
-
-	def create_button(self, display_text, index):
-		"""Creates a button with the given text."""
-
-		is_first = index == 0
-
-		self.button = customtkinter.CTkButton(
-			self.run_list_frame,
-			text=display_text,
-			fg_color=SECONDARY_COLOR if is_first else "transparent",
-			hover_color=SECONDARY_COLOR,
-			border_spacing=uv(17),
-			# command=,
-			anchor="w"
-		)
-
-		self.button.grid(row=index, column=0, padx=uv(10), sticky="ew")
-		return self.button
-
 	def __animation_camera_loading(self):
-		if not self.__thread_actif:
-			return
 		inner_text = self.test_label.cget("text")
 		if len(inner_text) > 3:
 			inner_text = ""
@@ -156,6 +131,7 @@ class RunPage(Page):
 
 	def __display_image(self, image: Image):
 		"""Display the image passed in parameter."""
+		self.__isCameraLoaded = True
 		image_array = Image.fromarray(image)
 		image_to_show = customtkinter.CTkImage(image_array, size=self.__imageSize)
 		self.test_label.configure(image=image_to_show)
@@ -164,18 +140,17 @@ class RunPage(Page):
 		super().set_inactive()
 		self.app.camera.flux_reader_event.unregister(self.video_widget)
 
+		self.__reading = False
+
 		# Set empty image
 		self.test_label.configure(image=EMPTY_IMAGE)
 		self.visibility_button.configure(state=customtkinter.DISABLED, image=self.show_cam)
 
 	def set_active(self):
 		super().set_active()
-		flux = self.app.camera.flux_reader_event.flux
-		if not isinstance(flux, int):
-			self.app.camera = Camera(flux)
-			self.app.camera.start()
 		self.app.camera.flux_reader_event.register(self.video_widget)
 		self.__init_cap()
+		self.__animation_camera_loading()
 
 	def get_name(self):
 		return "Run"
@@ -230,8 +205,6 @@ class RunPage(Page):
 		self.__pop_up.destroy()
 		self.__pop_up = None
 
-	def __slider_event(self, event):
-		print("slider event")
 
 	def on_size_change(self, width, height):
 		"""Called when the windows size change."""
