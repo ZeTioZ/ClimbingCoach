@@ -17,8 +17,11 @@ class FluxReaderEvent(Event):
 		super().__init__()
 		self.flux = flux
 		self.video = cv2.VideoCapture(self.flux)
+		if isinstance(self.flux, int) and self.video.get(cv2.CAP_PROP_FPS) == 0:
+			self.video.set(cv2.CAP_PROP_FPS, 30)
+		self.video.set(cv2.CAP_PROP_FRAME_WIDTH, 1080)
+		self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, 1920)
 		self.cancelled = False
-
 		self.refreshed = False
 		self.looping = looping
 
@@ -41,10 +44,11 @@ class FluxReaderEvent(Event):
 		self.refreshed = False
 		frame_skipper = 0
 		while self.video.isOpened() and not self.cancelled:
-			time.sleep(1 / self.video.get(cv2.CAP_PROP_FPS))
 			success, frame = self.video.read()
+			if isinstance(self.flux, str):
+				time.sleep(1 / self.video.get(cv2.CAP_PROP_FPS))
 			if not success:
-				if self.looping:
+				if self.looping and isinstance(self.flux, str):
 					self.video.set(cv2.CAP_PROP_POS_FRAMES, 0)
 					continue
 				else:

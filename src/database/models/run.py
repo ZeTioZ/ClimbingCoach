@@ -9,7 +9,7 @@ from .base_table import BaseTable
 class Run(BaseTable):
 	__tablename__ = 'run'
 
-	id: Mapped[Integer] = mapped_column(Integer, primary_key=True, autoincrement=True)
+	id: Mapped[Integer] = mapped_column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	skeletons_record: Mapped[LargeBinary] = mapped_column(LargeBinary, nullable=False)
 	holds: Mapped[LargeBinary] = mapped_column(LargeBinary, nullable=False)
 	runtime: Mapped[Float] = mapped_column(Float, nullable=False)
