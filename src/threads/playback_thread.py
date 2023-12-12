@@ -4,11 +4,11 @@ from threading import Thread
 import PIL.Image as Image
 import customtkinter
 import numpy as np
-from gui.utils import v
-from gui.abstract.page import Page
-from database.models.run import Run
-from objects.skeletons_record import SkeletonsRecord
 
+from database.models.run import Run
+from gui.abstract.page import Page
+from gui.utils import v
+from objects.skeletons_record import SkeletonsRecord
 from utils import draw_utils
 
 

@@ -1,23 +1,18 @@
 """Module tkinter for the test page."""
 import os.path
 from threading import Thread
-from typing import Callable
 
 import customtkinter
 import cv2
-import numpy as np
-import time
 from PIL import Image
 
-from threads.camera_thread import Camera
-from utils.draw_utils import skeleton_visualizer
-from listeners.skeleton_listener import SkeletonRecordSaverListener
+from database.queries import run_queries
 from enums.flux_reader_event_type import FluxReaderEventType
 from gui.abstract.page import Page
-from gui.run_viewer_page import RunViewerPage
 from gui.app_state import AppState
-from database.queries import run_queries
-from gui.utils import EMPTY_IMAGE, FONT, SECONDARY_COLOR, iuv, uv, v, get_font_style_default, get_font_style_title
+from gui.run_viewer_page import RunViewerPage
+from gui.utils import EMPTY_IMAGE, FONT, uv, v, get_font_style_default, get_font_style_title
+from listeners.skeleton_listener import SkeletonRecordSaverListener
 from listeners.video_widget import VideoWidget
 
 state = AppState()

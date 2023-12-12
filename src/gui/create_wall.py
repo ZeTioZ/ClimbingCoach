@@ -1,16 +1,16 @@
 """Module tkinter for the test page."""
-import cv2
 import pickle
-import customtkinter
-
-from PIL import Image
 from threading import Thread
 
+import customtkinter
+import cv2
+from PIL import Image
+
+from database.queries import wall_queries
 from enums.flux_reader_event_type import FluxReaderEventType
 from gui.abstract.page import Page
 from gui.utils import FONT, uv, v
 from listeners.video_widget import VideoWidget
-from database.queries import wall_queries
 
 
 class CreateWall(Page):

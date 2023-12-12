@@ -1,8 +1,8 @@
 import pickle
 
+from database.models.run import Run
 from database.queries import run_queries
 from gui.app_state import AppState
-from database.models.run import Run
 
 
 def get_derivation_stat(app_state: AppState, selected_run: Run) -> float:

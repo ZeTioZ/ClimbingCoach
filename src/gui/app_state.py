@@ -4,10 +4,10 @@ Database gui instance class.
 import os
 import pickle
 
+from database.models.user import User
 from database.models.wall import Wall
 from gui.abstract.singleton import Singleton
 from gui.utils import get_ressources_path
-from database.models.user import User
 from objects.route import Route
 
 

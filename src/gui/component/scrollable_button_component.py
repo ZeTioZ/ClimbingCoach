@@ -4,7 +4,9 @@ from typing import Callable
 import customtkinter as ctk
 from PIL import Image
 
-from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR, get_font_style_default, get_ressources_path, iuv, uv, normalize_title, v
+from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR, get_font_style_default, get_ressources_path, iuv, uv, \
+	normalize_title, v
+
 
 class ScrollableButtonComponent(ctk.CTkScrollableFrame):
 

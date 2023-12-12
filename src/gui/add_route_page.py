@@ -1,7 +1,7 @@
 import os
+
 import customtkinter
 import cv2
-
 from PIL import Image
 
 from gui.abstract.page import Page

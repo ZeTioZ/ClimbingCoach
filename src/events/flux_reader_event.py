@@ -1,15 +1,14 @@
-import cv2
 import os
 import time
 
-from objects.skeleton import Skeleton
+import cv2
 
+from enums.flux_reader_event_type import FluxReaderEventType
 from gui import utils
 from interfaces.event import Event
 from libs.model_loader import ModelLoader
+from objects.skeleton import Skeleton
 from utils.yolov8_converter_utils import convert_image_box_outputs, convert_image_skeleton_outputs
-
-from enums.flux_reader_event_type import FluxReaderEventType
 
 
 class FluxReaderEvent(Event):

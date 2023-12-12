@@ -6,11 +6,11 @@ import customtkinter
 from PIL import Image
 
 from database import user_queries
-from gui.register_page import RegisterPage
-from gui.wall_page import WallPage
 from gui.abstract.page import Page
 from gui.app_state import AppState
+from gui.register_page import RegisterPage
 from gui.utils import v, uv, iuv, get_parent_path, FONT
+from gui.wall_page import WallPage
 
 state = AppState()
 DEFAULT_FONT = (FONT, iuv(16))

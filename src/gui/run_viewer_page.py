@@ -1,17 +1,17 @@
 """Module for tkinter interface of run page."""
 import os.path
 import pickle
-import customtkinter
 
+import customtkinter
 from PIL import Image
 
+from database.models.run import Run
 from database.queries import run_queries
 from gui.abstract.page import Page
 from gui.app_state import AppState
 from gui.utils import FONT, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from gui.utils import get_ressources_path
 from gui.utils import v, uv, iuv, min_max_range
-from database.models.run import Run
 from threads import playback_thread
 from utils import stats_utils
 from utils.serializer_utils import deserialize_skeletons_record

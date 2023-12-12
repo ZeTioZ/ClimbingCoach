@@ -1,11 +1,11 @@
 """Module for tkinter interface of account page."""
 import customtkinter
 
-from gui.login_page import LoginPage
 from gui.abstract.page import Page
 from gui.app_state import AppState
-from utils.camera_discover_utils import get_available_cameras_names
+from gui.login_page import LoginPage
 from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR
+from utils.camera_discover_utils import get_available_cameras_names
 
 state = AppState()
 
