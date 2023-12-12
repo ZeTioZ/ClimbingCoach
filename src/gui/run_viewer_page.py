@@ -55,7 +55,7 @@ class RunViewerPage(Page):
 
 		# RIGHT FRAME
 		self.run_detail_frame = customtkinter.CTkScrollableFrame(self, width=uv(170), bg_color="transparent")
-		self.run_detail_frame.grid(row=1, column=1, rowspan=1, sticky="nswe")
+		self.run_detail_frame.grid(row=1, column=1, rowspan=2, sticky="nswe")
 		self.run_detail_frame.configure(fg_color="transparent")
 
 		self.run_detail_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
@@ -88,19 +88,19 @@ class RunViewerPage(Page):
 		self.video_progressbar = customtkinter.CTkSlider(self.video_commands_frame, from_=0, to=100)
 		self.video_progressbar.set(0)
 		self.video_progressbar.grid(row=0, column=1, pady=uv(9))
-		self.video_pop_up_button_img = customtkinter.CTkImage(Image.open(self.__get_image_path("pop_up.png")),
-		                                                      size=(30, 30))
-		self.video_pop_up_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=uv(10),
-		                                                   command=self.__popup_window,
-		                                                   image=self.video_pop_up_button_img, fg_color="transparent")
-		self.video_pop_up_button.grid(row=0, column=2)
+		# self.video_pop_up_button_img = customtkinter.CTkImage(Image.open(self.__get_image_path("pop_up.png")),
+		#                                                       size=(30, 30))
+		# self.video_pop_up_button = customtkinter.CTkButton(self.video_commands_frame, text="", width=uv(10),
+		#                                                    command=self.__popup_window,
+		#                                                    image=self.video_pop_up_button_img, fg_color="transparent")
+		# self.video_pop_up_button.grid(row=0, column=2)
 
 		# RUN INFORMATIONS
 		self.run_detail_description = customtkinter.CTkLabel(self.run_detail_frame, text="Run informations",
 		                                                     font=(FONT, iuv(30)))
 		self.run_detail_description.grid(row=4, column=0, columnspan=4, pady=uv(20))
 
-		self.run_information_frame = customtkinter.CTkFrame(self.run_detail_frame, bg_color="transparent")
+		self.run_information_frame = customtkinter.CTkFrame(self.run_detail_frame, bg_color="transparent", width=uv(200))
 		self.run_information_frame.grid(row=5, column=0, columnspan=4, sticky="nswe", padx=uv(20), pady=uv(20))
 		self.run_information_frame.grid_columnconfigure((0, 1), weight=1)
 
@@ -108,9 +108,25 @@ class RunViewerPage(Page):
 		                                                font=(FONT, iuv(26)))
 		self.user_record_label.grid(row=0, column=0, pady=uv(5))
 
-		self.all_time_record_label = customtkinter.CTkLabel(self.run_information_frame, text="All time record",
+		self.user_derivation_label = customtkinter.CTkLabel(self.run_information_frame, text="Derivation : ",
+		                                                    font=(FONT, iuv(18)))
+		self.user_derivation_label.grid(row=1, column=0, pady=uv(10))
+
+		self.user_time_label = customtkinter.CTkLabel(self.run_information_frame, text="Time : ",
+		                                              font=(FONT, iuv(18)))
+		self.user_time_label.grid(row=2, column=0, pady=uv(10))
+
+		self.all_time_record_label = customtkinter.CTkLabel(self.run_information_frame, text="Best records",
 		                                                    font=(FONT, iuv(26)))
 		self.all_time_record_label.grid(row=0, column=1, pady=uv(5))
+
+		self.best_derivation_label = customtkinter.CTkLabel(self.run_information_frame, text="Derivation : ",
+		                                                    font=(FONT, iuv(18)))
+		self.best_derivation_label.grid(row=1, column=1, pady=uv(10))
+
+		self.best_time_label = customtkinter.CTkLabel(self.run_information_frame, text="Time : ",
+		                                              font=(FONT, iuv(18)))
+		self.best_time_label.grid(row=2, column=1, pady=uv(10))
 
 		# OTHER RUNS
 		self.other_runs_frame = customtkinter.CTkFrame(self.run_detail_frame, bg_color="transparent",
@@ -130,29 +146,33 @@ class RunViewerPage(Page):
 		if len(self.run_list) > 0:
 			derivation_stat = stats_utils.get_derivation_stat(state, self.run_list[self.choose_index])
 			user_record_list = stats_utils.get_user_route_records(state)
+			print("USER RECORD LIST: ", user_record_list)
 			all_time_record_list = stats_utils.get_all_users_route_records(state)
+			print("ALL TIME RECORD LIST: ", all_time_record_list)
 
-			print("DERIVATION STAT: ", derivation_stat, "%")
+			#print("DERIVATION STAT: ", derivation_stat, "%")
 
 			# TODO: Afficher la stats de dérivation
+			self.show_stats(derivation_stat, self.run_list[self.choose_index].runtime, 0, 0)
+			# self.set_variation_stat(derivation_stat)
 
 			self.button_list: list[customtkinter.CTkButton] = []
 			for run in self.run_list:
 				self.run_button = self.create_button(run.id, self.run_list.index(run))
 				self.button_list.append(self.run_button)
 
-			self.user_record_button_list: list[customtkinter.CTkButton] = []
-			if user_record_list is not None:
-				for user_record in user_record_list:
-					self.record_button = self.create_label(user_record, (user_record_list.index(user_record)) + 1, 0)
-					self.user_record_button_list.append(self.record_button)
+			# self.user_record_button_list: list[customtkinter.CTkButton] = []
+			# if user_record_list is not None:
+			# 	for user_record in user_record_list:
+			# 		self.record_button = self.create_label(user_record, (user_record_list.index(user_record)) + 1, 0)
+			# 		self.user_record_button_list.append(self.record_button)
 
-			self.all_time_record_button_list: list[customtkinter.CTkButton] = []
-			if all_time_record_list is not None:
-				for all_time_record in all_time_record_list:
-					self.all_time_record_button = self.create_label(all_time_record,
-					                                                (all_time_record_list.index(all_time_record)) + 1, 1)
-					self.all_time_record_button_list.append(self.all_time_record_button)
+			# self.all_time_record_button_list: list[customtkinter.CTkButton] = []
+			# if all_time_record_list is not None:
+			# 	for all_time_record in all_time_record_list:
+			# 		self.all_time_record_button = self.create_label(all_time_record,
+			# 		                                                (all_time_record_list.index(all_time_record)) + 1, 1)
+			# 		self.all_time_record_button_list.append(self.all_time_record_button)
 
 		self.playback_thread = None
 
@@ -168,24 +188,26 @@ class RunViewerPage(Page):
 			print("DERIVATION STAT: ", derivation_stat, "%")
 
 			# TODO: Afficher la stats de dérivation
+			self.show_stats(derivation_stat, self.run_list[self.choose_index].runtime, 0, 0)
+			# self.set_variation_stat(derivation_stat)
 
 			self.button_list: list[customtkinter.CTkButton] = []
 			for run in self.run_list:
 				self.run_button = self.create_button(run.id, self.run_list.index(run))
 				self.button_list.append(self.run_button)
 
-			self.user_record_button_list: list[customtkinter.CTkButton] = []
-			if user_record_list is not None:
-				for user_record in user_record_list:
-					self.record_button = self.create_label(user_record, (user_record_list.index(user_record)) + 1, 0)
-					self.user_record_button_list.append(self.record_button)
+			# self.user_record_button_list: list[customtkinter.CTkButton] = []
+			# if user_record_list is not None:
+			# 	for user_record in user_record_list:
+			# 		self.record_button = self.create_label(user_record, (user_record_list.index(user_record)) + 1, 0)
+			# 		self.user_record_button_list.append(self.record_button)
 
-			self.all_time_record_button_list: list[customtkinter.CTkButton] = []
-			if all_time_record_list is not None:
-				for all_time_record in all_time_record_list:
-					self.all_time_record_button = self.create_label(all_time_record,
-					                                                (all_time_record_list.index(all_time_record)) + 1, 1)
-					self.all_time_record_button_list.append(self.all_time_record_button)
+			# self.all_time_record_button_list: list[customtkinter.CTkButton] = []
+			# if all_time_record_list is not None:
+			# 	for all_time_record in all_time_record_list:
+			# 		self.all_time_record_button = self.create_label(all_time_record,
+			# 		                                                (all_time_record_list.index(all_time_record)) + 1, 1)
+			# 		self.all_time_record_button_list.append(self.all_time_record_button)
 
 	def __change_video_state(self):
 		"""Change the state of the video."""
@@ -211,6 +233,13 @@ class RunViewerPage(Page):
 			self.video_progressbar.configure(state='normal')
 			if self.playback_thread is not None:
 				self.playback_thread.pause()
+
+	def show_stats(self, user_variation: float, user_time: float, best_variation: float, best_time: float):
+		"""Show the stats of the run."""
+		self.user_derivation_label.configure(text=f"Derivation : {user_variation} %")
+		self.user_time_label.configure(text=f"Time : {user_time} s")
+		self.best_derivation_label.configure(text=f"Derivation : {best_variation} %")
+		self.best_time_label.configure(text=f"Time : {best_time} s")
 
 	def __show_run_page(self):
 		"""Show the page passed in parameter."""
@@ -274,6 +303,10 @@ class RunViewerPage(Page):
 
 		current_run = self.__fetch_run_detail()
 		self.__set_title(current_run["title"])
+		self.show_stats(stats_utils.get_derivation_stat(state, self.run_list[self.choose_index]),
+						self.run_list[self.choose_index].runtime, 
+						0, 
+						0)
 
 	def __get_image_path(self, image_name: str):
 		"""Return the path of the icon passed in parameter."""
@@ -300,6 +333,11 @@ class RunViewerPage(Page):
 		self.run_list_title.configure(font=font_style_title)
 		self.run_detail_title.configure(font=font_style_title)
 		self.run_detail_description.configure(font=font_style_title)
+
+		self.user_derivation_label.configure(font=font_style_default)
+		self.user_time_label.configure(font=font_style_default)
+		self.best_derivation_label.configure(font=font_style_default)
+		self.best_time_label.configure(font=font_style_default)
 
 		self.user_record_label.configure(font=font_style_title)
 		self.all_time_record_label.configure(font=font_style_title)
