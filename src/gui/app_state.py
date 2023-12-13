@@ -89,7 +89,6 @@ class AppState(metaclass=Singleton):
 
 	# Login	
 	def set_user(self, user: User):
-		assert user is not None, "app_state: user is set to None"
 		assert user != "", "app_state: user is set to empty string"
 		self.__user = user
 

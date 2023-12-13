@@ -151,13 +151,14 @@ class Application(customtkinter.CTk):
 	def show_menu(self):
 		"""Show the menu page."""
 		if self.menu_frame is not None:
+			self.menu_frame.set_active()
 			return
 		self.menu_frame = MenuPage(self.menu_container_frame, self)
 		self.menu_frame.grid(row=0, column=0, sticky="nsew")
-		self.menu_frame.set_command_piste(lambda: self.show_page(WallPage))
-		self.menu_frame.set_command_chemin(lambda: self.show_page(RoutePage))
+		self.menu_frame.set_command_wall(lambda: self.show_page(WallPage))
+		self.menu_frame.set_command_route(lambda: self.show_page(RoutePage))
 		self.menu_frame.set_command_run(lambda: self.show_page(RunPage))
-		self.menu_frame.set_command_compte(lambda: self.show_page(AccountPage))
+		self.menu_frame.set_command_account(lambda: self.show_page(AccountPage))
 		self.menu_frame.update()
 
 	def update_page(self, page: type(Page)):
