@@ -59,10 +59,10 @@ class Skeleton:
 			return True
 
 	def __str__(self) -> str:
-		result = ""
+		result = "body:{"
 		for member in self.body:
-			result += f"{member}: {self.body[member]}"
-		return result
+			result += f"{member}: {self.body[member]}, "
+		return result.strip(", ") + "}"
 
 	def __repr__(self) -> str:
 		return self.__str__()

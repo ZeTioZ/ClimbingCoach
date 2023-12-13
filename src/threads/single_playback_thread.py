@@ -5,6 +5,7 @@ import PIL.Image as Image
 import customtkinter
 import numpy as np
 
+from objects.skeleton import Skeleton
 from database.models.run import Run
 from gui.abstract.page import Page
 from gui.utils import v
@@ -12,7 +13,7 @@ from objects.skeletons_record import SkeletonsRecord
 from utils import draw_utils
 
 
-class Playback(Thread):
+class SinglePlayback(Thread):
 	def __init__(self, run: Run, image: np.ndarray, frame_rate: float, parent_page: Page, runtime: float = 0, size: tuple = None):
 		super().__init__()
 		self.daemon = True
@@ -44,9 +45,9 @@ class Playback(Thread):
 				image_copy = self.image.copy()
 
 				image_with_hit_hold = self.__draw_hit_holds(image_copy)
-				image_with_hit_hold_and_skeleton = None
+				image_with_hit_hold_and_skeleton = image_with_hit_hold
 				for skeleton in skeletons:
-					image_with_hit_hold_and_skeleton = draw_utils.skeleton_visualizer(image_with_hit_hold, skeleton)
+					image_with_hit_hold_and_skeleton = draw_utils.skeleton_visualizer(image_with_hit_hold_and_skeleton, skeleton)
 
 				if image_with_hit_hold_and_skeleton is not None:
 					if self.size is None:

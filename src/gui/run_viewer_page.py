@@ -12,7 +12,7 @@ from gui.app_state import AppState
 from gui.utils import FONT, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from gui.utils import get_ressources_path, get_font_style_default, get_font_style_title
 from gui.utils import v, uv, iuv, min_max_range
-from threads import playback_thread
+from threads import single_playback_thread, multi_playback_thread
 from utils import stats_utils
 from utils.serializer_utils import deserialize_skeletons_record
 
@@ -134,7 +134,7 @@ class RunViewerPage(Page):
 		self.scrollable_record_frame.grid(row=1, column=0, columnspan=2, sticky="nswe")
 		self.scrollable_record_frame.grid_columnconfigure((0,1), weight=1)
 
-		self.playback_thread = None
+		self.single_playback_thread = None
 
 	def set_active(self):
 		"""Called when the page is set as active page."""
@@ -175,21 +175,21 @@ class RunViewerPage(Page):
 
 				chosen_run: Run = self.run_list[self.choose_index]
 				deserialized_skeletons_record = deserialize_skeletons_record(chosen_run.skeletons_record)
-				if self.playback_thread is None or \
-						(self.playback_thread.skeletons_list != deserialized_skeletons_record.skeletons):
-					self.playback_thread = playback_thread.Playback(
+				if self.single_playback_thread is None or \
+						(self.single_playback_thread.skeletons_list != deserialized_skeletons_record.skeletons):
+					self.single_playback_thread = single_playback_thread.SinglePlayback(
 						chosen_run,
 						pickle.loads(state.get_route().image),
 						deserialized_skeletons_record.frame_rate,
 						self, chosen_run.runtime
 					)
-					self.playback_thread.start()
-				self.playback_thread.play()
+					self.single_playback_thread.start()
+				self.single_playback_thread.play()
 		else:
 			self.video_play_button.configure(image=self.video_play_button_img)
 			self.video_progressbar.configure(state='normal')
-			if self.playback_thread is not None:
-				self.playback_thread.pause()
+			if self.single_playback_thread is not None:
+				self.single_playback_thread.pause()
 
 	def show_stats(self, user_variation: float, user_time: float, best_variation: float, best_time: float):
 		"""Show the stats of the run."""
@@ -341,8 +341,8 @@ class RunViewerPage(Page):
 
 	def __popup_window(self, run: Run, user_run: Run):
 		"""Create the pop-up window."""
-		if self.playback_thread is not None:
-				self.playback_thread.pause()
+		if self.single_playback_thread is not None:
+				self.single_playback_thread.pause()
 		self.video_play_button.configure(state='disabled', image=self.video_play_button_img)
 		self.video_progressbar.configure(state='disabled')
 		# pause video
@@ -373,7 +373,7 @@ class PopUp(Page):
 
 		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
 
-		self.playback_thread = None
+		self.multi_playback_thread = None
 
 	def show_popup(self):
 		"""Show a popup if there isn't one already."""
@@ -438,31 +438,23 @@ class PopUp(Page):
 
 			chosen_run = self.run
 			deserialized_skeletons_record = deserialize_skeletons_record(chosen_run.skeletons_record)
-			# user_deserialized_skeletons_record = deserialize_skeletons_record(self.user_run.skeletons_record)
 			size = (iuv(500), iuv(500 / self.ratio_img))
-			if self.playback_thread is None or \
-						(self.playback_thread.skeletons_list != deserialized_skeletons_record.skeletons):
-					self.playback_thread = playback_thread.Playback(chosen_run,
-													 				pickle.loads(state.get_route().image),
-					                                                deserialized_skeletons_record.frame_rate,
-					                                                self,
-					                                                chosen_run.runtime,
-																	size)
-					# self.user_playback_thread = playback_thread.Playback(self.user_run,
-					# 								 					pickle.loads(state.get_route().image),
-					# 													user_deserialized_skeletons_record.frame_rate,
-					# 													self,
-					# 													self.user_run.runtime,
-					# 													size)
-					self.playback_thread.start()
-					# self.user_playback_thread.start()
-			self.playback_thread.play()
-			# self.user_playback_thread.play()
+			if self.multi_playback_thread is None or \
+						(self.multi_playback_thread.main_skeletons_list != deserialized_skeletons_record.skeletons):
+					self.multi_playback_thread = multi_playback_thread.MultiPlayback(chosen_run,
+																					self.user_run,
+																					pickle.loads(state.get_route().image),
+																					deserialized_skeletons_record.frame_rate,
+																					self,
+																					chosen_run.runtime,
+																					size)
+					self.multi_playback_thread.start()
+			self.multi_playback_thread.play()
 		else:
 			self.video_play_button.configure(image=self.video_play_button_img)
 			self.video_progressbar.configure(state='normal')
-			if self.playback_thread is not None:# and self.user_playback_thread is not None:
-				self.playback_thread.pause()
+			if self.multi_playback_thread is not None:# and self.user_playback_thread is not None:
+				self.multi_playback_thread.pause()
 				# self.user_playback_thread.pause()
 
 	def __get_image_path(self, image_name: str):

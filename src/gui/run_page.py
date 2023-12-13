@@ -185,11 +185,6 @@ class RunPage(Page):
 	def get_name(self):
 		return "Run"
 
-	def __clear_run_record_frame(self):
-		print("clear run record frame")
-		for widget in self.run_record_frame.grid_slaves():
-			widget.grid_forget()
-
 	def __start_recording(self):
 		self.skeleton_record_saver_listener.start_timer()
 		self.app.camera.flux_reader_event.register(self.skeleton_record_saver_listener)
@@ -211,7 +206,6 @@ class RunPage(Page):
 		self.visibility_button.grid(row=0, column=2, padx=uv(10))
 
 	def __load_recording(self):
-		print("load recording")
 		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
 		if len(self.run_list) == 0:
 			if self.__pop_up is None:	
