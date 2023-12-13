@@ -173,14 +173,12 @@ class RunPage(Page):
 
 		# Set empty image
 		self.test_label.configure(image=EMPTY_IMAGE)
-		# self.visibility_button.configure(state=customtkinter.DISABLED, image=self.show_cam)
 
 	def set_active(self):
 		super().set_active()
 		self.app.camera.flux_reader_event.register(self.video_widget)
 
 		self.__start_reading()
-		# self.visibility_button.configure(state=customtkinter.NORMAL, image=self.show_cam)
 
 	def get_name(self):
 		return "Run"
@@ -196,7 +194,6 @@ class RunPage(Page):
 			self.stop_recording.grid(row=1, column=0, columnspan=2, pady=uv(10))
 
 	def __stop_recording(self):
-		# add logical
 		self.app.camera.flux_reader_event.unregister(self.skeleton_record_saver_listener)
 		self.skeleton_record_saver_listener.save_skeletons_record()
 

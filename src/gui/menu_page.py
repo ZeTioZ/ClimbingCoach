@@ -153,7 +153,6 @@ class MenuPage(Page):
 
 		size_icon = min_max_range(uv(60), uv(80), v(5.5, width))
 		size_label_icon = 115 / 80 * size_icon
-		# min(int(v(1.7, width)), 32)
 		default_font = ("Helvetica", min_max_range(iuv(22), iuv(30), int(v(1.7, width))), "bold")
 
 		def set_size(label: customtkinter.CTkLabel, image: customtkinter.CTkImage):

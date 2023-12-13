@@ -86,7 +86,6 @@ class AddRoutePage(Page):
 
 	def create_path(self):
 		"""Create the path."""
-		# self.image_driver.save_root
 		route_name_pop_up = customtkinter.CTkToplevel(self)
 		self.after(200, route_name_pop_up.lift)
 		route_name_pop_up.title("Route creation")

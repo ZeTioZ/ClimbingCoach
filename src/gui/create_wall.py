@@ -108,10 +108,7 @@ class CreateWall(Page):
 	def __save(self, image, name, difficulty, text_box):
 		wall_queries.create_wall(name=name, difficulty=difficulty, description=text_box, image=pickle.dumps(image))
 
-	# TODO: ajouter difficulty dans l'appel quand se sera set up
-
 	def __screener(self):
-		# add logical
 		video_pop_up = customtkinter.CTkToplevel(self)
 		video_pop_up.geometry("600x600")
 
