@@ -27,7 +27,7 @@ class RoutePage(Page):
 
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
 		super().__init__(parent, app)
-		
+
 		self.active_route_id = 0
 
 		parent.grid_rowconfigure(0, weight=1)
@@ -55,7 +55,8 @@ class RoutePage(Page):
 			self.route_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
 			state.set_route(route_queries.get_route_by_name(self.all_routes[self.active_route_id].name))
 		else:
-			self.route_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR, hover_color=PRIMARY_HOVER_COLOR)
+			self.route_selection_button.configure(text="Select", fg_color=PRIMARY_COLOR,
+			                                      hover_color=PRIMARY_HOVER_COLOR)
 			state.set_route(None)
 		self.app.update_menu()
 
@@ -83,7 +84,8 @@ class RoutePage(Page):
 
 	def __refresh_scrollable_button_component(self):
 		if self.all_routes is not None:
-			self.route_list_component.load_button_list([(route.name, lambda index: self.__show_route_detail(index)) for route in self.all_routes])
+			self.route_list_component.load_button_list(
+				[(route.name, lambda index: self.__show_route_detail(index)) for route in self.all_routes])
 
 	# Page lifecycle
 
@@ -124,7 +126,7 @@ class RoutePage(Page):
 
 		detail_frame.grid_columnconfigure((0, 3), weight=3)
 		detail_frame.grid_columnconfigure((1, 2), weight=1)
-		
+
 		detail_frame.grid_rowconfigure((0, 1, 2), weight=1)
 
 		self.image_componant = ImageComponent(detail_frame)
@@ -142,7 +144,7 @@ class RoutePage(Page):
 			fg_color="transparent", state="disabled"
 		)
 		self.description.grid(
-			row=1, column=0, sticky="nswe", 
+			row=1, column=0, sticky="nswe",
 			pady=(uv(50), uv(0)), padx=(uv(50), uv(0))
 		)
 
@@ -151,7 +153,7 @@ class RoutePage(Page):
 
 		self.route_selection_button = customtkinter.CTkButton(
 			detail_frame, text="Select",
-			command = lambda: self.selection_route()
+			command=lambda: self.selection_route()
 		)
 		self.route_selection_button.grid(row=2, column=1, padx=(uv(0), uv(50)))
 
@@ -164,7 +166,7 @@ class RoutePage(Page):
 		self.active_route_id = active_route_id
 
 		self.__change_select_btn()
-	
+
 		self.current_route = self.__fetch_route_detail()
 
 		self.set_image(self.__image_loader(self.current_route["image"]))
@@ -182,9 +184,9 @@ class RoutePage(Page):
 		"""Return true if the page is already selected."""
 		current_route = state.get_route()
 		list_name = [route.name for route in self.all_routes]
-		return current_route is not None\
-				and current_route.name in list_name\
-				and self.active_route_id == list_name.index(current_route.name)
+		return current_route is not None \
+			and current_route.name in list_name \
+			and self.active_route_id == list_name.index(current_route.name)
 
 	def __set_select_btn_active(self):
 		self.route_selection_button.configure(text="Selected", fg_color=LIGHT_GREEN, hover_color=DARK_GREEN)
@@ -232,9 +234,9 @@ class RoutePage(Page):
 
 	def refresh_description(self):
 		"""Set the page active"""
-		if isinstance(self.active_route_id, int) and self.active_route_id < len(self.all_routes) and self.active_route_id >= 0:
+		if isinstance(self.active_route_id, int) and len(self.all_routes) > self.active_route_id >= 0:
 			self.__show_route_detail(self.active_route_id)
-	
+
 	def detail_component_resize(self, width: int, height: int):
 		self.image_componant.resize(width, height)
 		self.difficulty_component.resize(width, height)

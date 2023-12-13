@@ -8,8 +8,9 @@ def rgb_to_hex(rgb):
 
 
 def hex_to_rgb(hex_color):
-	hex_color_len = len(hex_color.lstrip('#'))
-	return tuple(int(hex_color[i:i + hex_color_len // 3], 16) for i in range(0, hex_color_len, hex_color_len // 3))
+	stripped_hex_color = hex_color.lstrip('#')
+	hex_color_len = len(stripped_hex_color)
+	return tuple(int(stripped_hex_color[i:i + hex_color_len // 3], 16) for i in range(0, hex_color_len, hex_color_len // 3))
 
 
 __COLORS = [
