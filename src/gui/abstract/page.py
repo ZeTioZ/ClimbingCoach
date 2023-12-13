@@ -1,5 +1,6 @@
 from customtkinter import CTkFrame, CTk
 
+
 class Page(CTkFrame):
 	app = None
 

@@ -11,7 +11,7 @@ from gui.abstract.page import Page
 from gui.app_state import AppState
 from gui.utils import FONT, SECONDARY_COLOR, SECONDARY_HOVER_COLOR
 from gui.utils import get_ressources_path, get_font_style_default, get_font_style_title
-from gui.utils import v, uv, iuv, min_max_range
+from gui.utils import v, uv, iuv
 from threads import single_playback_thread, multi_playback_thread
 from utils import stats_utils
 from utils.serializer_utils import deserialize_skeletons_record
@@ -88,13 +88,14 @@ class RunViewerPage(Page):
 		self.video_progressbar = customtkinter.CTkSlider(self.video_commands_frame, from_=0, to=100)
 		self.video_progressbar.set(0)
 		self.video_progressbar.grid(row=0, column=1, pady=uv(9))
-		
+
 		# RUN INFORMATIONS
 		self.run_detail_description = customtkinter.CTkLabel(self.run_detail_frame, text="Run informations",
 		                                                     font=(FONT, iuv(30)))
 		self.run_detail_description.grid(row=4, column=0, columnspan=4, pady=uv(20))
 
-		self.run_information_frame = customtkinter.CTkFrame(self.run_detail_frame, bg_color="transparent", width=uv(200))
+		self.run_information_frame = customtkinter.CTkFrame(self.run_detail_frame, bg_color="transparent",
+		                                                    width=uv(200))
 		self.run_information_frame.grid(row=5, column=0, columnspan=4, sticky="nswe", padx=uv(20), pady=uv(20))
 		self.run_information_frame.grid_columnconfigure((0, 1), weight=1)
 
@@ -127,12 +128,15 @@ class RunViewerPage(Page):
 		self.other_runs_frame.grid(row=6, column=0, columnspan=4, sticky="nswe", padx=uv(20), pady=uv(20))
 		self.other_runs_frame.grid_columnconfigure(0, weight=1)
 
-		self.other_runs_label = customtkinter.CTkLabel(self.other_runs_frame, text="Other climbers runs", font=(FONT, iuv(26)))
+		self.other_runs_label = customtkinter.CTkLabel(self.other_runs_frame, text="Other climbers runs",
+		                                               font=(FONT, iuv(26)))
 		self.other_runs_label.grid(row=0, column=0, pady=uv(5), columnspan=2)
 
-		self.scrollable_record_frame = customtkinter.CTkScrollableFrame(self.other_runs_frame, width=uv(200), height=uv(250), bg_color="transparent", fg_color="transparent")
+		self.scrollable_record_frame = customtkinter.CTkScrollableFrame(self.other_runs_frame, width=uv(200),
+		                                                                height=uv(250), bg_color="transparent",
+		                                                                fg_color="transparent")
 		self.scrollable_record_frame.grid(row=1, column=0, columnspan=2, sticky="nswe")
-		self.scrollable_record_frame.grid_columnconfigure((0,1), weight=1)
+		self.scrollable_record_frame.grid_columnconfigure((0, 1), weight=1)
 
 		self.single_playback_thread = None
 
@@ -146,19 +150,19 @@ class RunViewerPage(Page):
 			self.derivation_stat = stats_utils.get_derivation_stat(state, self.run_list[self.choose_index])
 			self.best_runs_list = stats_utils.get_all_users_route_records(state)
 			self.best_time_derivation = stats_utils.get_derivation_stat(state, self.best_runs_list[0])
-			
+
 			self.__set_title((self.run_list[self.choose_index]).id)
 
-			self.show_stats(self.derivation_stat, 
-							self.run_list[self.choose_index].runtime, 
-							self.best_time_derivation, 
-							self.best_runs_list[0].runtime)
+			self.show_stats(self.derivation_stat,
+			                self.run_list[self.choose_index].runtime,
+			                self.best_time_derivation,
+			                self.best_runs_list[0].runtime)
 
 			self.button_list: list[customtkinter.CTkButton] = []
 			for run in self.run_list:
 				self.run_button = self.create_button(run.id, self.run_list.index(run))
 				self.button_list.append(self.run_button)
-			
+
 			if self.best_runs_list is not None:
 				index = 1
 				for run in self.best_runs_list:
@@ -220,7 +224,7 @@ class RunViewerPage(Page):
 		)
 
 		replay_img = customtkinter.CTkImage(Image.open(self.__get_image_path("replay.png")),
-											size=(25, 25))
+		                                    size=(25, 25))
 		replay_button = customtkinter.CTkButton(
 			self.scrollable_record_frame,
 			text="",
@@ -231,7 +235,7 @@ class RunViewerPage(Page):
 		)
 		label.grid(row=index, column=0, pady=uv(10), sticky="e")
 		replay_button.grid(row=index, column=1, pady=uv(10), sticky="w")
-		
+
 		return label, replay_button
 
 	def create_button(self, display_text, index):
@@ -274,15 +278,15 @@ class RunViewerPage(Page):
 
 		self.choose_index = run_chosen
 		self.button_list[run_chosen].configure(fg_color=SECONDARY_COLOR, hover_color=SECONDARY_HOVER_COLOR)
-		
+
 		if self.video_play_button.cget("image") == self.video_pause_button_img:
 			self.__change_video_state()
 
 		self.__set_title((self.run_list[self.choose_index]).id)
-		self.show_stats(derivation_stat, 
-						self.run_list[self.choose_index].runtime, 
-						best_time_derivation, 
-						best_runs_list[0].runtime)
+		self.show_stats(derivation_stat,
+		                self.run_list[self.choose_index].runtime,
+		                best_time_derivation,
+		                best_runs_list[0].runtime)
 		self.__update_all_runs()
 
 	def __update_all_runs(self):
@@ -310,8 +314,8 @@ class RunViewerPage(Page):
 	def on_size_change(self, width, height):
 		super().on_size_change(width, height)
 
-		font_style_default = get_font_style_default(width, height)
-		font_style_title = get_font_style_title(width, height)
+		font_style_default = get_font_style_default(width)
+		font_style_title = get_font_style_title(width)
 
 		self.run_back_button.configure(height=v(4, height), width=uv(100),
 		                               font=font_style_default)
@@ -342,7 +346,7 @@ class RunViewerPage(Page):
 	def __popup_window(self, run: Run, user_run: Run):
 		"""Create the pop-up window."""
 		if self.single_playback_thread is not None:
-				self.single_playback_thread.pause()
+			self.single_playback_thread.pause()
 		self.video_play_button.configure(state='disabled', image=self.video_play_button_img)
 		self.video_progressbar.configure(state='disabled')
 		popup = PopUp(self, run=run, user_run=user_run)
@@ -439,15 +443,15 @@ class PopUp(Page):
 			deserialized_skeletons_record = deserialize_skeletons_record(chosen_run.skeletons_record)
 			size = (iuv(500), iuv(500 / self.ratio_img))
 			if self.multi_playback_thread is None or \
-						(self.multi_playback_thread.main_skeletons_list != deserialized_skeletons_record.skeletons):
-					self.multi_playback_thread = multi_playback_thread.MultiPlayback(chosen_run,
-																					self.user_run,
-																					pickle.loads(state.get_route().image),
-																					deserialized_skeletons_record.frame_rate,
-																					self,
-																					chosen_run.runtime,
-																					size)
-					self.multi_playback_thread.start()
+					(self.multi_playback_thread.main_skeletons_list != deserialized_skeletons_record.skeletons):
+				self.multi_playback_thread = multi_playback_thread.MultiPlayback(chosen_run,
+				                                                                 self.user_run,
+				                                                                 pickle.loads(state.get_route().image),
+				                                                                 deserialized_skeletons_record.frame_rate,
+				                                                                 self,
+				                                                                 chosen_run.runtime,
+				                                                                 size)
+				self.multi_playback_thread.start()
 			self.multi_playback_thread.play()
 		else:
 			self.video_play_button.configure(image=self.video_play_button_img)

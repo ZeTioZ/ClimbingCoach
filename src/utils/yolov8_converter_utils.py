@@ -27,23 +27,23 @@ def convert_image_skeleton_outputs(predictions_outputs) -> list:
 	:return: A list of skeletons.
 	"""
 	skeletons = []
-	for skeleton_keypoints in predictions_outputs[0].keypoints.xy:
-		keypoints = skeleton_keypoints.tolist()
-		if not len(keypoints) == 17:
+	for skeleton_key_points in predictions_outputs[0].keypoints.xy:
+		key_points = skeleton_key_points.tolist()
+		if len(key_points) != 17:
 			continue
 		skeleton = Skeleton(
-			main_1=Position(keypoints[9][0], keypoints[9][1]),
-			main_2=Position(keypoints[10][0], keypoints[10][1]),
-			pied_1=Position(keypoints[15][0], keypoints[15][1]),
-			pied_2=Position(keypoints[16][0], keypoints[16][1]),
-			epaule_1=Position(keypoints[5][0], keypoints[5][1]),
-			epaule_2=Position(keypoints[6][0], keypoints[6][1]),
-			coude_1=Position(keypoints[7][0], keypoints[7][1]),
-			coude_2=Position(keypoints[8][0], keypoints[8][1]),
-			bassin_1=Position(keypoints[11][0], keypoints[11][1]),
-			bassin_2=Position(keypoints[12][0], keypoints[12][1]),
-			genou_1=Position(keypoints[13][0], keypoints[13][1]),
-			genou_2=Position(keypoints[14][0], keypoints[14][1])
+			main_1=Position(key_points[9][0], key_points[9][1]),
+			main_2=Position(key_points[10][0], key_points[10][1]),
+			pied_1=Position(key_points[15][0], key_points[15][1]),
+			pied_2=Position(key_points[16][0], key_points[16][1]),
+			epaule_1=Position(key_points[5][0], key_points[5][1]),
+			epaule_2=Position(key_points[6][0], key_points[6][1]),
+			coude_1=Position(key_points[7][0], key_points[7][1]),
+			coude_2=Position(key_points[8][0], key_points[8][1]),
+			bassin_1=Position(key_points[11][0], key_points[11][1]),
+			bassin_2=Position(key_points[12][0], key_points[12][1]),
+			genou_1=Position(key_points[13][0], key_points[13][1]),
+			genou_2=Position(key_points[14][0], key_points[14][1])
 		)
 		skeletons.append(skeleton)
 	return skeletons

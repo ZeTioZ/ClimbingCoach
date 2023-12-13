@@ -111,7 +111,7 @@ class WallPage(Page):
 		self.element_list_component.resize(width, height)
 		self.detail_component_resize(width, height)
 
-		font_style_title = get_font_style_title(width, height)
+		font_style_title = get_font_style_title(width)
 		self.wall_list_title.configure(font=font_style_title)
 
 	# DB
@@ -238,7 +238,7 @@ class WallPage(Page):
 
 	def refresh_description(self):
 		"""Set the page active"""
-		if isinstance(self.active_id, int) and self.active_id < len(self.all_walls) and self.active_id >= 0:
+		if isinstance(self.active_id, int) and len(self.all_walls) > self.active_id >= 0:
 			self.__show_detail(self.active_id)
 
 	def detail_component_resize(self, width: int, height: int):
@@ -246,6 +246,6 @@ class WallPage(Page):
 		self.image_componant.resize(width, height)
 		self.difficulty_component.resize(width, height)
 
-		font_style_default = get_font_style_default(width, height)
+		font_style_default = get_font_style_default(width)
 		self.description.configure(font=font_style_default)
 		self.selection_button.configure(height=v(5, height), width=v(22, width), font=font_style_default)

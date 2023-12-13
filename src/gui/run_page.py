@@ -43,8 +43,8 @@ class RunPage(Page):
 
 		v_width, v_height = self.__get_image_size_from_app_size()
 
-		default_font = get_font_style_default(app_width, app_height)
-		title_font = get_font_style_title(app_width, app_height)
+		default_font = get_font_style_default(app_width)
+		title_font = get_font_style_title(app_width)
 
 		self.test_label = customtkinter.CTkLabel(self, text="", font=title_font, width=v_width,
 		                                         height=v_height)
@@ -238,8 +238,7 @@ class RunPage(Page):
 		"""Called when the windows size change."""
 		super().on_size_change(width, height)
 
-		default_font = get_font_style_default(width, height)
-		title_font = get_font_style_title(width, height)
+		title_font = get_font_style_title(width)
 
 		b_width, b_height = self.__get_button_size(width, height)
 

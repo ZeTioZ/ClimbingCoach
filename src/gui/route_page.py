@@ -103,7 +103,7 @@ class RoutePage(Page):
 		self.route_list_component.resize(width, height)
 		self.detail_component_resize(width, height)
 
-		font_style_title = get_font_style_title(width, height)
+		font_style_title = get_font_style_title(width)
 		self.route_list_title.configure(font=font_style_title)
 
 	# DB
@@ -239,6 +239,6 @@ class RoutePage(Page):
 		self.image_componant.resize(width, height)
 		self.difficulty_component.resize(width, height)
 
-		font_style_default = get_font_style_default(width, height)
+		font_style_default = get_font_style_default(width)
 		self.description.configure(font=font_style_default)
 		self.route_selection_button.configure(height=v(5, height), width=v(22, width), font=font_style_default)

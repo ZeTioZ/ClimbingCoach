@@ -60,7 +60,6 @@ class FluxReaderEvent(Event):
 			if (refresh_holds or not self.refreshed) and (
 					super().has_listener(FluxReaderEventType.HOLDS_PROCESSED_EVENT) or super().has_listener(
 				FluxReaderEventType.FRAME_PROCESSED_EVENT)):
-
 				self.refreshed = True
 
 				holds_predictions = holds_detector.predict(frame, classes=[0])
@@ -75,7 +74,8 @@ class FluxReaderEvent(Event):
 				FluxReaderEventType.FRAME_PROCESSED_EVENT)):
 				skeleton_prediction = skeleton_detector.predict(frame, img_size=512)
 				skeletons = convert_image_skeleton_outputs(skeleton_prediction)
-				self.notify(FluxReaderEventType.SKELETONS_PROCESSED_EVENT, self.nbr_frame_to_skip, skeletons, holds_boxes, frame)
+				self.notify(FluxReaderEventType.SKELETONS_PROCESSED_EVENT, self.nbr_frame_to_skip, skeletons,
+				            holds_boxes, frame)
 
 			if super().has_listener(FluxReaderEventType.FRAME_PROCESSED_EVENT):
 				self.notify(FluxReaderEventType.FRAME_PROCESSED_EVENT, frame, holds_boxes, floor_boxes, skeletons,
@@ -84,4 +84,3 @@ class FluxReaderEvent(Event):
 
 		self.notify(FluxReaderEventType.END_OF_FILE_EVENT)
 		self.video.release()
-
