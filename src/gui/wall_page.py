@@ -183,7 +183,9 @@ class WallPage(Page):
 			width=uv(30),
 			command= self.delete_wall
 		)
-		self.delete_button.grid(row=2, column=2, padx=(uv(0), uv(50)))
+		
+		if self.__is_user_admin():
+			self.delete_button.grid(row=2, column=2, padx=(uv(0), uv(50)))
 
 	# Show detail
 
