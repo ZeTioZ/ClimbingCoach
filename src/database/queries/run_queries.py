@@ -53,7 +53,7 @@ def delete_run_by_id(run_id: int):
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()
 		try:
-			run.delete()
+			session.delete(run)
 			session.commit()
 		except SQLAlchemyError:
 			session.rollback()

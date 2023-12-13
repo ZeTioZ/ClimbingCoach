@@ -38,7 +38,7 @@ def delete_route_by_name(name: str):
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()
 		try:
-			route.delete()
+			session.delete(route)
 			session.commit()
 		except SQLAlchemyError:
 			session.rollback()
