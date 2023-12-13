@@ -33,7 +33,7 @@ def delete_wall_by_name(name: str):
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()
 		try:
-			wall.delete()
+			session.delete(wall)
 			session.commit()
 		except SQLAlchemyError:
 			session.rollback()

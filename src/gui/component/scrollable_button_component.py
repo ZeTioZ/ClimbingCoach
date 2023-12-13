@@ -147,7 +147,7 @@ class ScrollableButtonComponent(ctk.CTkScrollableFrame):
 	# Component lifecycle
 
 	def resize(self, width: int, height: int, frame_width: int | None = None):
-		font_style_default = get_font_style_default(width, height)
+		font_style_default = get_font_style_default(width)
 
 		if frame_width is None:
 			target_frame_width = max(uv(250), v(10, width))

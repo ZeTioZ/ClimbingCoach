@@ -42,23 +42,21 @@ def set_height_utils(height):
 
 def v(p: float | int, view: float | int) -> float:
 	"""
-	Return the value as percentage of the view. (v for view)
-	:param p: The pourcent of the view
-	:param view: The view (usually the height of the window)
+	Return the value as percentage of the view (v for view).
+	:param p: The percentage of the view
+	:param view: The view (usually the height of the window).
 	:return: The value as percentage of the view
 	"""
 	return p * (view / 100)
 
 
-def min_max_range(min: float | int | None, max: float | int | None, value: float | int) -> float:
-	if min > max:
+def min_max_range(min_range: float | int | None, max_range: float | int | None, value: float | int) -> float:
+	if min_range > max_range:
 		raise ValueError("min must be less than max")
-
-	if min is not None and value < min:
-		return min
-	if max is not None and value > max:
-		return max
-
+	if min_range is not None and value < min_range:
+		return min_range
+	if max_range is not None and value > max_range:
+		return max_range
 	return value
 
 
@@ -73,11 +71,14 @@ def iuv(value, resolution=1080):
 	"""Integer Universal value. Allow using absolute value for the height of the window."""
 	return int(uv(value, resolution))
 
-def get_font_style_default(width: int, height: int):
-	return (FONT, min_max_range(iuv(8), iuv(28), int(v(1.9, width))))
-	
-def get_font_style_title(width: int, height: int):
-	return (FONT, min_max_range(iuv(12), iuv(32), int(v(2.5, width))), "bold")
+
+def get_font_style_default(width: int):
+	return FONT, min_max_range(iuv(8), iuv(28), int(v(1.9, width)))
+
+
+def get_font_style_title(width: int):
+	return FONT, min_max_range(iuv(12), iuv(32), int(v(2.5, width))), "bold"
+
 
 def normalize_title(title: str):
 	"""Normalize the title of the wall."""

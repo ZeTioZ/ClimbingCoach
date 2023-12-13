@@ -5,7 +5,6 @@ import PIL.Image as Image
 import customtkinter
 import numpy as np
 
-from objects.skeleton import Skeleton
 from utils.list_utils import list_filler
 from database.models.run import Run
 from gui.abstract.page import Page

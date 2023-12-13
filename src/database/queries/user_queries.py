@@ -62,7 +62,7 @@ def delete_user_by_name(username: str):
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()
 		try:
-			user.delete()
+			session.delete(user)
 			session.commit()
 		except SQLAlchemyError:
 			session.rollback()

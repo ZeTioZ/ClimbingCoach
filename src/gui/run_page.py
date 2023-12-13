@@ -17,6 +17,7 @@ from listeners.video_widget import VideoWidget
 
 state = AppState()
 
+
 class RunPage(Page):
 	__reading = False
 	__isCameraLoaded = False
@@ -43,8 +44,8 @@ class RunPage(Page):
 
 		v_width, v_height = self.__get_image_size_from_app_size()
 
-		default_font = get_font_style_default(app_width, app_height)
-		title_font = get_font_style_title(app_width, app_height)
+		default_font = get_font_style_default(app_width)
+		title_font = get_font_style_title(app_width)
 
 		self.test_label = customtkinter.CTkLabel(self, text="", font=title_font, width=v_width,
 		                                         height=v_height)
@@ -61,7 +62,7 @@ class RunPage(Page):
 
 		self.stop_recording = customtkinter.CTkButton(self, text="Stop recording", command=self.__stop_recording,
 		                                              font=default_font, fg_color="#dc3835", hover_color="#ae1e1d",
-													  width=b_width, height=b_height)
+		                                              width=b_width, height=b_height)
 
 		vb_width, vb_height = self.__get_visibility_button_size(self.app.winfo_width(), self.app.winfo_height())
 
@@ -69,8 +70,7 @@ class RunPage(Page):
 		                                       size=(vb_width - 25, vb_height - 25))
 		self.hide_cam = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("hide_cam.png")),
 		                                       size=(vb_width - 25, vb_height - 25))
-		
-		
+
 		self.visibility_button = customtkinter.CTkButton(self, text="", command=self.__toggle_camera,
 		                                                 state=customtkinter.NORMAL, image=self.hide_cam,
 		                                                 width=vb_width, height=vb_height)
@@ -97,7 +97,7 @@ class RunPage(Page):
 			inner_text = ""
 		inner_text += "."
 		self.test_label.configure(text=inner_text)
-		
+
 		self.after(1000, self.__animation_camera_loading)
 
 	def __get_ratio(self) -> float:
@@ -118,7 +118,7 @@ class RunPage(Page):
 		target_height = v(50, height)
 		target_width = target_height * ratio
 		return int(target_width), int(target_height)
-	
+
 	def __get_image_size_from_app_size(self) -> tuple[int, int]:
 		return self.__get_image_size(self.app.winfo_width(), self.app.winfo_height())
 
@@ -186,7 +186,7 @@ class RunPage(Page):
 	def __start_recording(self):
 		self.skeleton_record_saver_listener.start_timer()
 		self.app.camera.flux_reader_event.register(self.skeleton_record_saver_listener)
-		
+
 		if self.visibility_button.cget("image") == self.hide_cam:
 			self.start_recording.grid_forget()
 			self.load_recording.grid_forget()
@@ -205,19 +205,20 @@ class RunPage(Page):
 	def __load_recording(self):
 		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
 		if len(self.run_list) == 0:
-			if self.__pop_up is None:	
+			if self.__pop_up is None:
 				self.__pop_up = customtkinter.CTkToplevel(self)
 				self.__pop_up.title("Warning")
 				self.__pop_up.geometry("300x100")
 				self.__pop_up.resizable(False, False)
 				self.__pop_up.grid_columnconfigure(0, weight=1)
-				self.__pop_up.grid_rowconfigure((0,1), weight=1)
-				__pop_up_label = customtkinter.CTkLabel(self.__pop_up, text="You have no run for this route", font=(FONT, 18))
+				self.__pop_up.grid_rowconfigure((0, 1), weight=1)
+				__pop_up_label = customtkinter.CTkLabel(self.__pop_up, text="You have no run for this route",
+				                                        font=(FONT, 18))
 				__pop_up_label.grid(row=0, column=0, sticky="nswe")
 				__pop_up_button = customtkinter.CTkButton(self.__pop_up,
-											  			text="Ok",
-														command=self.__close_pop_up,
-														font=(FONT, 16))
+				                                          text="Ok",
+				                                          command=self.__close_pop_up,
+				                                          font=(FONT, 16))
 				__pop_up_button.grid(row=1, column=0)
 		else:
 			self.app.show_page(RunViewerPage)
@@ -238,8 +239,7 @@ class RunPage(Page):
 		"""Called when the windows size change."""
 		super().on_size_change(width, height)
 
-		default_font = get_font_style_default(width, height)
-		title_font = get_font_style_title(width, height)
+		title_font = get_font_style_title(width)
 
 		b_width, b_height = self.__get_button_size(width, height)
 
@@ -258,5 +258,3 @@ class RunPage(Page):
 
 		self.show_cam.configure(size=(vb_width - 25, vb_height - 25))
 		self.hide_cam.configure(size=(vb_width - 25, vb_height - 25))
-
-		

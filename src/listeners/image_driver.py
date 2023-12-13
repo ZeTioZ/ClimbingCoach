@@ -9,6 +9,7 @@ from database.queries.route_queries import create_route, get_route_by_name
 from enums.event_type import EventType
 from enums.flux_reader_event_type import FluxReaderEventType
 from events.flux_reader_event import FluxReaderEvent
+from gui.app_state import AppState
 from gui.component.interactive_image import InteractiveImage
 from interfaces.listener import Listener
 from objects.box import Box
@@ -16,6 +17,8 @@ from objects.route import Route
 from utils.click_utils import find_selected_hold
 from utils.draw_utils import box_visualizer, draw_path, path_box_visualizer
 from utils.serializer_utils import deserialize_holds
+
+app_state = AppState()
 
 
 class ImageDriver(Listener):
@@ -91,7 +94,7 @@ class ImageDriver(Listener):
 	def save_route(self, difficulty: int = None, description: str = ""):
 		"""Save the path."""
 		if self.route.is_name_set():
-			create_route(self.route, description, difficulty, pickle.dumps(np.array(self.draw_element(self.image,[], False))))
+			create_route(self.route, app_state.get_wall().name, description, difficulty, pickle.dumps(np.array(self.draw_element(self.image,[], False))))
 		else:
 			raise AttributeError("The name of the route is not set.")
 

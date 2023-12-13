@@ -1,6 +1,7 @@
 """Module for tkinter interface of wall page."""
 import pickle
 import tkinter as tk
+import os.path
 from typing import Callable
 
 import customtkinter
@@ -17,7 +18,7 @@ from gui.component.image_component import ImageComponent
 from gui.component.scrollable_button_component import ScrollableButtonComponent
 from gui.create_wall import CreateWall
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, \
-	get_font_style_default, get_font_style_title, normalize_title
+	get_font_style_default, get_font_style_title, normalize_title, get_ressources_path
 from gui.utils import v, uv, iuv
 
 state = AppState()
@@ -29,7 +30,7 @@ class WallPage(Page):
 	def __init__(self, parent: customtkinter.CTkFrame, app: customtkinter.CTk):
 		super().__init__(parent, app)
 
-		self.active_id = 0
+		self.active_id: int | None = 0
 
 		parent.grid_rowconfigure(0, weight=1)
 		parent.grid_columnconfigure(0, weight=1)
@@ -111,7 +112,7 @@ class WallPage(Page):
 		self.element_list_component.resize(width, height)
 		self.detail_component_resize(width, height)
 
-		font_style_title = get_font_style_title(width, height)
+		font_style_title = get_font_style_title(width)
 		self.wall_list_title.configure(font=font_style_title)
 
 	# DB
@@ -119,6 +120,16 @@ class WallPage(Page):
 	def __load_wall(self) -> list[Wall]:
 		"""Load the walls from the database."""
 		return wall_queries.get_all_walls()
+	
+	# Delete
+
+	def delete_wall(self):
+		"""Delete the wall."""
+		wall_queries.delete_wall_by_name(self.all_walls[self.active_id].name)
+		self.all_walls = self.__load_wall()
+		self.__refresh_scrollable_button_component()
+		self.refresh_description()
+		# self.__show_detail()
 
 	# =====================
 	# Description component
@@ -161,12 +172,25 @@ class WallPage(Page):
 			detail_frame, text="Select",
 			command=lambda: self.selection_wall()
 		)
-		self.selection_button.grid(row=2, column=1, padx=(uv(0), uv(50)))
+		self.selection_button.grid(row=2, column=1, padx=(uv(0), uv(20)))
+
+		bin_img = customtkinter.CTkImage(Image.open(os.path.join(get_ressources_path(), "images", "bin.png")),
+								   			size=(uv(30), uv(30)))
+		self.delete_button = customtkinter.CTkButton(
+			detail_frame, 
+			text="",
+			image=bin_img,
+			width=uv(30),
+			command= self.delete_wall
+		)
+		self.delete_button.grid(row=2, column=2, padx=(uv(0), uv(50)))
 
 	# Show detail
 
-	def __show_detail(self, active_id: int):
+	def __show_detail(self, active_id: int | None):
 		"""Shows the route detail page."""
+		# if active_id is not None:
+
 		self.active_id = active_id
 
 		self.__change_select_btn()
@@ -238,7 +262,7 @@ class WallPage(Page):
 
 	def refresh_description(self):
 		"""Set the page active"""
-		if isinstance(self.active_id, int) and self.active_id < len(self.all_walls) and self.active_id >= 0:
+		if isinstance(self.active_id, int) and len(self.all_walls) > self.active_id >= 0:
 			self.__show_detail(self.active_id)
 
 	def detail_component_resize(self, width: int, height: int):
@@ -246,6 +270,8 @@ class WallPage(Page):
 		self.image_componant.resize(width, height)
 		self.difficulty_component.resize(width, height)
 
-		font_style_default = get_font_style_default(width, height)
+		font_style_default = get_font_style_default(width)
 		self.description.configure(font=font_style_default)
 		self.selection_button.configure(height=v(5, height), width=v(22, width), font=font_style_default)
+		self.delete_button.configure(height=v(5, height), width=v(5, width), font=font_style_default)
+		self.delete_button.cget("image").configure(size=(v(2, width), v(2, width)))

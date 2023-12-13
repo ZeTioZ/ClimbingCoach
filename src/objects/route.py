@@ -6,7 +6,7 @@ class Route:
 	Route class representing a climbing route using a list of holds
 	"""
 
-	def __init__(self, name: str | None = None, holds: list[Box] = None):
+	def __init__(self, name: str = None, holds: list[Box] = None):
 		"""
 		Initializes the Route object with the given name and list of holds.
 		:param name: The name of the route.
@@ -36,7 +36,7 @@ class Route:
 		Clears the route.
 		"""
 		self.holds.clear()
-	
+
 	def set_name(self, name: str) -> None:
 		"""
 		Sets the name of the route.
@@ -54,12 +54,6 @@ class Route:
 		:return: True if the name of the route is set, False otherwise.
 		"""
 		return self.name is not None
-
-	def get_name(self) -> str:
-		"""
-		:return: The name of the route.
-		"""
-		return self.name
 
 	def get_holds(self) -> list:
 		"""
