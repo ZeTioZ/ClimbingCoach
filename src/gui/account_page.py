@@ -61,6 +61,11 @@ class AccountPage(Page):
 	def desconnect(self):
 		"""Desconnect the user."""
 		self.app.show_page(LoginPage)
+		state.set_wall(None)
+		state.set_route(None)
+		state.set_user(None)
+		self.app.update_menu()
+		self.app.menu_frame.set_active()
 
 	def ask_confirmation(self):
 		"""Delete the account."""

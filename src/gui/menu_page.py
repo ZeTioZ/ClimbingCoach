@@ -36,17 +36,17 @@ class MenuPage(Page):
 
 		self.piste = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("piste_light.png")),
 		                                    size=(80, 80))
-		self.piste_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 20, "bold"), image=self.piste,
+		self.wall_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 20, "bold"), image=self.piste,
 		                                          height=100, width=100, fg_color=COLOR, corner_radius=DEFAULT_RADIUS)
-		self.piste_label.grid(row=1, column=0, pady=(10, 10), padx=(10, 10))
-		self.__set_hover_effect(self.piste_label, self.piste, "Wall")
+		self.wall_label.grid(row=1, column=0, pady=(10, 10), padx=(10, 10))
+		self.__set_hover_effect(self.wall_label, self.piste, "Wall")
 
-		self.chemin = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("chemin_light.png")),
+		self.route = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("chemin_light.png")),
 		                                     size=(80, 80))
-		self.chemin_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 20, "bold"), image=self.chemin,
+		self.route_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 20, "bold"), image=self.route,
 		                                           height=100, width=100, fg_color=COLOR, corner_radius=DEFAULT_RADIUS)
-		self.chemin_label.grid(row=2, column=0, padx=(10, 10))
-		self.__set_hover_effect(self.chemin_label, self.chemin, "Route")
+		self.route_label.grid(row=2, column=0, padx=(10, 10))
+		self.__set_hover_effect(self.route_label, self.route, "Route")
 
 		self.run = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("run_light.png")), size=(80, 80))
 		self.run_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 20, "bold"), image=self.run,
@@ -54,29 +54,29 @@ class MenuPage(Page):
 		self.run_label.grid(row=3, column=0, pady=(10, 10), padx=(10, 10))
 		self.__set_hover_effect(self.run_label, self.run, "Run")
 
-		self.compte = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("compte_light.png")),
+		self.account = customtkinter.CTkImage(dark_image=Image.open(self.__get_icon_path("compte_light.png")),
 		                                     size=(80, 80))
-		self.compte_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 20, "bold"), image=self.compte,
+		self.account_label = customtkinter.CTkLabel(self, text="", font=("Helvetica", 20, "bold"), image=self.account,
 		                                           height=100, width=100, fg_color=COLOR, corner_radius=DEFAULT_RADIUS)
-		self.compte_label.grid(row=4, column=0, pady=(0, 10), padx=(10, 10))
-		self.__set_hover_effect(self.compte_label, self.compte, "My\nspace")
+		self.account_label.grid(row=4, column=0, pady=(0, 10), padx=(10, 10))
+		self.__set_hover_effect(self.account_label, self.account, "My\nspace")
 
-		entry = self.piste_label
+		entry = self.wall_label
 
 		self.__change_active(entry)
 
 	# Hide/Show methods
-	def hide_piste(self):
-		self.piste_label.grid_forget()
+	def hide_wall(self):
+		self.wall_label.grid_forget()
 
-	def show_piste(self):
-		self.piste_label.grid(row=1, column=0, pady=(10, 10), padx=(10, 10))
+	def show_wall(self):
+		self.wall_label.grid(row=1, column=0, pady=(10, 10), padx=(10, 10))
 
-	def hide_chemin(self):
-		self.chemin_label.grid_forget()
+	def hide_route(self):
+		self.route_label.grid_forget()
 
-	def show_chemin(self):
-		self.chemin_label.grid(row=2, column=0, padx=(10, 10))
+	def show_route(self):
+		self.route_label.grid(row=2, column=0, padx=(10, 10))
 
 	def hide_run(self):
 		self.run_label.grid_forget()
@@ -85,17 +85,17 @@ class MenuPage(Page):
 		self.run_label.grid(row=3, column=0, pady=(10, 10), padx=(10, 10))
 
 	# Set Command methods
-	def set_command_chemin(self, command):
-		self.__set_on_click(self.chemin_label, lambda e: command())
+	def set_command_route(self, command):
+		self.__set_on_click(self.route_label, lambda e: command())
 
 	def set_command_run(self, command):
 		self.__set_on_click(self.run_label, lambda e: command())
 
-	def set_command_compte(self, command):
-		self.__set_on_click(self.compte_label, lambda e: command())
+	def set_command_account(self, command):
+		self.__set_on_click(self.account_label, lambda e: command())
 
-	def set_command_piste(self, command):
-		self.__set_on_click(self.piste_label, lambda e: command())
+	def set_command_wall(self, command):
+		self.__set_on_click(self.wall_label, lambda e: command())
 
 	# Utils
 	def __change_active(self, elem: customtkinter.CTkLabel):
@@ -128,14 +128,14 @@ class MenuPage(Page):
 	# Methods for the page
 	def update(self, *args, **kwargs):
 		"""Update the page."""
-		self.__update_chemin()
+		self.__update_route()
 		self.__update_run()
 
-	def __update_chemin(self):
+	def __update_route(self):
 		if state.is_wall_selected():
-			self.show_chemin()
+			self.show_route()
 		else:
-			self.hide_chemin()
+			self.hide_route()
 
 	def __update_run(self):
 		if state.is_route_selected():
@@ -146,7 +146,7 @@ class MenuPage(Page):
 	def set_active(self):
 		"""Set the page active."""
 		super().set_active()
-		self.__change_active(self.piste_label)
+		self.__change_active(self.wall_label)
 
 	def on_size_change(self, width, height):
 		"""Called when the windows size change."""
@@ -159,7 +159,7 @@ class MenuPage(Page):
 			label.configure(height=size_label_icon, width=size_label_icon, font=default_font)
 			image.configure(size=(size_icon, size_icon))
 
-		set_size(self.piste_label, self.piste)
-		set_size(self.chemin_label, self.chemin)
+		set_size(self.wall_label, self.piste)
+		set_size(self.route_label, self.route)
 		set_size(self.run_label, self.run)
-		set_size(self.compte_label, self.compte)
+		set_size(self.account_label, self.account)
