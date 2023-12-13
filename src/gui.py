@@ -35,6 +35,9 @@ class Application(customtkinter.CTk):
 		self.camera.start()
 		set_height_utils(self.winfo_screenheight())
 
+		self.fullscreen = False
+		self.bind("<F11>", self.toggle_fullscreen)
+
 		self.geometry(f"{uv(700)}x{uv(600)}+600+300")
 		self.title("Climbing Coach")
 
@@ -66,6 +69,11 @@ class Application(customtkinter.CTk):
 		self.init_frame()
 		self.show_page(LoginPage)
 		self.show_menu()
+
+	def toggle_fullscreen(self, event):
+		"""Toggle the fullscreen."""
+		self.fullscreen = not self.fullscreen
+		self.attributes("-fullscreen", self.fullscreen)
 
 	# OS Init Section
 	def __os_init(self):
