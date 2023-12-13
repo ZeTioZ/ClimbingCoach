@@ -1,10 +1,11 @@
-import numpy as np
 import pickle
-
 from tkinter import Event
 from typing import Callable
+
+import numpy as np
 from PIL import Image
 
+from database.queries.route_queries import create_route, get_route_by_name
 from enums.event_type import EventType
 from enums.flux_reader_event_type import FluxReaderEventType
 from events.flux_reader_event import FluxReaderEvent
@@ -12,7 +13,6 @@ from gui.component.interactive_image import InteractiveImage
 from interfaces.listener import Listener
 from objects.box import Box
 from objects.route import Route
-from database.queries.route_queries import create_route, get_route_by_name
 from utils.click_utils import find_selected_hold
 from utils.draw_utils import box_visualizer, draw_path, path_box_visualizer
 from utils.serializer_utils import deserialize_holds

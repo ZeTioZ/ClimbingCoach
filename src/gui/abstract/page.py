@@ -9,7 +9,7 @@ class Page(CTkFrame):
 		self.app = app
 
 	def on_size_change(self, width, height):
-		"""Called when the windows size change."""
+		"""Called when the window size change."""
 		pass
 
 	def update(self, *args, **kwargs):

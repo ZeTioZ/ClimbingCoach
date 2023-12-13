@@ -1,23 +1,18 @@
 """Module tkinter for the test page."""
 import os.path
 from threading import Thread
-from typing import Callable
 
 import customtkinter
 import cv2
-import numpy as np
-import time
 from PIL import Image
 
-from threads.camera_thread import Camera
-from utils.draw_utils import skeleton_visualizer
-from listeners.skeleton_listener import SkeletonRecordSaverListener
+from database.queries import run_queries
 from enums.flux_reader_event_type import FluxReaderEventType
 from gui.abstract.page import Page
-from gui.run_viewer_page import RunViewerPage
 from gui.app_state import AppState
-from database.queries import run_queries
-from gui.utils import EMPTY_IMAGE, FONT, SECONDARY_COLOR, iuv, uv, v, get_font_style_default, get_font_style_title
+from gui.run_viewer_page import RunViewerPage
+from gui.utils import EMPTY_IMAGE, FONT, uv, v, get_font_style_default, get_font_style_title
+from listeners.skeleton_listener import SkeletonRecordSaverListener
 from listeners.video_widget import VideoWidget
 
 state = AppState()
@@ -178,22 +173,15 @@ class RunPage(Page):
 
 		# Set empty image
 		self.test_label.configure(image=EMPTY_IMAGE)
-		# self.visibility_button.configure(state=customtkinter.DISABLED, image=self.show_cam)
 
 	def set_active(self):
 		super().set_active()
 		self.app.camera.flux_reader_event.register(self.video_widget)
 
 		self.__start_reading()
-		# self.visibility_button.configure(state=customtkinter.NORMAL, image=self.show_cam)
 
 	def get_name(self):
 		return "Run"
-
-	def __clear_run_record_frame(self):
-		print("clear run record frame")
-		for widget in self.run_record_frame.grid_slaves():
-			widget.grid_forget()
 
 	def __start_recording(self):
 		self.skeleton_record_saver_listener.start_timer()
@@ -206,7 +194,6 @@ class RunPage(Page):
 			self.stop_recording.grid(row=1, column=0, columnspan=2, pady=uv(10))
 
 	def __stop_recording(self):
-		# add logical
 		self.app.camera.flux_reader_event.unregister(self.skeleton_record_saver_listener)
 		self.skeleton_record_saver_listener.save_skeletons_record()
 
@@ -216,7 +203,6 @@ class RunPage(Page):
 		self.visibility_button.grid(row=0, column=2, padx=uv(10))
 
 	def __load_recording(self):
-		print("load recording")
 		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
 		if len(self.run_list) == 0:
 			if self.__pop_up is None:	

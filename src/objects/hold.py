@@ -14,7 +14,6 @@ class Hold:
 		:param box: A box object that represents the bounding box of the hold.
 		"""
 		self.box = box
-		# TODO: Add other attributes to the Hold object.
 
 	def __str__(self) -> str:
 		"""

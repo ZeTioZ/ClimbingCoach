@@ -25,8 +25,6 @@ __COLORS = [
 	(128, 128, 0)  #olive
 ]
 
-# __COLOR_1 = (41, 0, 255)
-# __COLOR_2 = (255, 0, 0)
 
 __COLOR_1 = hex_to_rgb("#0b7687")
 __COLOR_2 = hex_to_rgb("#7f6360")

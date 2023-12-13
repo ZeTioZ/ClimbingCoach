@@ -3,7 +3,7 @@ import customtkinter
 
 from database import user_queries
 from gui.abstract.page import Page
-from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR
+from gui.utils import SECONDARY_COLOR, SECONDARY_HOVER_COLOR, FONT
 
 
 class RegisterPage(Page):
@@ -13,6 +13,7 @@ class RegisterPage(Page):
 		super().__init__(parent, app)
 
 		self.show_page = app.show_page
+		self.popup = None
 
 		parent.grid_rowconfigure(0, weight=1)
 		parent.grid_columnconfigure(0, weight=1)
@@ -51,10 +52,27 @@ class RegisterPage(Page):
 
 		if pseudo not in self.__get_all_usernames():
 			user_queries.create_user(pseudo, password)
+			self.app.show_login_page()
+			if self.popup is not None and self.popup.winfo_exists():
+				self.popup.destroy()
 		else:
-			# TODO: afficher un message disant que l'user existe déjà
-			print("User already exists")
-		self.app.show_login_page()
+			if self.popup is None or not self.popup.winfo_exists():
+				self.popup = customtkinter.CTkToplevel(self)
+				self.popup.grid_columnconfigure(0, weight=1)
+				self.popup.grid_rowconfigure((0,1), weight=1)
+				self.popup.geometry("300x100")
+				self.popup.resizable(False, False)
+				self.popup.title("Warning")
+				popup_button = customtkinter.CTkButton(self.popup,
+														text="Ok",
+														command=self.popup.destroy,
+														font=(FONT, 16))
+				popup_button.grid(row=1, column=0)
+			
+			self.after(200, self.popup.lift)
+			popup_label = customtkinter.CTkLabel(self.popup, text=f"Username \"{pseudo}\" is already taken!", font=(FONT, 18))
+			popup_label.grid(row=0, column=0, sticky="nswe")
+		
 
 	def cancel(self):
 		"""Cancel the registration."""

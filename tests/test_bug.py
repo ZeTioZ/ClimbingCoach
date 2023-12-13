@@ -1,10 +1,11 @@
 import sys
 from os import path
 from threading import Thread
+
 import customtkinter as ctk
-from PIL import Image
 import cv2
 import numpy as np
+from PIL import Image
 
 sys.path.append(path.join(path.dirname(path.dirname(path.abspath(__file__))), "src"))
 

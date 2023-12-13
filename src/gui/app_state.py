@@ -4,10 +4,10 @@ Database gui instance class.
 import os
 import pickle
 
+from database.models.user import User
 from database.models.wall import Wall
 from gui.abstract.singleton import Singleton
 from gui.utils import get_ressources_path
-from database.models.user import User
 from objects.route import Route
 
 
@@ -75,12 +75,10 @@ class AppState(metaclass=Singleton):
 		"""Return true if a wall is selected."""
 		return self.__wall is not None
 
-	# TODO: Change the injection of this function into route_page.py
 	def get_route(self) -> Route | None:
 		"""Return the route."""
 		return self.__route
 
-	# TODO: Change the injection of this function into route_page.py
 	def set_route(self, route: Route | None):
 		"""Set the route."""
 		self.__route = route
@@ -104,15 +102,6 @@ class AppState(metaclass=Singleton):
 	def get_camera_name(self) -> str:
 		"""Return the camera name."""
 		return self.__camera_name
-
-	def get_index_camera(self) -> int:
-		# """Return the index of the camera."""
-		# cameras = get_available_cameras_names()
-		# if self.__camera_name in cameras:
-		#     return str(cameras.index(self.__camera_name))
-		# else:
-		# Wasn't working on macOS that's why it's commented
-		return 1
 
 	def set_camera_name(self, camera_name: str):
 		"""Set the camera name."""

@@ -1,8 +1,9 @@
 import customtkinter as ctk
-from PIL import Image
 import numpy as np
+from PIL import Image
 
 from gui.utils import min_max_range, uv, v
+
 
 class ImageComponent(ctk.CTkLabel):
 

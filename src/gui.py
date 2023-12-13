@@ -10,7 +10,8 @@ from database.queries import user_queries
 from gui import LoginPage, RunPage, Page, MenuPage, WallPage, RoutePage, AccountPage, RegisterPage
 from gui import set_height_utils, uv
 from threads.camera_thread import Camera
-from gui import utils
+from gui.utils import get_ressources_path
+
 
 class Application(customtkinter.CTk):
 	"""
@@ -29,7 +30,8 @@ class Application(customtkinter.CTk):
 	def __init__(self):
 		"""Constructor."""
 		super().__init__()
-		self.camera = Camera(os.path.join(utils.get_ressources_path(), "videos", "Escalade_Fixe.mp4"))
+		self.camera = Camera(os.path.join(get_ressources_path(), "videos", "Escalade_Fixe.mp4"))
+		# self.camera = Camera(1)
 		self.camera.start()
 		set_height_utils(self.winfo_screenheight())
 

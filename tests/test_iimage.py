@@ -1,8 +1,10 @@
 import sys
-from os import path
 import threading
+from os import path
 from tkinter import Tk
+
 import customtkinter as CTk
+
 # from src.threads.camera_thread import Camera
 # from src.gui.component.interactive_image import InteractiveImage
 # from src.listeners.image_driver import ImageDriver

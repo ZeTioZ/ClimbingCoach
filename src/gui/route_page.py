@@ -1,5 +1,4 @@
 """Module for tkinter interface of route page."""
-import os.path
 import pickle
 import tkinter as tk
 from typing import Callable
@@ -8,17 +7,17 @@ import customtkinter
 import numpy as np
 from PIL import Image
 
+from database.models.route import Route
 from database.queries import route_queries
 from gui.abstract.page import Page
 from gui.add_route_page import AddRoutePage
-from gui.component.scrollable_button_component import ScrollableButtonComponent
+from gui.app_state import AppState
 from gui.component.difficulty_component import DifficultyComponent
 from gui.component.image_component import ImageComponent
-from gui.app_state import AppState
+from gui.component.scrollable_button_component import ScrollableButtonComponent
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, \
-	SECONDARY_HOVER_COLOR, COLOR_DIFFICULTY, normalize_title
-from gui.utils import v, uv, iuv, min_max_range, get_ressources_path, get_font_style_default, get_font_style_title
-from database.models.route import Route
+	normalize_title
+from gui.utils import v, uv, iuv, get_font_style_default, get_font_style_title
 
 state = AppState()
 

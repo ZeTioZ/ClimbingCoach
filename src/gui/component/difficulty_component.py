@@ -2,6 +2,7 @@ import customtkinter as ctk
 
 from gui.utils import COLOR_DIFFICULTY, min_max_range, uv, v
 
+
 class DifficultyComponent(ctk.CTkFrame):
 
 	def __init__(self, master, **kw):
@@ -13,20 +14,20 @@ class DifficultyComponent(ctk.CTkFrame):
 		self.grid_columnconfigure((0, 6), weight=2)
 
 		self.difficulty = self.__create_difficulty_circles()
-	
+
 	def __create_difficulty_circles(self) -> list[ctk.CTkFrame]:
 		difficulty_circles = []
 		for i in range(5):
 			difficulty_circle = self.__create_difficulty_circle()
-			difficulty_circle.grid(row=0, column=i+1, padx=uv(5))
+			difficulty_circle.grid(row=0, column=i + 1, padx=uv(5))
 			difficulty_circles.append(difficulty_circle)
 		return difficulty_circles
-	
+
 	def __create_difficulty_circle(self) -> ctk.CTkFrame:
 		difficulty_circle = ctk.CTkFrame(
 			self, corner_radius=uv(1000),
 			fg_color="transparent", border_color="white",
-			width=uv(25), height=uv(25), 
+			width=uv(25), height=uv(25),
 		)
 		return difficulty_circle
 
@@ -43,7 +44,7 @@ class DifficultyComponent(ctk.CTkFrame):
 				self.difficulty[i].configure(fg_color=COLOR_DIFFICULTY[i], border_width=0)
 			else:
 				self.difficulty[i].configure(fg_color="transparent", border_width=uv(2))
-	
+
 	# Component lifecycle
 
 	def resize(self, width: int, height: int):
