@@ -9,10 +9,11 @@ from ..models.route import Route
 DATABASE_HANDLER = database_handler.get_instance_database()
 
 
-def create_route(route: RouteObject, description: str = None, difficulty: int = None, image: ndarray = None):
+def create_route(route: RouteObject, wall_name: str, description: str = None, difficulty: int = None,
+                 image: ndarray = None):
 	serialized_holds = serialize_holds(route.get_holds())
 	route = Route(name=route.name, description=description, difficulty=difficulty, image=image,
-	              holds=serialized_holds)
+	              holds=serialized_holds, wall_name=wall_name)
 	with DATABASE_HANDLER.get_session() as session:
 		session.begin()
 		try:

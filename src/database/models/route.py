@@ -1,8 +1,8 @@
 from sqlalchemy import Integer, String, LargeBinary, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base_table import BaseTable
-from database.models.wall import Wall
+from .wall import Wall
 
 
 class Route(BaseTable):
@@ -14,3 +14,4 @@ class Route(BaseTable):
 	image: Mapped[LargeBinary] = mapped_column(LargeBinary, nullable=False)
 	holds: Mapped[LargeBinary] = mapped_column(LargeBinary, nullable=False)
 	wall_name: Mapped[Wall] = mapped_column(String, ForeignKey('wall.name', ondelete='CASCADE'), nullable=False)
+	run = relationship("Run", backref="route_run", cascade='save-update, merge, delete, delete-orphan', lazy='dynamic')
