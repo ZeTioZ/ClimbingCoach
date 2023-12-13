@@ -1,6 +1,7 @@
 """Module for tkinter interface of route page."""
 import pickle
 import tkinter as tk
+import os.path
 from typing import Callable
 
 import customtkinter
@@ -16,7 +17,7 @@ from gui.component.difficulty_component import DifficultyComponent
 from gui.component.image_component import ImageComponent
 from gui.component.scrollable_button_component import ScrollableButtonComponent
 from gui.utils import FONT, LIGHT_GREEN, DARK_GREEN, PRIMARY_COLOR, PRIMARY_HOVER_COLOR, SECONDARY_COLOR, \
-	normalize_title
+	normalize_title, get_ressources_path
 from gui.utils import v, uv, iuv, get_font_style_default, get_font_style_title
 
 state = AppState()
@@ -113,6 +114,15 @@ class RoutePage(Page):
 	def __load_routes(self) -> list[Route]:
 		"""Load the routes from the database."""
 		return route_queries.get_all_routes()
+	
+	# Delete
+
+	def delete_route(self):
+		"""Delete the route."""
+		route_queries.delete_route_by_name(self.all_routes[self.active_route_id].name)
+		self.all_routes = self.__load_routes()
+		self.__refresh_scrollable_button_component()
+		self.refresh_description()
 
 	# =====================
 	# Description component
@@ -155,7 +165,18 @@ class RoutePage(Page):
 			detail_frame, text="Select",
 			command=lambda: self.selection_route()
 		)
-		self.route_selection_button.grid(row=2, column=1, padx=(uv(0), uv(50)))
+		self.route_selection_button.grid(row=2, column=1, padx=(uv(0), uv(20)))
+
+		bin_img = customtkinter.CTkImage(Image.open(os.path.join(get_ressources_path(), "images", "bin.png")),
+								   			size=(uv(30), uv(30)))
+		self.delete_button = customtkinter.CTkButton(
+			detail_frame, 
+			text="",
+			image=bin_img,
+			width=uv(30),
+			command= self.delete_route
+		)
+		self.delete_button.grid(row=2, column=2, padx=(uv(0), uv(50)))
 
 		return detail_frame
 
@@ -244,3 +265,6 @@ class RoutePage(Page):
 		font_style_default = get_font_style_default(width)
 		self.description.configure(font=font_style_default)
 		self.route_selection_button.configure(height=v(5, height), width=v(22, width), font=font_style_default)
+		self.delete_button.configure(height=v(5, height), width=v(5, width), font=font_style_default)
+		self.delete_button.cget("image").configure(size=(v(2, width), v(2, width)))
+
