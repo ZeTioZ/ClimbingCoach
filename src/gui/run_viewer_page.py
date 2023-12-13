@@ -220,7 +220,7 @@ class RunViewerPage(Page):
 			text=display_text,
 			anchor="center",
 			corner_radius=uv(100),
-			font=get_font_style_default(self.app.winfo_width(), self.app.winfo_height())
+			font=get_font_style_default(self.app.winfo_width())
 		)
 
 		replay_img = customtkinter.CTkImage(Image.open(self.__get_image_path("replay.png")),
