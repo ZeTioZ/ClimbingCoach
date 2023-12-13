@@ -345,7 +345,6 @@ class RunViewerPage(Page):
 				self.single_playback_thread.pause()
 		self.video_play_button.configure(state='disabled', image=self.video_play_button_img)
 		self.video_progressbar.configure(state='disabled')
-		# pause video
 		popup = PopUp(self, run=run, user_run=user_run)
 		popup.show_popup()
 		popup.mainloop()
@@ -453,9 +452,8 @@ class PopUp(Page):
 		else:
 			self.video_play_button.configure(image=self.video_play_button_img)
 			self.video_progressbar.configure(state='normal')
-			if self.multi_playback_thread is not None:# and self.user_playback_thread is not None:
+			if self.multi_playback_thread is not None:
 				self.multi_playback_thread.pause()
-				# self.user_playback_thread.pause()
 
 	def __get_image_path(self, image_name: str):
 		"""Return the path of the icon passed in parameter."""
