@@ -14,7 +14,7 @@ from objects.skeletons_record import SkeletonsRecord
 class SkeletonRecordSaverListener(Listener):
 	def __init__(self):
 		super().__init__([FluxReaderEventType.SKELETONS_PROCESSED_EVENT, FluxReaderEventType.END_OF_FILE_EVENT])
-		self.skeleton_record = SkeletonsRecord()
+		self.skeleton_record = None
 		self.hit_holds = []
 		self.start_time = 0                                                                                                                                
 
@@ -46,6 +46,8 @@ class SkeletonRecordSaverListener(Listener):
 
 	def start_timer(self):
 		self.start_time = time.time()
+		self.skeleton_record = SkeletonsRecord()
+		self.hit_holds = []
 
 	def save_skeletons_record(self):
 		state = AppState()

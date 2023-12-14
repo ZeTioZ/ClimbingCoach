@@ -29,6 +29,11 @@ def get_route_by_name(name: str) -> Route:
 		return session.query(Route).filter(Route.name == name).first()
 
 
+def get_route_by_wall_name(wall_name: str) -> list[Route]:
+	with DATABASE_HANDLER.get_session() as session:
+		return session.query(Route).filter(Route.wall_name == wall_name).all()
+
+
 def get_all_routes() -> list[Route]:
 	with DATABASE_HANDLER.get_session() as session:
 		return session.query(Route).all()

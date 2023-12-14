@@ -50,7 +50,6 @@ class AccountPage(Page):
 	def validate(self):
 		"""Validate the settings."""
 		self.choose_cam()
-		self.choose_frame_rate()
 
 	def choose_cam(self):
 		"""Choose the camera."""

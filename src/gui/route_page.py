@@ -113,7 +113,7 @@ class RoutePage(Page):
 
 	def __load_routes(self) -> list[Route]:
 		"""Load the routes from the database."""
-		return route_queries.get_all_routes()
+		return route_queries.get_route_by_wall_name(state.get_wall().name)
 	
 	# Delete
 

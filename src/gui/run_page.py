@@ -203,7 +203,10 @@ class RunPage(Page):
 		self.visibility_button.grid(row=0, column=2, padx=uv(10))
 
 	def __load_recording(self):
-		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
+		if AppState().get_user().username == "admin":
+			self.run_list = run_queries.get_runs_by_route(state.get_route().name)
+		else:
+			self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
 		if len(self.run_list) == 0:
 			if self.__pop_up is None:
 				self.__pop_up = customtkinter.CTkToplevel(self)

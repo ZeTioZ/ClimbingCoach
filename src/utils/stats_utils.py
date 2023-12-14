@@ -23,7 +23,10 @@ def get_user_route_records(app_state: AppState) -> list[Run]:
 	"""Return the user route records."""
 	user = app_state.get_user()
 	selected_route = app_state.get_route()
-	user_route_records = run_queries.get_runs_by_user_and_route(user.username, selected_route.name)
+	if user.username == "admin":
+		user_route_records = run_queries.get_runs_by_route(selected_route.name)
+	else:
+		user_route_records = run_queries.get_runs_by_user_and_route(user.username, selected_route.name)
 	user_route_records.sort(key=lambda x: x.runtime)
 	return user_route_records
 

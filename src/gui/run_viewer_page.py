@@ -374,6 +374,7 @@ class PopUp(Page):
 		self.run = run
 		self.user_run = user_run
 
+
 		self.run_list = run_queries.get_runs_by_user_and_route(state.get_user().username, state.get_route().name)
 
 		self.multi_playback_thread = None
